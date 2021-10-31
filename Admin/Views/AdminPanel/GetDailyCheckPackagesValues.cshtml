@@ -1,0 +1,347 @@
+﻿@model PagedList.Core.PagedList<Data.Domain.DailyCheckPackagesValues>
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *,PagedList.Core.Mvc
+@{
+    ViewData["Title"] = "Ölçüm Listesi";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    int baslangic = 0;
+    int bitis = 0;
+    int toplam = 0;
+}
+
+
+@section css{
+    <link href="~/css/style.css" rel="stylesheet" />
+    <link href="~/fonts/flaticon.css" rel="stylesheet" />
+
+}
+<style>
+    .item-icon i {
+        font-size: 4rem;
+    }
+
+    #olcumler-liste a {
+        font-size: 1.3rem;
+    }
+
+    .swal-update {
+        width: 400px
+    }
+
+        .swal-update .hatirlatici-form-group div {
+            flex: unset;
+        }
+
+    .swal-delete {
+        font-size: 1.5rem;
+    }
+</style>
+
+<div class="container" style="width:100%">
+    <div class="row justify-content-end">
+        <div class="col-xs-12 islem-Button" style="text-align:right">
+
+            <a href="javascript:void(0)" onclick="createValue()" class="green ">Ölçüm Ekle</a>
+            @*<a href="/AdminPanel/GetDailyCheckPackages" class="blue">Paketler</a>*@
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div id="tabid1">
+                <div class="dashboard-content" style="padding: 0px 0px 0px 0px;margin-left: 0px">
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12 col-xs-12">
+                            <div class="dashboard-list-box">
+                                <h4 class="gray">Paket Listesi</h4>
+                                <div class="table-box">
+                                    <table class="basic-table booking-table" id="olcumler-liste">
+                                        <thead>
+                                            <tr>
+                                                <th>Ölçüm Adı</th>
+                                                <th>En Düşük Değer</th>
+                                                <th>En Yüksek Değer</th>
+                                                <th>İkon</th>
+                                                <th>Varsayılan Ölçüm</th>
+                                                <th>İşlemler</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var item in Model)
+                                            {
+                                                <tr>
+                                                    <td>@item.Name</td>
+                                                    <td>@item.MinValue</td>
+                                                    <td>@item.MaxValue</td>
+                                                    <td class="item-icon"><i class="@item.Icon"></i></td>
+                                                    <td class="IsActive">
+                                                        <a class="@(item.IsDefault == false?"kapat":"ac")" id="isactive-@item.Id" data-ajax="true" data-ajax-method="GET" data-ajax-success="updateStatus" href="/AdminPanel/UpdateDailyCheckPackagesValuesDefault?valueId=@item.Id">@(item.IsDefault == false?" Pasif":"Aktif")</a>
+
+                                                    </td>
+                                                    <td class="islemler-yazi">
+                                                        <a href="javascript:void(0)" class="blue" onclick="updateValue(@item.Id,'@item.Name','@item.MinValue','@item.MaxValue')">Güncelle</a>
+                                                        <a href="javascript:void(0)" onclick="deleteValue(@item.Id)" class="red">Sil</a>
+                                                    </td>
+                                                </tr>
+                                            }
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            @*<div class="pagination-container">
+                                    <nav class="pagination">
+                                        <ul>
+                                            <li><a href="#" class="current-page">1</a></li>
+                                            <li><a href="#">2</a></li>
+                                            <li><a href="#"><i class="sl sl-icon-arrow-right"></i></a></li>
+                                        </ul>
+                                    </nav>
+                                </div>*@
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12 sayfalama">
+                            <div class="sayfalama-bilgi">Toplam <span>@Model.TotalItemCount</span> Kayıt Bulunuyor. Şu anda <span>@Model.FirstItemOnPage</span> - <span>@Model.LastItemOnPage</span> Arasındaki Kayıtlar Gösteriliyor. </div>
+
+                            <pager list="@Model" asp-controller="AdminPanel" options="@PagedList.Core.Mvc.PagedListRenderOptions.Bootstrap4PageNumbersOnly" asp-action="GetDailyCheckPackagesValues" />
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function updateStatus(data) {
+        console.log(data.activeStatus);
+        if (data.activeStatus) {
+            document.getElementById("isactive-" + data.id).innerHTML = "Aktif";
+
+            document.getElementById("isactive-" + data.id).classList.remove('kapat');
+            document.getElementById("isactive-" + data.id).classList.add('ac');
+        } else {
+            document.getElementById("isactive-" + data.id).innerHTML = "Pasif";
+
+            document.getElementById("isactive-" + data.id).classList.remove('ac');
+            document.getElementById("isactive-" + data.id).classList.add('kapat');
+        }
+
+        OnSuccess(data);
+    }
+
+    function updateValue(valueId, valueName, valueMin, valueMax) {
+
+        valueMin = valueMin.replace(",", ".");
+        valueMax = valueMax.replace(",", ".");
+        console.log(valueMin)
+        console.log(valueMax)
+        Swal.fire({
+            title: '<strong>Ölçüm Güncelle</strong>',
+            html: '<div class="hatirlatici-form">' +
+                '<div class="hatirlatici-form-group" >' +
+                '<label for="olcumadi">Ölçüm Adı</label><div><input type="text" name="olcumadi" value="' + valueName + '" id="olcumadi" placeholder="Ölçüm Adı" /></div>' +
+                '</div>' +
+                '<div class="hatirlatici-form-group">' +
+                '<label for="minValue">En Düşük Değer</label><div><input type="number" min="0" step="0.1" name="minValue" value="' + Number(valueMin) + '" id="minValue" placeholder="En Düşük Değer" onblur="kontrol(this.id)" /></div>' +
+                '</div> ' +
+                '<div class="hatirlatici-form-group">' +
+                '<label for="maxValue">En Yüksek Değer</label><div><input type="number" min="0" step="0.1" name="maxValue" value="' + Number(valueMax) + '" id="maxValue" placeholder="En Yüksek Değer" onblur="kontrol(this.id)"/></div>' +
+                '</div> ' +
+
+                '</div>',
+            showCloseButton: true,
+            customClass: 'swal-update',
+            showCancelButton: true,
+            focusConfirm: false,
+            confirmButtonText:
+                'Güncelle',
+            confirmButtonAriaLabel: 'update',
+            cancelButtonColor: '#d33',
+            cancelButtonText:
+                'İptal Et',
+            cancelButtonAriaLabel: 'cancel'
+
+        }).then((result) => {
+            if (result.value) {
+                var olcumListeTablo = document.getElementById("olcumler-liste");
+                var olcumAdlari = [];
+                for (var i = 1; i < olcumListeTablo.rows.length; i++) {
+                    olcumAdlari.push(olcumListeTablo.rows[i].cells[0].innerHTML);
+                }
+                var olcumAdi = document.getElementById("olcumadi").value;
+                var minValue = document.getElementById("minValue").value;
+                var maxValue = document.getElementById("maxValue").value;
+
+                if (olcumAdi == "" || olcumAdi === null) {
+                    toastr.error('Lütfen Eksik Alan Bırakmayınız!', 'Hata!');
+                    updateValue(valueId, valueName, valueMin, valueMax);
+                } else if (olcumAdi != valueName && olcumAdlari.indexOf(olcumAdi) != -1) {
+                    toastr.error('Girilen Ölçüm Zaten Mevcut!', 'Hata!');
+                    updateValue(valueId, valueName, valueMin, valueMax);
+                } else {
+
+                    minValue = minValue.toString().replace(".", ",");
+                    maxValue = maxValue.toString().replace(".", ",");
+
+                    $.ajax({
+                        url: '/AdminPanel/UpdateDailyCheckPackagesValues',
+                        data: { Id: valueId, Name: olcumAdi, MinValue: minValue, MaxValue: maxValue },
+                        type: 'post',
+                        dataType: 'json',
+                        success: function (data) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Ölçüm Başarıyla Güncellendi',
+                                showConfirmButton: false,
+                                timer: 1500
+                            })
+                            location.reload();
+                        },
+                        error: function (data) {
+                            toastr.error('Bir Hata İle Karşılaştık', 'Hata!');
+                        }
+                    });
+
+
+
+                }
+            }
+
+        })
+    }
+
+
+
+    function kontrol(id) {
+        var deger = document.getElementById(id).value;
+        if (deger == "" || deger == null || deger < 0) {
+            document.getElementById(id).value = "0";
+        }
+
+    }
+
+
+    function deleteValue(packageid) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Emin Misiniz?',
+            text: 'Bu Ölçümü Silmek İstediğinize Emin Misiniz?',
+            showCloseButton: true,
+            showCancelButton: true,
+            focusConfirm: false,
+            customClass: 'swal-delete',
+
+            confirmButtonText:
+                'Ölçümü Sil',
+            confirmButtonAriaLabel: 'delete',
+            cancelButtonText:
+                'İptal Et',
+            confirmButtonColor:
+                '#d33',
+            cancelButtonAriaLabel: 'cancel'
+        }).then((result) => {
+            if (result.value) {
+                console.log("sd");
+                $.ajax({
+                    url: '/AdminPanel/deletePackageValues',
+                    data: { Id: packageid },
+                    type: 'post',
+                    dataType: 'json',
+                    success: function (data) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Ölçüm Başarıyla Silindi',
+                            showConfirmButton: false,
+                            timer: 1500
+                        })
+                        location.reload();
+
+                    },
+                    error: function (data) {
+                        toastr.error('Bir Hata İle Karşılaştık', 'Hata!');
+                    }
+                });
+
+            }
+        })
+    }
+
+
+
+    function createValue() {
+
+        Swal.fire({
+            title: '<strong>Ölçüm Ekle</strong>',
+            html: '<div class="hatirlatici-form">' +
+                '<div class="hatirlatici-form-group" >' +
+                '<label for="olcumadi">Ölçüm Adı</label><div><input type="text" name="olcumadi" value="" id="olcumadi" placeholder="Ölçüm Adı" /></div>' +
+                '</div>' +
+                '<div class="hatirlatici-form-group">' +
+                '<label for="minValue">En Düşük Değer</label><div><input type="number" min="0" step="0.01" name="minValue" value="0" id="minValue" placeholder="En Düşük Değer" onblur="kontrol(this.id)" /></div>' +
+                '</div> ' +
+                '<div class="hatirlatici-form-group">' +
+                '<label for="maxValue">En Yüksek Değer</label><div><input type="number" min="0" step="0.01" name="maxValue" value="0" id="maxValue" placeholder="En Yüksek Değer" onblur="kontrol(this.id)"/></div>' +
+                '</div> ' +
+
+                '</div>',
+            showCloseButton: true,
+            customClass: 'swal-update',
+            showCancelButton: true,
+            focusConfirm: false,
+            confirmButtonText:
+                'Yeni Ölçüm Ekle',
+            confirmButtonAriaLabel: 'add',
+            cancelButtonColor: '#d33',
+            cancelButtonText:
+                'İptal Et',
+            cancelButtonAriaLabel: 'cancel'
+        }).then((result) => {
+            if (result.value) {
+                var olcumListeTablo = document.getElementById("olcumler-liste");
+                var olcumAdlari = [];
+                for (var i = 1; i < olcumListeTablo.rows.length; i++) {
+                    olcumAdlari.push(olcumListeTablo.rows[i].cells[0].innerHTML);
+                }
+                var olcumAdi = document.getElementById("olcumadi").value;
+                var minValue = document.getElementById("minValue").value;
+                var maxValue = document.getElementById("maxValue").value;
+
+                if (olcumAdi == "" || olcumAdi === null) {
+                    toastr.error('Lütfen Eksik Alan Bırakmayınız!', 'Hata!');
+                    createValue();
+                } else if (olcumAdlari.indexOf(olcumAdi) != -1) {
+                    toastr.error('Girilen Ölçüm Zaten Mevcut!', 'Hata!');
+                    createValue();
+                } else {
+                    minValue = minValue.toString().replace(".", ",");
+                    maxValue = maxValue.toString().replace(".", ",");
+                    $.ajax({
+                        url: '/AdminPanel/AddDailyCheckPackagesValues',
+                        data: { Name: olcumAdi, MinValue: minValue, MaxValue: maxValue },
+                        type: 'post',
+                        dataType: 'json',
+                        success: function (data) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Ölçüm Başarıyla Eklendi',
+                                showConfirmButton: false,
+                                timer: 1500
+                            })
+                            location.reload();
+
+                        },
+                        error: function (data) {
+                            toastr.error('Bir Hata İle Karşılaştık', 'Hata!');
+                        }
+                    });
+
+
+
+                }
+            }
+        });
+    }
+
+</script>

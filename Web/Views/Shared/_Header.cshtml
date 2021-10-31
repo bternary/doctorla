@@ -1,0 +1,185 @@
+﻿<!-- Header Starts -->
+<!-- Facebook Pixel Code -->
+<script>
+    !function (f, b, e, v, n, t, s) {
+        if (f.fbq) return; n = f.fbq = function () {
+            n.callMethod ?
+                n.callMethod.apply(n, arguments) : n.queue.push(arguments)
+        };
+        if (!f._fbq) f._fbq = n; n.push = n; n.loaded = !0; n.version = '2.0';
+        n.queue = []; t = b.createElement(e); t.async = !0;
+        t.src = v; s = b.getElementsByTagName(e)[0];
+        s.parentNode.insertBefore(t, s)
+    }(window, document, 'script',
+        'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '659856217926719');
+    fbq('track', 'PageView');
+</script>
+<noscript>
+    <img height="1" width="1"
+         src="https://www.facebook.com/tr?id=659856217926719&ev=PageView
+&noscript=1" alt="Facebook Pixel" />
+</noscript>
+<!-- End Facebook Pixel Code -->
+<style>
+</style>
+<header class="main_header_area">
+    <div class="top-bar">
+        <div class="top-bar-content" style="    padding-left: 100px;">
+            <div class="contact-info">
+                @*<p><i class="fa fa-phone" aria-hidden="true"></i> +90 (212) 706 06 73</p>*@
+                <p><i class="fa fa-envelope" aria-hidden="true"></i> info@doctorla.co</p>
+            </div>
+            <div class="doctor-sign">
+                <span>Sağlık Çalışanı Mısınız?</span>
+                <a href="/Doctorla/Giris#doktor-kayit" target="_blank">Hemen Bize Katılın!</a>
+            </div>
+            <div class="header-links">
+                <a href="https://twitter.com/doctorlatr"><i class="fab fa-twitter" aria-hidden="true"></i></a>
+                <a href="https://www.instagram.com/doctorla.co/?hl=tr"><i class="fab fa-instagram" aria-hidden="true"></i></a>
+            </div>
+        </div>
+    </div>
+    <div class="header_menu affix-top">
+        <nav class="navbar navbar-default">
+            <div class="container" style="padding-bottom:4px;">
+                <!-- Brand and toggle get grouped for better mobile display -->
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="/" style="padding-top:15px;">
+                        <img src="~/images/logo_white.png" alt="Doctorla">
+                        <img src="~/images/logo.png" alt="Doctorla" style="width: 220px;">
+                    </a>
+                </div>
+                <!-- Collect the nav links, forms, and other content for toggling -->
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                    <ul class="nav navbar-nav" id="responsive-menu">
+                        <li>
+                            <a href="/" role="button" aria-expanded="false">Anasayfa</a>
+                        </li>
+                        <li class="submenu dropdown active">
+                            @*<a href="/Blog">Blog</a>*@
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Blog<i class="fa fa-angle-down" aria-hidden="true"></i></a>
+                            <ul class="dropdown-menu">
+                                <li> <a href="/AcilDurum/PaketDetay/Covid19">Korona Takip</a></li>
+                                <li><a href="/Blog">Genel Blog</a></li>
+                            </ul>
+                        </li>
+                        <li class="submenu dropdown">
+                            <a href="/Doctorla/Hakkimizda">Hakkımızda</a>
+                            <!--
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Hakkımızda<i class="fa fa-angle-down" aria-hidden="true"></i></a>
+                <ul class="dropdown-menu">
+                     <li><a href="/Saglikcim/Hakkimizda#BizKimiz">Biz Kimiz?</a></li>
+                     <li><a href="/Saglikcim/Hakkimizda#NasilCalisir">Nasıl Çalışır</a></li>
+                     <li><a href="/Saglikcim/Hakkimizda#SSS">S.S.S</a></li>
+                     <li><a href="/Saglikcim/Hakkimizda#Sozlesmeler">Sözleşmeler</a></li>
+                     <li><a href="/Saglikcim/Hakkimizda#Iletisim">İletişim</a></li>
+                 </ul>
+                 -->
+                        </li>
+                        <li class="submenu dropdown">
+                            <a href="/Doctorla/TakipModeli" role="button" aria-expanded="false">Takip Modeli</a>
+                        </li>
+                        <li class="submenu dropdown">
+                            <a href="/Doctorla/TibbiBirimler" role="button" aria-expanded="false">Tıbbi Birimler</a>
+                        </li>
+
+                        <li class="submenu dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Yardım Paketleri<i class="fa fa-angle-down" aria-hidden="true"></i></a>
+                            <ul class="dropdown-menu">
+                                @*<li><a href="/YardimPaketleri/Index">Dayanışma Hareketi</a></li>*@
+                                <li><a href="/YardimPaketleri/Bagis">Bağış</a></li>
+                            </ul>
+                        </li>
+                        @*<li>
+                    <a href="/" role="button" aria-expanded="false">Sağlık Köşesi</a>
+                </li>*@
+                        @if (User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.Email) == null)
+                        {
+                            <li>
+                                <a href="/Doctorla/Giris" id="girisbtn" role="button" aria-expanded="false">Giriş</a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="submenu dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">@User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.Name).Value<i class="far fa-user" aria-hidden="true"></i></a>
+                                <ul class="dropdown-menu">
+                                    @if (User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.Role).Value == "Hasta")
+                                    {
+                                        <li><a href="/Doctorla/Profilim">Profilim</a></li>
+                                    }
+                                    else if (User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.Role).Value == "Admin")
+                                    {
+                                        <li><a href="/AdminPanel/Anasayfa">Profilim</a></li>
+                                    }
+                                    else
+                                    {
+                                        <li><a href="/DoctorPanel/Anasayfa">Profilim</a></li>
+                                    }
+                                    <li><a href="javascript:null" onclick="logOut()">Oturumu Kapat</a></li>
+                                </ul>
+                            </li>
+                        }
+
+                        <li id="girisbtn" style="display:none">
+                            <a href="/Doctorla/Giris" role="button" aria-expanded="false">Giriş</a>
+                        </li>
+
+                        <li class="submenu dropdown" style="display:none" id="profilebtn">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" id="profilename"><i class="fa fa-user-circle-o" aria-hidden="true"></i></a>
+                            <ul class="dropdown-menu">
+                                <li id="userprofile" style="display:none"><a href="/Doctorla/Profilim">Profilim</a></li>
+                                <li id="doctorprofile" style="display:none"><a href="/DoctorPanel/Anasayfa">Hesap İşlemleri</a></li>
+                                <li><a href="javascript:null" onclick="logOut()">Oturumu Kapat</a>  </li>
+                            </ul>
+                        </li>
+
+
+                        @*<li class="submenu dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Hakkımızda<i class="fa fa-angle-down" aria-hidden="true"></i></a>
+                    <ul class="dropdown-menu">
+                        <li class="submenu dropdown">
+                            <a href="department.html" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Department<i class="fa fa-angle-right" aria-hidden="true"></i></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="department.html">Department One</a></li>
+                                <li><a href="department1.html">Department Two</a></li>
+                                <li><a href="department-detail.html">Department Detail</a></li>
+                            </ul>
+                        </li>
+
+                        <li><a href="pricing.html">Pricing</a></li>
+                        <li><a href="faq.html">Faq</a></li>
+                        <li><a href="error.html">404 Error</a></li>
+
+                        <li><a href="timetable.html">Time Table</a></li>
+                    </ul>
+                </li>*@
+
+                        <li class="dropdown submenu">
+                            <a href="#search1" class="mt_search"><i class="fa fa-search"></i></a>
+                        </li>
+
+                        @*  <li class="dropdown submenu">
+                    <a href="#" class="mt_cart"><i class="fa fa-shopping-cart"></i><span class="number-cart">1</span></a>
+                </li>
+                        *@
+                    </ul>
+                </div><!-- /.navbar-collapse -->
+            </div><!-- /.container-fluid -->
+            <div id="slicknav-mobile"></div>
+        </nav>
+    </div>
+</header>
+<!-- Header Ends -->
+
+
+
+
+<script>
+    function logOut() {
+        window.location.href = "/Doctorla/Cikis";
+    }
+
+
+</script>

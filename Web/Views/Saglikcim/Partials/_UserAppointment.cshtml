@@ -1,0 +1,127 @@
+﻿@model PagedList.Core.PagedList<Data.Domain.Appointment>
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *,PagedList.Core.Mvc
+
+
+<div class="row">
+    <div class="col-lg-12 col-md-12 col-xs-12">
+        <div class="dashboard-list-box">
+            <h4 class="gray">Randevularım</h4>
+            <div class="table-box table-responsive">
+                <table class="basic-table booking-table">
+                    <thead>
+                        <tr>
+                            <th>Ad Soyad</th>
+                            <th>Bölüm</th>
+                            <th>Doktor Adı</th>
+                            <th>Randevu Tarihi</th>
+                            <th></th>
+                            <th>İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@ViewBag.Name</td>
+                                <td>@item.Department.Name</td>
+                                <td>@item.DoctorName</td>
+                                <td class="t-id">@item.AppointmentDate.ToString("dd.MM.yyyy")<br />@item.AppointmentDate.ToString("HH:mm") - @item.AppointmentFinishDate.ToString("HH:mm")</td>
+                                @if (item.Status == -1)
+                                {
+                                    <td>
+                                        <span class="paid t-box fa fa-video-camera" style="        background: #d92027
+"><a style="color:white;cursor:pointer;">  Doktorunuz Bu Görüşmeyi İptal Etti..</a></span>
+                                    </td>
+                                }
+                                else if (item.Status == -2)
+                                {
+                                    <td><span class="paid t-box fa fa-video-camera" style="background:#d92027"><a style="color:white;cursor:pointer;">  Bu Görüşmeyi İptal Ettiniz</a></span></td>
+                                }
+                                else if (item.Status == -3)
+                                {
+                                    <td><span class="paid t-box fa fa-video-camera" style="background:#d92027"><a style="color:white;cursor:pointer;">  Doktor Gelmedi Seçildi. (Kontrol Ediliyor..)</a></span></td>
+                                }
+                                else if (item.Status == -100)
+                                {
+                                    <td><span class="paid t-box fa fa-video-camera" style="background:#d92027"><a style="color:white;cursor:pointer;">  Sistem Yöneticisi Tarafından Randevu İptal Edildi</a></span></td>
+                                }
+                                else if (item.Status == 1 && item.AppointmentFinishDate < DateTime.Now)
+                                {
+                                    <td><span class="paid t-box fa fa-video-camera" style=" background:#4BB543;"><a style="color:white;cursor:pointer;"> Randevu Başarılı Bir Şekilde Sonlandı</a></span></td>
+                                }
+                                else if (item.AppointmentFinishDate < DateTime.Now)
+                                {
+                                    <td><span class="unpaid t-box fa fa-video-camera"><a style="color:white;cursor:pointer;">  Görüşme Bitti</a></span></td>
+                                }
+                                else if (item.AppointmentDate < DateTime.Now.AddMinutes(10))
+                                {
+                                    <td><span class="pending t-box fa fa-video-camera" title="Görüşmeye Girebilirsinizz"><a href="/Doctorla/LiveChat/@item.SessionKey" target="_blank" style="color:white">  Görüşmeye Girebilirsiniz</a></span></td>
+                                }
+                                else
+                                {
+                                    <td><span class="pending t-box fa fa-video-camera" title="Görüşmeye 10 Dakika Kaldığında Girebilirsiniz"><a style="color:white;cursor:pointer;">  Görüşmeye 10 Dakika Kaldığında Girebilirsiniz</a></span></td>
+                                }
+                                @if (item.Status == 1 || item.Status == 0)
+                                {
+                                    <td class="islemler">
+                                        @if (!item.IsDeleted)
+                                        {
+                                            <a href="#" id="popupDetailbtn" onclick="getAppointmentDetailToModal('@item.SessionKey')" style="color: #35d0ba;"><i class="fa fa-pencil-square-o"></i></a>
+                                        }
+                                        @if (item.Status == 1)
+                                        {
+                                            <a style="color:red;cursor:pointer" onclick="ratesOfAppointment('@item.SessionKey')"><i class="fa fa-star" style="color:#ffcd3c" title="Randevuyu Oyla"></i> </a>
+                                            <a style="cursor:pointer" href="/Doctorla/SendAppointmentDonationDocument?appointmentCode=@item.SessionCode"><i class="fa fa-file-download" style="color:#95389e" title="Katılım Belgesi"></i> </a>
+                                        }
+                                        @if (DateTime.Now.AddHours(1) >= item.AppointmentDate && DateTime.Now <= item.AppointmentDate && item.Status == 0)
+                                        {
+                                            <a style="color:red;cursor:pointer" onclick="appointmentDeleteTimeError()"><i class="fa fa-times" style="color:#d92027" title="Randevuyu İptal Et"></i></a>
+                                        }
+                                        else if (DateTime.Now <= item.AppointmentDate && item.Status == 0)
+                                        {
+                                            <a style="color:red;cursor:pointer" onclick="userDeleteAppointment('@item.SessionKey')"><i class="fa fa-times" style="color:#d92027" title="Randevuyu İptal Et"></i></a>
+                                        }
+                                    </td>
+                                }
+                                else
+                                {
+                                    <td></td>
+                                }
+
+
+
+                            </tr>
+                        }
+                        @if (Model.Count == 0)
+                        {
+                        <td>Randevu Yok</td>
+                        <td>Randevu Yok</td>
+                        <td>Randevu Yok</td>
+                        <td>Randevu Yok</td>
+                        <td>Randevu Yok</td>
+                        <td>Randevu Yok</td>
+                    }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            @*<div class="pagination-container">
+                    <nav class="pagination">
+                        <ul>
+                            <li><a href="#" class="current-page">1</a></li>
+                            <li><a href="#">2</a></li>
+                            <li><a href="#"><i class="sl sl-icon-arrow-right"></i></a></li>
+                        </ul>
+                    </nav>
+                </div>*@
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12 sayfalama">
+            <div class="sayfalama-bilgi">Toplam <span>@Model.TotalItemCount</span> Kayıt Bulunuyor. Şu anda <span>@Model.FirstItemOnPage</span> - <span>@Model.LastItemOnPage</span> Arasındaki Kayıtlar Gösteriliyor. </div>
+
+            <pager list="@Model" asp-controller="Saglikcim" options="@PagedList.Core.Mvc.PagedListRenderOptions.Bootstrap4PageNumbersOnly" asp-action="getUserAppointment" />
+        </div>
+    </div>
+

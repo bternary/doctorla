@@ -1,0 +1,547 @@
+﻿.acilir-pencere {
+    max-width:300px;
+}
+.acilir-pencere .baslik {
+    font-weight: bold;
+}
+
+.acilir-pencere .baslik, .acilir-pencere .bilgi {
+    margin-top: 0.2rem;
+}
+
+.acilir-pencere-buton {
+    margin-top: 0.4rem;
+}
+.cursornone{
+   
+}
+.acilir-pencere-buton a {
+    display: block;
+    width: 100%;
+    height: auto;
+    background: none;
+    border: 1px solid #00a3c8;
+    border-radius: 2px;
+    color: #00a3c8;
+    padding: 0.1rem 0.2rem;
+    transition: 0.2s;
+    font-size: 13px;
+    text-align: center;
+    white-space: normal;
+}
+
+        .acilir-pencere-buton a:hover {
+            color: #fff;
+            background-color: #00a3c8;
+            border-color: #4d94c4;
+        }
+.tarih-buton {
+    margin-bottom: 1rem;
+}
+.takvim-bir .tarih-buton {
+display:flex;
+
+}
+    .takvim-bir .tarih-buton span {
+        padding-left: 1rem;
+        font-size: 16px;
+        cursor: pointer;
+        color: rgb(0, 163, 200);
+    }
+        .takvim-bir .tarih-buton span:hover {
+            color: #0ecefa;
+        }
+        .tarih-buton button, .tarih-buton a, .randevu-buton button {
+            background: none;
+            border: 1px solid #00a3c8;
+            border-radius: 2px;
+            color: #00a3c8;
+            padding: 0.4rem 1rem;
+            transition: 0.2s;
+        }
+
+        .tarih-buton button:hover, .tarih-buton a:hover, .randevu-buton button:hover {
+            color: #fff;
+            background-color: #00a3c8;
+            border-color: #4d94c4;
+        }
+
+  
+.randevutoday {
+    background-color: darkgreen;
+    color: white
+}
+
+.tablo-saatler {
+    width: 100%;
+    max-width: 100%;
+    border-spacing: 0;
+    border-collapse: collapse;
+}
+.tablo-saatler td {
+    padding:1px;
+    text-align:center;
+}
+    .tablo-saatler a {
+        background-color: #1DB9A0;
+        display:inline-block;
+        width:100%;
+        height:auto;
+        padding:0.1rem;
+        border-radius:5px;
+        color:#fff;
+        font-size:12px;
+    }
+        .tablo-saatler a:hover {
+            background-color: #2bdcc0;
+        }
+    .tablo-saatler .gecmis {
+        background-color: #cc0f0f;
+    }
+    .tablo-saatler .gecmis:hover {
+        background-color: #ff0000;
+    }
+    .tablo-saatler .yaklasti {
+        background-color: #d95320;
+    }
+    .tablo-saatler .yaklasti:hover {
+        background-color: orangered;
+    }
+    .tablo-saatler .randevudolu {
+        background-color: #4287f5;
+    }
+    .tablo-saatler .iptal {
+        background-color: gray;
+    }
+        .tablo-saatler .iptal:hover {
+            background-color: #ff0000;
+        }
+
+
+    .tablo-saatler .randevudolu:hover {
+        background-color: #5f99f5;
+    }
+.takvim-iki {
+    text-align: right;
+}
+        @media(max-width: 911px) {
+            .takvim-bir input, .takvim-bir button {
+        margin-top: 0.5rem;
+        margin-bottom: 0;
+    }
+
+            .takvim-iki {
+                margin-top: 1rem;
+                text-align: center;
+            }
+            .takvim-bir{
+                text-align:center;
+            }
+}
+.departman, .startdate, .randevu-buton {
+    margin-top:0.5rem;
+}
+
+
+.goruntulu-konusma .modal-dialog {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+}
+
+    .goruntulu-konusma .modal-content {
+        height: 100%;
+        border-radius: 0;
+    }
+.modal-backdrop {
+    position:relative;
+}
+.modal {
+    padding-right: 0px !important;
+    margin:10px;
+}
+.goruntulu-konusma .close {
+    position:absolute;
+    right:1rem;
+    top:1rem;
+}
+.goruntulu-konusma .modal-footer {
+    bottom: 0px;
+    position: absolute;
+    width: 100%;
+}
+    .goruntulu-konusma .modal-footer .btn {
+        background: none;
+        border: 1px solid #cc0f0f;
+        border-radius: 2px;
+        color: #00a3c8;
+        padding: 0.4rem 1rem;
+        transition: 0.2s;
+        color: #cc0f0f;
+
+    }
+
+.goruntulu-konusma .modal-footer .btn:hover {
+    color: #fff;
+    background-color: #cc0f0f;
+    border-color: #b20e0e;
+}
+
+.goruntulu-konusma .modal-body .detay-kapsa {
+    height: 100%;
+}
+.goruntulu-konusma .modal-body .sol, .goruntulu-konusma .modal-body .sag {
+    height:100%;
+}
+    .goruntulu-konusma .modal-body .sag .row {
+        height: 49%;
+        box-sizing: border-box;
+    }
+    .goruntulu-konusma .modal-body .sag .hasta-not {
+        height: 100%;
+    }
+    .goruntulu-konusma .modal-body .sag .hasta-dosyalar {
+        height: 100%;
+        padding-top: 1rem;
+        margin-top:1%;
+    }
+.goruntulu-konusma .modal-body .hasta-onceki-randevular {
+    padding: 0.2rem;
+    height: 98%;
+    box-sizing: border-box;
+    box-shadow: 0 0px 10px #ccc;
+    border-radius: 5px 5px 0 0;
+    margin-bottom:0.4rem;
+}
+    .goruntulu-konusma .modal-body .hasta-onceki-randevular h5 {
+        background-color: #1DB9A1;
+        height: 40px;
+        margin-bottom: 0px;
+        padding: 1rem 0 0 1rem;
+        color: #fff;
+        border-radius: 5px 5px 0 0;
+
+    }
+    .bilgi-kapsa {
+        margin-top:1rem;
+        text-align:justify;
+    }
+    .tasma {
+        overflow: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+.tasma::-webkit-scrollbar {
+    width: 2px;
+}
+
+/* Track */
+.tasma::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 5px grey;
+    border-radius: 10px;
+}
+
+/* Handle */
+.tasma::-webkit-scrollbar-thumb {
+    background: #333;
+    border-radius: 10px;
+}
+
+
+.hasta-onceki-randevular .table th, .hasta-onceki-randevular .table td {
+    vertical-align: middle;
+}
+.hasta-onceki-randevular  table > thead > tr > th {
+    border-bottom:0;
+}
+.hasta-onceki-randevular table .detay-goster {
+    text-align: center;
+}
+.hasta-onceki-randevular a {
+    color: #4287f5;
+    transition: 0.2s;
+    font-size:20px;
+}
+
+    .hasta-onceki-randevular a:hover {
+        color:#3872d0;
+    }
+
+.yuklenen-dosya {
+    text-align: center;
+    padding-top: 20px;
+    padding-bottom: 30px;
+}
+    .yuklenen-dosya i {
+        font-size: 4em;
+        color: #f7571b;
+    }
+    .yuklenen-dosya span {
+        display:block;
+        font-size:15px;
+    }
+    .yuklenen-dosya a:hover i {
+        color: #f3642f;
+    }
+    .yuklenen-dosya a:hover {
+        color: #5f99f5;
+    }
+
+.goruntulu-konusma .modal-footer .kaydet {
+    border: 1px solid #00a3c8;
+    color: #00a3c8;
+}
+    .goruntulu-konusma .modal-footer .kaydet:hover {
+        border: 1px solid #5f99f5;
+        background-color: #00a3c8;
+        color: #fff;
+    }
+.goruntulu-konusma .modal-footer .gizle,.silme {
+    border: 1px solid #cc0f0f;
+    color: #cc0f0f;
+}
+
+    .goruntulu-konusma .modal-footer .gizle:hover, .silme:hover {
+        background-color: #cc0f0f;
+        color: #fff;
+    }
+.goruntulu-konusma .modal-footer .ac {
+    border: 1px solid #019458;
+    color: #019458;
+}
+
+    .goruntulu-konusma .modal-footer .ac:hover {
+        border: 1px solid #01ac66;
+        background-color: #019458;
+        color: #fff;
+    }
+
+
+.dropzone {
+    border: 2px dashed rgba(0,0,0,0.3);
+}
+.detaylar form .chatbody {
+    position: relative;
+    height: calc(100% - 100px);
+    overflow: auto;
+}
+.doktor-randevu-detay .modal-body {
+    position: relative;
+    height: calc(100% - 120px);
+    overflow: auto;
+}
+.modal2 {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1050; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    margin: 10px;
+    padding-right: 10px !important;
+    padding-bottom: 20px !important;
+    box-sizing: border-box;
+    transition:.2s;
+}
+@media(max-width: 911px) {
+     .goruntulu-konusma .modal-body .sol, .goruntulu-konusma .modal-body .sag {
+        height: auto;
+    }
+    .detaylar form {
+        height: 70%;
+        overflow: auto;
+    }
+    .detaylar form .chatbody {
+        height:100%;
+    }
+    .detaylar .goruntulu-konusma .modal-footer a {
+        display: inline-block;
+        width: 100%;
+    }
+    .detaylar .goruntulu-konusma .modal-footer button {
+        display: inline-block;
+        width: 49.4%;
+        margin-left: 0 !important;
+        margin-top: 3px;
+    }
+    .doktor-randevu-detay .modal-body {
+        position: relative;
+        height: calc(100% - 125px);
+        overflow: auto;
+    }
+    .modal2 {
+        padding-right: 30px !important;
+        padding-bottom: 40px !important;
+    }
+    }
+
+.notguncelle {
+    line-height: 1.42857143 !important;
+    text-transform: uppercase !important;
+    font-weight:400 !important;
+}
+
+
+.acilir-pencere-buton .silme {
+    border: 1px solid #cc0f0f;
+    color: #cc0f0f;
+    margin-top:0.5rem;
+}
+
+    .acilir-pencere-buton .silme:hover {
+        background-color: #cc0f0f;
+        color: #fff;
+        border: 1px solid #cc0f0f;
+    }
+.acilir-pencere-buton .gorusme {
+    border: 1px solid #019458;
+    color: #019458;
+    margin-top: 0.5rem;
+}
+
+    .acilir-pencere-buton .gorusme:hover {
+        background-color: #019458;
+        color: #fff;
+        border: 1px solid #019458;
+    }
+
+#video .modal {
+    display:flex;
+    justify-content:center;
+}
+#video .modal-dialog {
+    width: 50%;
+    height: 50%;
+    margin-top:10%;
+    
+}
+#video .modal-dialog video {
+    width:100%;
+    height:100%;
+}
+
+.sessionPrice, .sessionminute {
+    -webkit-tap-highlight-color: transparent;
+    outline: 0;
+    background: transparent;
+    box-sizing: border-box;
+    margin: 0;
+    font: inherit;
+    font-weight: 300;
+    font-family: 'Poppins', sans-serif;
+    margin-bottom: 0;
+    cursor: pointer;
+    text-transform: none;
+    display: block;
+    width: 100%;
+    height: 34px !important;
+    padding: 6px 12px;
+    font-size: 14px;
+    line-height: 1.42857143;
+    color: #555;
+    background-color: #fff;
+    background-image: none;
+    border: 1px solid #ccc !important;
+    border-radius: 4px;
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+    transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+    margin-top:0.5rem;
+}
+.randevualma span {
+    display:block;
+    font-size:1.4rem;
+    text-align:left;
+    margin-top:0.5rem;
+}
+.randevualma input, .randevualma select {
+    margin-top:0.1rem;
+}
+
+.ucret-sure {
+    display:flex;
+}
+.ucret-sure .ucret {
+    padding-right:0.1rem;
+}
+    .ucret-sure .sure {
+        padding-left: 0.1rem;
+    }
+
+.tekli-coklu, .tekli-coklu .tekli, .tekli-coklu .coklu {
+    display: flex;
+    flex:1;
+    align-items:center;
+}
+.tekli-coklu {
+   margin-top:0.5rem;
+}
+    .tekli-coklu input {
+        margin:0;
+    }
+    .tekli-coklu .tekli label, .tekli-coklu .coklu label, .tanisma label{
+        padding-left: 0.4rem;
+        margin: 0;
+    }
+#coklu-secim {
+    display: flex;
+    transition: 1s;
+    display: none;
+}
+    #coklu-secim .bitis-zamani, #coklu-secim .moladk {
+        flex: 1;
+    }
+    #coklu-secim .bitis-zamani {
+        padding-right:0.1rem;
+    }
+    #coklu-secim .moladk {
+        padding-left: 0.1rem;
+    }
+    .tanisma {
+        display:flex;
+        margin-top:0.5rem;
+    }
+       
+        .tanisma input {
+            margin-top:3.5px;
+            width:15px;
+            height:15px;
+        }
+
+        @media(min-width: 1024px) {
+            .swiper-container {
+        width:1000px;
+    }
+
+}
+
+.dashboard-stat {
+    display:flex;
+    flex-direction:column;
+}
+.dashboard-stat-content {
+    display:flex;
+    width:100%;
+    align-items:center; 
+    position:relative;
+}
+    .dashboard-stat-content h4 {
+        flex:1;
+    }
+    .dashboard-stat-content i {
+        font-size:50px;
+        flex:1;
+    }
+.dashboard-stat-title {
+    display: flex;
+    width: 90%;
+    justify-content:center;
+    align-items:center;
+    margin:auto;
+    margin-left:25px
+}
+.dashboard-stat-title span {
+    width: 100%;
+    font-size:20px;
+}
+

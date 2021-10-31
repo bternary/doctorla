@@ -1,0 +1,180 @@
+﻿
+<div class="dashboard-sticky-nav" id="dashboard-sticky-nav">
+    <div class="content-left pull-left">
+        <h2><a href="/" class="white">Doctorla</a></h2>
+    </div>
+    <div class="content-right pull-right">
+        <div class="search-bar s">
+            <form action="/DoctorPanel/GecmisRandevular" method="get">
+                <div class="form-group">
+                    <div class="col-sm-12 doctor-panel-search">
+                        <input type="text" class="form-control" id="searchuser" placeholder="Hasta Ara" name="name">
+                        <button type="submit" style="cursor:pointer"><i class="fa fa-search" aria-hidden="true"></i></button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="dropdown b1">
+            <a class="dropdown-toggle" data-toggle="dropdown">
+                <div class="dropdown-item">
+                    <i class="sl sl-icon-envelope-open"></i>
+                    <span class="notify">0</span>
+                </div>
+            </a>
+            <div class="dropdown-menu notification-menu dropdown-menu-right">
+                <ul>
+                    <li>
+                        <a href="#">
+                            <div class="notification-item">
+                                <div class="notification-image">
+                                    <i class="sl sl-icon-envelope-open"></i>
+                                </div>
+                                <div class="notification-content">
+                                    <p>Mesajınız Bulunmamaktadır.</p>
+                                </div>
+                            </div>
+                        </a>
+                    </li>
+
+                </ul>
+                @*<p class="all-noti"><a href="#">See all messages</a></p>*@
+            </div>
+        </div>
+        <div class="dropdown b2" id="bildirimler">
+            <a class="dropdown-toggle" data-toggle="dropdown">
+                <div class="dropdown-item">
+                    <i class="sl sl-icon-envelope-open"></i>
+                    <span class="notify">0</span>
+                </div>
+            </a>
+            <div class="dropdown-menu notification-menu dropdown-menu-right">
+                <ul>
+                    <li>
+                        <a href="#">
+                            <div class="notification-item">
+                                <div class="notification-image">
+                                    <i class="fa fa-envelope-o"></i>
+                                </div>
+                                <div class="notification-content">
+                                    <p>Bildirim Bulunmamaktadır.</p>
+                                </div>
+                            </div>
+                        </a>
+                    </li>
+
+                </ul>
+                @*<p class="all-noti"><a href="#">See all messages</a></p>*@
+            </div>
+        </div>
+        <div class="dropdown p">
+            <a class="dropdown-toggle" data-toggle="dropdown">
+                <div class="profile-sec">
+                    <div class="dash-image">
+                        <i class="fa fa-user"></i>
+                    </div>
+                    <div class="dash-content">
+                        <h4>@User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.Name).Value</h4>
+                    </div>
+                </div>
+            </a>
+            <ul class="dropdown-menu notification-menu" style="width:120%">
+                <li>
+                    <a style="cursor:pointer" id="passchangebtn" onclick="changepass()">
+                        <div class="notification-item">
+                            <div class="notification-image">
+                                <i class="sl sl-icon-lock"></i>
+                            </div>
+                            <div class="notification-content">
+                                <p>
+                                    Şifre Değiştir
+                                </p>
+                            </div>
+                        </div>
+                    </a>
+                </li>
+                @*<li><a href="#"><i class="sl sl-icon-power"></i>Çıkış</a></li>*@
+            </ul>
+        </div>
+    </div>
+</div>
+<a href="#" class="dashboard-responsive-nav-trigger"><i class="fa fa-reorder"></i>Menü</a>
+
+<div class="dashboard-nav">
+    <div class="dashboard-nav-inner">
+        <ul>
+            <li><a href="/AdminPanel/Anasayfa"><i class="sl sl-icon-home"></i> Anasayfa</a></li>
+            <li>
+                <a><i class="sl sl-icon-list"></i>Paketler</a>
+                <ul>
+                    <li>@*<a href="/AdminPanel/GetDailyCheckPackages"><i class="sl sl-icon-settings"></i>Paket Listesi</a>*@</li>
+                    <li><a href="/AdminPanel/GetDailyCheckPackagesValues"><i class="sl sl-icon-settings"></i>Ölçüm Listesi</a></li>
+                    <li><a href="/AdminPanel/Paketler/1"><i class="sl sl-icon-settings"></i>Süresi Biten Paketler</a></li>
+                    <li> <a href="/AdminPanel/Paketler/-1"><i class="sl sl-icon-settings"></i>Hemşire Ataması Olmayan Paketler</a></li>
+                    <li> <a href="/AdminPanel/Paketler/0"><i class="sl sl-icon-settings"></i>Devam Eden Paketler</a></li>
+                </ul>
+            </li>
+            <li>
+                <a><i class="sl sl-icon-target"></i>Kampanyalar</a>
+                <ul>
+                    <li><a href="/AdminPanel/Campaignes"><i class="sl sl-icon-list"></i>Kampanya Listesi</a></li>
+                    <li><a href="/AdminPanel/UsedCampaignes"><i class="sl sl-icon-list"></i>Kampanya Kullanım Listesi</a></li>
+                </ul>
+            </li>
+            <li class="@ViewBag.Blog">
+                    <a><i class="sl sl-icon-book-open"></i>Blog</a>
+                    <ul>
+                        <li><a href="/AdminPanel/Blogs"><i class="sl sl-icon-book-open"></i>Blog Yazıları</a></li>
+                        <li><a href="/AdminPanel/NewBlogPost"><i class="sl sl-icon-plus"></i>Yeni Yazı Ekle</a></li>
+                    </ul>
+                </li>
+            <li>
+                <a><i class="sl sl-icon-calender "></i>Randevu İşlemleri</a>
+                <ul>
+                    <li><a href="/AdminPanel/RandevuIslemleri/0"> Bütün Randevular </a></li>
+                    <li><a href="/AdminPanel/RandevuIslemleri/1"> Aktif Alınmış Randevular </a></li>
+                    <li><a href="/AdminPanel/RandevuIslemleri/2"> Aktif Bekleyen Randevular </a></li>
+                    <li><a href="/AdminPanel/RandevuIslemleri/3"> Geçmiş Randevular </a></li>
+                    <li><a href="/AdminPanel/RandevuIslemleri/8"> Geçmiş Başarılı Alınmış Randevular </a></li>
+                    <li><a href="/AdminPanel/RandevuIslemleri/4"> Doktor Gelmedi </a></li>
+                    <li><a href="/AdminPanel/RandevuIslemleri/5"> Kullanici Tarafından Silinen </a></li>
+                    <li><a href="/AdminPanel/RandevuIslemleri/6"> Doktor Tarafından Silinen </a></li>
+                    <li><a href="/AdminPanel/RandevuIslemleri/7"> Admin Tarafından Silinen </a></li>
+                </ul>
+            </li>
+            <li>
+                <a><i class="sl sl-icon-user"></i>Kullanıcı İşlemleri</a>
+                <ul>
+                    <li><a href="/AdminPanel/KullaniciIslemleri/0"> Hasta İşlemleri </a></li>
+                    <li><a href="/AdminPanel/KullaniciIslemleri/1"> Doktor İşlemleri </a></li>
+                    <li><a href="/AdminPanel/KullaniciIslemleri/4"> Hemşire İşlemleri  </a></li>
+                    <li><a href="/AdminPanel/KullaniciIslemleri/2"> Yetkili İşlemleri </a></li>
+                    <li><a href="/AdminPanel/KullaniciIslemleri/3"> Son 2 Günde Açılan </a></li>
+                </ul>
+            </li>
+
+
+            @*<li>
+                    <a><i class="sl sl-icon-layers"></i> Makale Listesi</a>
+                    <ul>
+                        <li><a href="/DoctorPanel/Makalelerim"> Son Etkileşimler <span class="nav-tag yellow">1</span></a></li>
+                        <li><a href="/DoctorPanel/Makalelerim">Bütün Makaleler <span class="nav-tag green">6</span></a></li>
+                        <li><a href="/DoctorPanel/Makalelerim">Silinen Makaleler <span class="nav-tag red">2</span></a></li>
+                    </ul>
+                </li>*@
+            <li><a href="/AdminPanel/YorumveSikayetler"><i class="sl sl-icon-star"></i> Yorum/Şikayetler</a></li>
+            <li><a href="/AdminPanel/IletisimFormu"><i class="sl sl-icon-phone"></i> İletişim Formu</a></li>
+            <li><a href="/AdminPanel/Cikis"><i class="sl sl-icon-power"></i> Çıkış</a></li>
+        </ul>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $(".dashboard-nav a").each(function () {
+            if (this.pathname == document.location.pathname) {
+                $(this).parents('li').each(function () { $(this).addClass("active"); });
+                $(this).addClass("active");
+            }
+        });
+    });
+</script>

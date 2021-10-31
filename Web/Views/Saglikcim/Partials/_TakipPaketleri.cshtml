@@ -1,0 +1,494 @@
+﻿@model List<Data.Domain.Package>
+@using  Newtonsoft.Json;
+@{
+    ViewData["Title"] = "Premium Satın Al";
+}
+<style>
+    .paketItem {
+        order: 4;
+    }
+
+    [data-name="Ücretsiz Takip Paketi"] {
+        order: 1;
+    }
+
+    [data-name="Doktor Takip Paketi"] {
+        order: 3;
+    }
+
+    .swal-checkDoctor .swal2-validation-message {
+        margin-top: 10px;
+    }
+
+    .swal-checkDoctor input[type=number] {
+        -moz-appearance: textfield;
+        max-width: 100% !important;
+    }
+
+    .swal-checkDoctor input::-webkit-outer-spin-button,
+    .swal-checkDoctor input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    .swal2-popup-package {
+        display: none;
+        position: relative;
+        box-sizing: border-box;
+        flex-direction: column;
+        justify-content: center;
+        width: 40em;
+        max-width: 100%;
+        padding: 1.25em;
+        border: none;
+        border-radius: .3125em;
+        background: #fff;
+        font-family: inherit;
+        font-size: 1rem;
+    }
+</style>
+<section id="premium-satin-al" class="sponsor">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 premium-paketleri">
+                <h1><span style=" color: #f0a500; ">Takip</span> PAKETLERİ</h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-md-6 paket-filtrele">
+                <label for="paket-filtreleme-yazi">Paket Filtrele</label>
+                <input type="text" name="paket-filtreleme-yazi" id="paket-filtreleme-yazi" list="paket-filtreleme" onkeyup="paketFiltreleYazi()" oninput="paketFiltrele()" placeholder="Lütfen Bir Paket Seçiniz" />
+                <datalist id="paket-filtreleme">
+                    @foreach (var item in Model)
+                    {
+                        <option value="@item.PackegeName"></option>
+                    }
+                </datalist>
+            </div>
+        </div>
+        <div class="ortala d-flex align-items-stretch" id="paketler-kapsayici">
+
+            @foreach (var item in Model)
+            {
+                var offer = item.Offers.Where(p => p.IsDefault).OrderBy(p => p.Id).FirstOrDefault();
+                var oldAmount = offer.OldAmount.ToString("00.00").Replace(',', '.').Split('.');
+                var newAmount = offer.NewAmount.ToString("00.00").Replace(',', '.').Split('.');
+                <div class=" paketItem align-items-stretch" style="order:2;" id="paket-@item.Id" data-name="@item.PackegeName">
+                    <div class="card sponsorCard @(item.IsPremium?"premium-card":"") ">
+                        <div class="card-header text-align-center"><h4>@item.PackegeName</h4></div>
+                        <div class="sponsorLogo">
+                            <div class="premium-fiyat">
+                                <div class="gecmis-fiyat">@oldAmount[0]<span>.@oldAmount[1] ₺/@offer.ValidityDates gün</span></div>
+                                @if (offer.IsFree)
+                                {
+                                    <div class="guncel-fiyat blue">ÜCRETSİZ</div>
+                                }
+                                else
+                                {
+                                    <div class="guncel-fiyat blue">@newAmount[0]<span>.@newAmount[1] ₺/@offer.ValidityDates gün</span></div>
+                                }
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-group paketIcerigi" style="margin-bottom:0px;">
+                                @{
+                                    item.RelPackageDetail = item.RelPackageDetail.OrderBy(p => p.PackageDetail.ScreenOrder).ToList();
+                                    foreach (var itemdetail in item.RelPackageDetail)
+                                    {
+                                        <li class="list-group-item @(itemdetail.PackageDetail.IsPremium?"ozel":"")">
+                                            <i class="far fa-check-circle"></i>@(itemdetail.PackageDetail.AddDefaultOfferDays?" "+offer.ValidityDates.ToString():"") @itemdetail.PackageDetail.Name
+                                        </li>
+                                    }
+                                }
+                            </ul>
+                            <div class="destekOlButon">
+                                @if (item.IsPremium)
+                                {
+                                    <a id="destekbtn-2" href="javascript:void(0)" onclick="buyPackageNew(@item.Id,'@item.PackegeName',@item.IsDoctor.ToString().ToLower(),@item.IsDoctorSpec.ToString().ToLower(),@item.IsPremium.ToString().ToLower())" @*onclick="buyPackage(@item.Id,'@item.Price','@item.Name','premium')"*@ class="btn btn-primary">PREMİUM OL</a>
+                                }
+                                else
+                                {
+                                    <a id="destekbtn-1" href="javascript:void(0)" class="btn btn-primary" onclick="buyPackageNew(@item.Id,'@item.PackegeName',@item.IsDoctor.ToString().ToLower(),@item.IsDoctorSpec.ToString().ToLower(),@item.IsPremium.ToString().ToLower())" @*onclick="buyPackage(@item.Id,'@item.Price','@item.Name','normal')"*@>Paketi Satın Al</a>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+<script src="~/js/jquery-3.5.1.min.js"></script>
+
+<script>
+
+    function buyPackageNew(packageId, packageName, isDoctor, isDoctorSpec, isPremium) {
+        var doktorAdi, doktorid;
+        var itemClass = isPremium ? "premium" : "normal";
+        if (isDoctorSpec) {
+            Swal.fire({
+                title: 'Doktorunuzun Kodunu Giriniz',
+                input: 'number',
+                inputAttributes: {
+                    autocapitalize: 'off',
+                    'id': 'doctorCode',
+                    'onkeydown': 'javascript: return event.keyCode === 8 || event.keyCode === 46 ? true : !isNaN(Number(event.key))'
+                },
+                text: 'Bu paketi satın alabilmek için doktorunuzun kodunu girmeniz gerekmektedir.',
+                showCancelButton: true,
+                confirmButtonText: 'Kontrol Et',
+                cancelButtonText: 'İptal Et',
+                cancelButtonColor: '#d33',
+                showLoaderOnConfirm: true,
+                customClass: 'swal-checkDoctor',
+
+                preConfirm: (login) => {
+                    return $.ajax({
+                        url: '/Saglikcim/DoctorCodeCheck',
+                        data: { code: login },
+                        type: 'post',
+                        dataType: 'json',
+                        success: function (data) {
+                            if (data.status == -1) {
+                                Swal.showValidationMessage(
+                                    'Geçersiz Kod Girdiniz'
+                                )
+                            } else if (data.status == 1) {
+                                doktorAdi = data.doctor.ad;
+                                doktorid = data.doctor.id;
+                            }
+                        },
+                        error: function (data) {
+                        }
+                    });
+                },
+                allowOutsideClick: () => !Swal.isLoading()
+            }).then((result) => {
+                if (result.value) {
+                    paymentOperation(packageId, doktorid, itemClass, packageName);
+                }
+            });
+        }
+        else
+            paymentOperation(packageId, 0, itemClass, packageName);
+    }
+    function paymentOperation(packageId, doktorid, itemClass, packageName) {
+        $.ajax({
+            url: '/Saglikcim/GetPackageDetail',
+            type: 'POST',
+            data: { packageId: packageId, doctorId: doktorid },
+            dataType: 'html',
+            success: function (data) {
+
+                Swal.fire({
+                    title: '<strong class="' + itemClass + '">' + packageName + '</strong>',
+                    html: data,
+                    showCloseButton: true,
+                    showCancelButton: true,
+                    focusConfirm: false,
+                    cancelButtonColor: '#d33',
+                    confirmButtonText:
+                        'Paketi Satın Al',
+                    confirmButtonAriaLabel: 'Paketi Satın Al',
+                    cancelButtonText:
+                        'İptal',
+                    cancelButtonAriaLabel: 'İptal',
+                    preConfirm: (login) => {
+                        offerId = $('#paket-suresi >option:selected').val();
+                        if ($("#select-doctor").length) {                            
+                            doktorid = $('#paket-suresi >option:selected').val();
+                            if (doktorid <= 0)
+                                Swal.showValidationMessage(
+                                    'Lütfen Doktor Seçiniz!'
+                                );
+                        }
+                        return true;
+                    },
+                    customClass: 'swal2-popup-package',
+                    allowOutsideClick: () => !Swal.isLoading(),
+                    onOpen: (toast) => {
+                        getDepartments();
+                    }
+                }).then((result) => {
+                    if (result.value) {
+                        if (loginstatus == false) {
+                            Swal.fire({
+                                title: 'Giriş Yapın',
+                                text: 'Lütfen Satın alma işlemi için giriş yapınız.',
+                                icon: 'error',
+                                timer: 3000,
+                                showConfirmButton: false,
+                            });
+                            setTimeout(function () { window.location.href = "/Doctorla/Giris"; }, 3000)
+                        } else {
+                            $.ajax({
+                                url: '/doctorla/BuyDailyCheckNew',
+                                type: 'POST',
+                                data: { packageId: packageId, offerId: offerId, doctorId: doktorid },
+                                dataType: 'json',
+                                success: function (data) {
+                                    if (data.status == 1) {
+                                        Swal.fire({
+                                            html: '<iframe src="' + data.token + '" id="paytriframe" frameborder="0" scrolling="yes" style="width: 100%;height:580px"></iframe>',
+                                            showCancelButton: false,
+                                            timer: 999999,
+                                            showConfirmButton: false,
+                                        });
+                                    }
+                                    else if (data.status == 2) {
+                                        Swal.fire({
+                                            title: data.title,
+                                            text: data.message,
+                                            icon: 'success',
+                                            timer: 4000,
+                                            showConfirmButton: false,
+                                        });
+                                        setTimeout(function () { window.location.href = "/Doctorla/Profilim"; }, 5000)
+                                    } else {
+                                        Swal.fire({
+                                            title: data.title,
+                                            text: data.message,
+                                            icon: 'error',
+                                            timer: 4000,
+                                            showConfirmButton: false,
+                                        });
+                                    }
+
+                                },
+                                error: function (data) {
+                                    $.ajax({
+                                        url: '/Saglikcim/ErrorLogs',
+                                        data: { page: "Saglikcim  - _TakipPaketleri - buyPackage" },
+                                        type: 'post',
+                                        dataType: 'json',
+                                        success: function (data) {
+
+                                        },
+                                        error: function (data) {
+
+                                        }
+                                    });
+                                    Swal.fire({
+                                        title: 'İşlem Hatası Oluştu',
+                                        text: 'Paketi Getirirken Bir Hata Oluştu. Lütfen Tekrar Giriş Yapınız',
+                                        icon: 'error',
+                                        timer: 3000,
+                                        showConfirmButton: false,
+                                    });
+                                    setTimeout(function () { window.location.href = "/Doctorla/Giris"; }, 3000)
+                                }
+                            });
+
+                        }
+
+
+                    }
+                })
+            },
+            error: function (data) {
+                $.ajax({
+                    url: '/Saglikcim/ErrorLogs',
+                    data: { page: "Saglikcim  - _TakipPaketleri - buyPackage" },
+                    type: 'post',
+                    dataType: 'json',
+                    success: function (data) {
+
+                    },
+                    error: function (data) {
+
+                    }
+                });
+                Swal.fire({
+                    title: 'İşlem Hatası Oluştu',
+                    text: 'Paketi Getirirken Bir Hata Oluştu. Lütfen Tekrar Giriş Yapınız',
+                    icon: 'error',
+                    timer: 3000,
+                    showConfirmButton: false,
+                });
+                setTimeout(function () { window.location.href = "/Doctorla/Giris"; }, 3000)
+            }
+        });
+    }
+
+    function setNewPrices() {
+        selected = $('#paket-suresi >option:selected');
+        oldAmount = $(selected).data("oldamount").toString().split(".");
+        newAmount = $(selected).data("newamount").toString().split(".");
+        days = $(selected).data("days");
+        freetext = $(selected).data("freetext");
+        document.getElementById("oldPrice").innerHTML = oldAmount[0] + '<span>.' + oldAmount[1] + ' ₺/' + days + ' gün</span>';
+        if ($(selected).data("isfree"))
+            document.getElementById("newPrice").innerHTML = newAmount[0] + '<span>.' + newAmount[1] + ' ₺/' + days + ' gün</span>';
+        else
+            document.getElementById("newPrice").innerHTML = freetext;
+    }
+
+
+    function getDoctors(id) {
+        bolum = id;
+        $.ajax({
+            url: '/Saglikcim/GetDoctors',
+            type: 'GET',
+            data: { departmentId: id, token: _token },
+            dataType: 'json',
+            success: function (data) {
+                $("#select-doctor option").remove();
+                if (data.length == 0)
+                    $('<option/>').val(-1).text("Doktor Bulunmamaktadır").appendTo('#select-doctor');
+                else {
+                    data.forEach(function (item) {
+                        $('<option/>').val(item.id).text(item.name).appendTo('#select-doctor');
+                    });
+                }
+
+            },
+            error: function (data) {
+                Swal.fire({
+                    title: 'İşlem Hatası Oluştu',
+                    text: 'Doktorları Getirirken Bir Hata Oluştu. Tekrarı Durumunda Lütfen Bu Hatayı Bize Bildiriniz',
+                    icon: 'error',
+                    timer: 2000,
+                    showConfirmButton: false,
+                });
+            }
+        });
+    }
+
+    function getDepartments() {
+        $.ajax({
+            url: '/Saglikcim/GetDepartments',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                if ($("#select-depatment").length) {
+                    $("#select-depatment option").remove();
+                    data.forEach(function (item) {
+                        $('<option/>').val(item.id).text(item.name).appendTo('#select-depatment');
+                    });
+                    $("#select-depatment").trigger("change");
+                }
+            },
+            error: function (data) {
+                $.ajax({
+                    url: '/Saglikcim/ErrorLogs',
+                    data: { page: "Shared  - _MainLayout - fillDepartments" },
+                    type: 'post',
+                    dataType: 'json',
+                    success: function (data) {
+
+                    },
+                    error: function (data) {
+
+                    }
+                });
+                Swal.fire({
+                    title: 'İşlem Hatası Oluştu',
+                    text: 'Departmanları Doldururken Bir Hata Oluştu. Tekrarı Durumunda Lütfen Bu Hatayı Bize Bildiriniz',
+                    icon: 'error',
+                    timer: 2000,
+                    showConfirmButton: false,
+                });
+            }
+        });
+    }
+
+    function kapandi(packageId2, prices2, packgeName2, className2) {
+        console.log(packageId2);
+        console.log(prices2);
+        console.log(packgeName2);
+        console.log(className2);
+        ;
+
+    }
+
+
+    function paketFiltrele() {
+        var paketAdi = document.getElementById("paket-filtreleme-yazi").value.toLowerCase();
+        var paketAdiKelimeler = paketAdi.split(" ");
+        paketAdiKelimeler.pop();
+        var paketler = document.getElementById("paketler-kapsayici").querySelectorAll(".paketItem");
+        if (paketAdi == "" || paketAdi == null) {
+            for (var i = 0; i < paketler.length; i++) {
+                document.getElementById(paketler[i].id).style.display = "";
+
+            }
+        } else {
+            for (var i = 0; i < paketler.length; i++) {
+                var paketlerAyir = paketler[i].dataset.name.split(" ");
+                paketlerAyir.pop();
+                for (var a = 0; a < paketler.length; a += 1) {
+                    if (paketler[i].dataset.name.toLowerCase().indexOf(paketAdi) != -1) {
+                        document.getElementById(paketler[i].id).style.display = "";
+                        break;
+                    } else {
+                        document.getElementById(paketler[i].id).style.display = "none";
+                    }
+                }
+
+            }
+        }
+    }
+
+
+    function paketFiltreleYazi() {
+        var paketAdi = document.getElementById("paket-filtreleme-yazi").value.toLowerCase();
+        var paketAdiKelimeler = paketAdi.split(" ");
+        paketAdiKelimeler.pop();
+        var paketler = document.getElementById("paketler-kapsayici").querySelectorAll(".paketItem");
+        if (paketAdi == "" || paketAdi == null) {
+            for (var i = 0; i < paketler.length; i++) {
+                document.getElementById(paketler[i].id).style.display = "";
+
+            }
+        } else {
+            for (var i = 0; i < paketler.length; i++) {
+                var paketlerAyir = paketler[i].dataset.name.split(" ");
+                paketlerAyir.pop();
+                for (var a = 0; a < paketler.length; a += 1) {
+                    if (paketler[i].dataset.name.toLowerCase().indexOf(paketAdi) != -1) {
+                        document.getElementById(paketler[i].id).style.display = "";
+                        break;
+                    } else {
+                        document.getElementById(paketler[i].id).style.display = "none";
+                    }
+                }
+
+            }
+        }
+    }
+
+    function myFunction(x) {
+        if (x.matches) { // If media query matches
+            var cards = document.querySelectorAll(".sponsorCard");
+
+
+            for (var i = 0; i < cards.length; i++) {
+                cards[i].addEventListener("click", function (e) {
+                    console.log(e);
+                    if (e.target.className != "btn btn-primary") {
+                        console.log("sdv");
+
+                        this.classList.toggle("active");
+                        var content = this.getElementsByClassName("paketIcerigi")[0];
+                    }
+
+                });
+            }
+
+            for (i in cards) {
+                cards[i].classList.add("mobileSponsorCard");
+            }
+
+            console.log(cards);
+
+
+        }
+    }
+
+    var x = window.matchMedia("(max-width: 576px)")
+    myFunction(x) // Call listener function at run time
+    x.addListener(myFunction) // Attach listener function on state changes
+
+
+</script>

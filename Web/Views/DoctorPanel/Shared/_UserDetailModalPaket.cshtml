@@ -1,0 +1,250 @@
+﻿@model List<Data.Domain.DailyCheckDetail>
+@using Data.Domain
+@{
+    List<DailyCheckDetailValues> values = new List<DailyCheckDetailValues>();
+    foreach (var item in Model.OrderBy(x => x.TitleOrder))
+    {
+        values.AddRange(item.Values);
+    }
+    string key = ""; int counter = 1;
+    var TitleCount = 0;
+}
+<div class="modal-dialog" id="olcumModal" tabindex="1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered doktor-randevu-detay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="olcumModalLabel">Görevler</h5>
+                <button type="button" class="close modal-kapat" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body tasma2">
+                <div class="row detay-kapsa">
+                    <div class="col-12 col-md-9 gecmisOlcumler" style="height:98%;">
+                        <div class="dashboard-list-box">
+                            <h4 class="gray">Hasta Görev Sonuçları</h4>
+                            <div class="table-box">
+                                <table class="basic-table booking-table" id="olcumler-tablo">
+                                    <thead>
+
+                                        <tr>
+
+                                            <th>Tarih</th>
+                                            @foreach (var item in Model.OrderBy(x => x.TitleOrder))
+                                            {
+                                                <th data-minValue="@item.ValuesTitle.MinValue"  data-maxValue="@item.ValuesTitle.MaxValue" data-icon="@item.ValuesTitle.Icon">@item.ValuesTitle.Name</th>
+                                            }
+                                            <th>İşlemler</th>
+
+                                        </tr>
+                                    </thead>
+                                    <tbody id="dailycheckdatas">
+                                        @foreach (var item in values.OrderBy(x => x.IDate.ToString("yyyy.MM.dd HH:mm")).ThenBy(x => x.Key).ThenBy(x => x.TitleOrder))
+                                        {
+                                            if (key != item.Key)
+                                            {
+                                                @:<tr id="dailycheckdetail-@item.Key">
+                                                    <td>@item.IDate.ToString("yyyy.MM.dd HH:mm")</td>
+                                                    if (item.TitleOrder == 1100 && Model.Count != counter + 2)
+                                                    {
+                                                        int newcounter = counter;
+                                                        for (int i = 0; i < Model.Count - newcounter - 2; i++)
+                                                        {
+                                                            counter++;
+                                                            <td> </td>
+                                                        }
+                                                    }
+                                                    <td>@item.Value</td>
+                                                    key = item.Key; counter = 1;
+                                                }
+                                                else if (item.TitleOrder == 1102)
+                                                {
+                                                    <td>
+                                                        @if (!String.IsNullOrWhiteSpace(item.Value))
+                                                        {
+                                                            foreach (var file in item.Value.Split(','))
+                                                            {
+                                                                <a style="color:blue" href="~/DailyCheckFiles/@file" download><i class="fa fa-file"></i> @file.Substring(0, 10)..</a>
+                                                            }
+                                                        }
+                                                    </td>
+                                                    @:<td><a href="#" onclick="updateDailyCheckValues(@item.Key)" style="color: #35d0ba;"><i class="fa fa-edit"></i></a></td></tr>
+
+
+                                            }
+                                            else
+                                            {
+
+                                                if (item.TitleOrder == 1100 && Model.Count != counter + 2)
+                                                {
+                                                    int newcounter = counter;
+                                                    for (int i = 0; i < Model.Count - newcounter - 2; i++)
+                                                    {
+                                                        counter++;
+                                                    <td> </td>
+                                                }
+                                            }
+                                            <td>@(item.Value ?? "-")</td>
+
+                                        }
+                                        counter++;
+                                        TitleCount = Model.Count;
+                                    }
+                                        <span id="veriCount" style="display:none">@Model.Count</span>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-3  tasma" style="height:98%">
+                            <div class="dashboard-list-box   " style="">
+                                <h4 class="gray">Ölçümlerim</h4>
+                                <div class="olcumlerim  tasma" style="">
+
+                                    <form id="olcumler-form">
+                                        <div class="inputlar">
+                                            @{counter = 0; }
+                                            @foreach (var item in Model.OrderBy(x => x.TitleOrder))
+                                            {
+                                                <div class="form-group " style="display:@(item.ValuesTitle.Name == "Hasta Notu"?"none":"flex")">
+                                                    @if (item.ValuesTitle.Name != "Dosyalar" || item.ValuesTitle.Name != "Hasta Notu")
+                                                    {
+                                                        <div class="icon-label">
+                                                            <i class="@item.ValuesTitle.Icon"></i>
+                                                            <label for="staticEmail">@item.ValuesTitle.Name Değeri</label>
+                                                        </div>
+                                                    }
+                                                    @if (item.ValuesTitle.Name == "Hemşire Notu")
+                                                    {
+                                                        <textarea style="resize:none" type="text" data-id="@item.Id" name="values-@(counter)" class="form-control" id="values-@(counter++)" placeholder="Notunuz"></textarea>
+                                                    }
+                                                    else if (item.ValuesTitle.Name == "Hasta Notu")
+                                                    {
+                                                        <input type="text" data-id="@item.Id" value="" name="values-@(counter)" class="form-control" id="values-@(counter++)" placeholder="Notunuz">
+                                                    }
+
+                                                    else if (item.ValuesTitle.Name == "Dosyalar")
+                                                    {
+                                                        <div class="premium-files-container row" id="fileuploadcontainer2">
+                                                            <div class="col-lg-12 col-md-12 col-xs-12">
+                                                                <div id="fileupload2" class="dropzone" style="background-repeat: round;">
+                                                                    <div class="dz-default dz-message">Buraya TIklayıp Dosya Yükleyiniz (<span id="filecounter2">0</span>)</div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <input type="text" data-id="@item.Id" name="values-@(counter)" class="form-control" id="values-@(counter++)" placeholder="@item.ValuesTitle.MinValue~@item.ValuesTitle.MaxValue">
+                                                    }
+                                                </div>
+                                            }
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="olcumlerim-buton">
+                                    <button type="button" class="btn  kaydet" id="dailyEkle" onclick="createDailyCheckDetail(@Model.FirstOrDefault().DailyCheckId)">Ekle</button>
+                                    <button type="button" class="btn kaydet " id="dailyGuncelle" onclick="UpdateDailyCheckDetail()" style="display:none;">Güncelle</button>
+                                    <button type="button" class="btn iptal " id="dailyIptal" onclick="cancelDailyCheckDetail()" style="display:none;">İptal</button>
+
+                                    <span style="display:none" id="veriCount">@Model.Count</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Kapat</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
+
+    <script type="text/javascript">
+        function NoteUpdate(data) {
+            if (data.status == 1) {
+                Swal.fire({
+                    title: data.title,
+                    text: data.message,
+                    icon: 'success',
+                    timer: 2000,
+                    showConfirmButton: false,
+                })
+                if (deleteindex != -1)
+                    deletefile(deleteindex);
+            } else {
+                Swal.fire({
+                    title: data.title,
+                    text: data.message,
+                    icon: 'error',
+                    timer: 2000,
+                    showConfirmButton: false,
+                })
+            }
+        }
+
+        function deletefile2(index) {
+            document.querySelectorAll("#fileuploadcontainer2 .yuklenen-dosya")[index].innerHTML = ""
+            var a = files2.split(":::");
+            files2 = "";
+            for (var i = 0; i < a.length; i++) {
+                if (i != index)
+                    files2 += a[i];
+            }
+            counter2--;
+            document.getElementById("filecounter2").innerText = counter2;
+
+        }
+        function setFirstFileModalId(Id) {
+            document.getElementById("firstFileModalId").innerText = Id;
+        }
+
+
+
+        Dropzone.autoDiscover = false;
+        var counter2 = 0;
+        var files2 = '';
+        $(function () {
+            //-----------------  UPLOAD First FILES
+
+            var base642 = '';
+            var filelimit2 = 10;
+            var acceptedtype2 = "image/png,image/jpg,image/jpeg,application/pdf,.doc,.docx"; //İzin Verilen Dosya Türleri
+            Dropzone.autoDiscover = false;
+            $("#fileupload2").dropzone({
+                maxFiles: filelimit2,
+                maxFilesize: 10024,
+                acceptedFiles: acceptedtype2,
+                uploadMultiple: true,
+                parallelUploads: true,
+                paramName: "Userphoto", //Önemsiz
+                autoProcessQueue: false,
+                url: '/', //Önemsiz
+                addedfile: function (file) {
+                    var reader = new FileReader();
+                    reader.onload = function (event) {
+                        if (counter2 < filelimit2) {
+                            base642 = event.target.result;
+                            files2 += base642 + ":::";
+                            $("#fileuploadcontainer2").append("<div class='col-xs-3 yuklenen-dosya'><a ><i class='flaticon-file'></i></a><span class='fa fa-times' style='cursor:pointer' onclick='deletefile2(" + counter2 + ")'></span><span class='filename'>" + file.name + "</span></div> ");
+                            counter2++;
+                            document.getElementById("filecounter2").innerText = counter2;
+                        } else {
+                            Swal.fire({
+                                title: 'Dosya Ekleme Hatası',
+                                text: 'Daha Fazla Dosya Ekleyemezsiniz',
+                                icon: 'error',
+                                showConfirmButton: false,
+                            })
+                        }
+
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        });
+
+
+    </script>

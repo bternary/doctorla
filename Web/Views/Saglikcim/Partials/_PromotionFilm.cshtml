@@ -1,0 +1,48 @@
+<section class="call-to-action">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 col-sm-12">
+                <div class="section-title">
+                    <h3>TANITIM FİLMİ</h3>
+                    <h2>Sağlığınız İçin <br /><span>Çözüm Üretiyoruz</span></h2>
+                </div>
+                <div class="action-content">
+                    <p>Dijital çağa geçiş ile birlikte devlet dairelerindeki işlemlerden, şirket kurmaya kadar tüm işlemleri internet üzerinden gerçekleştirebilir hale geldik. Doctorla bunu bir adım ileri taşıyarak, hayatımızı sürdürebilmemiz için kritik öneme sahip olan sağlık hizmetlerini internet ortamına taşıyor.</p>
+                    
+                    <p>Doctorla’nın internet sitesi üzerinden alanında uzman doktorlarımız ile görüşebilir ve bu işlemi gerçekleştirirken toplumsal dayanışmaya katkı sağlayabilirsiniz. Hasta Takip paketlerimiz ile diyabetten corona virüse kadar onlarca farklı hastalıkta kapsamlı bir şekilde sizi takip ediyor, her gün sizlerden aldığımız geri dönüşleri uzman doktorlarımıza iletiyoruz.</p>
+                    <p></p>
+                    <p>Söz konusu sağlıksa, Doctorla yanında...</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-sm-12">
+                <div class="video-outer">
+                    <div class="video-content" onclick="butonkaybet();">
+                        <video controls poster="~/images/mainpageTHUMB.png" id="korona-korunma-video" style="height:auto; ">
+                            <source src="~/images/mainpage.mp4" type="video/mp4">
+                            Tarayıcınız Bu Video Tarafından Desteklenmiyor
+                        </video>
+                        <button type="button" class="play-btn" id="ply-btn" onclick="videobaslat('korona-korunma-video');"><i class="fa fa-play"></i></button>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<script type="text/javascript">
+
+
+    function videobaslat(videoid) {
+        var vid = document.getElementById("korona-korunma-video");
+
+        vid.play();
+        document.getElementById("ply-btn").style.display = "none";
+
+    }
+    function butonkaybet() {
+
+        document.getElementById("ply-btn").style.display = "none";
+
+    }
+
+</script>

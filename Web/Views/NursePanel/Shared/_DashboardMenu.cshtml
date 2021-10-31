@@ -1,0 +1,112 @@
+﻿
+<div class="dashboard-sticky-nav" id="dashboard-sticky-nav">
+    <div class="content-left pull-left">
+        <h2><a href="/" class="white">Doctorla</a></h2>
+    </div>
+    <div class="content-right pull-right">
+        <div class="search-bar s">
+            <form action="/DoctorPanel/GecmisRandevular" method="get">
+                <div class="form-group">
+                    <div class="col-sm-12 doctor-panel-search">
+                        <input type="text" class="form-control" id="searchuser" placeholder="Hasta Ara" name="name">
+                        <button type="submit" style="cursor:pointer"><i class="fa fa-search" aria-hidden="true"></i></button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="dropdown b1">
+            <a class="dropdown-toggle" data-toggle="dropdown">
+                <div class="dropdown-item">
+                    <i class="sl sl-icon-envelope-open"></i>
+                    <span class="notify">0</span>
+                </div>
+            </a>
+            <div class="dropdown-menu notification-menu">
+                <h4> 0 Mesaj</h4>
+                <ul>
+                    <li>
+                        <a href="#">
+                            <div class="notification-item">
+                                <div class="notification-image">
+                                    <i class="fa fa-envelope-o"></i>
+                                </div>
+                                <div class="notification-content">
+                                    <p>Mesajınız Bulunmamaktadır.</p><span class="notification-time">1 saat önce</span>
+                                </div>
+                            </div>
+                        </a>
+                    </li>
+
+                </ul>
+                @*<p class="all-noti"><a href="#">See all messages</a></p>*@
+            </div>
+        </div>
+        <div class="dropdown b2">
+            <a class="dropdown-toggle" data-toggle="dropdown">
+                <div class="dropdown-item">
+                    <i class="sl sl-icon-bell"></i>
+                    <span class="notify">0</span>
+                </div>
+            </a>
+            <div class="dropdown-menu notification-menu">
+                <h4> 0 Bildiri</h4>
+                <ul>
+                    <li>
+                        <a href="#">
+                            <div class="notification-item">
+                                <div class="notification-image">
+                                    <i class="fa fa-bell-o"></i>
+                                </div>
+                                <div class="notification-content">
+                                    <p>Bildiriminiz Bulunmamaktadır.</p><span class="notification-time">30 Dakika Önce</span>
+                                </div>
+                            </div>
+                        </a>
+                    </li>
+
+                </ul>
+                @*<p class="all-noti"><a href="#">See all notifications</a></p>*@
+            </div>
+        </div>
+        <div class="dropdown p">
+            <a class="dropdown-toggle" data-toggle="dropdown">
+                <div class="profile-sec">
+                    <div class="dash-image">
+                        <img src="~/images/Users/defaultuser.png" alt="">
+                    </div>
+                    <div class="dash-content">
+                        <h4>@User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.Name).Value</h4>
+                        <span>Ünvan : Hemşire</span>
+                    </div>
+                </div>
+            </a>
+            <ul class="dropdown-menu">
+                <li><a style="cursor:pointer" id="passchangebtn" onclick="changepass()"><i class="sl sl-icon-lock"></i>Şifre Değiştir</a></li>
+                @*<li><a href="#"><i class="sl sl-icon-power"></i>Çıkış</a></li>*@
+            </ul>
+        </div>
+    </div>
+</div>
+<a href="#" class="dashboard-responsive-nav-trigger"><i class="fa fa-reorder"></i>Menü</a>
+
+<div class="dashboard-nav">
+    <div class="dashboard-nav-inner">
+        <ul>
+            <li class="@ViewBag.Anasayfa"><a href="/NursePanel/Anasayfa"><i class="sl sl-icon-settings"></i> Anasayfa</a></li>
+            <li class="@ViewBag.Profilim"><a href="/NursePanel/Profilim"><i class="sl sl-icon-user"></i> Profilim</a></li>
+
+            <li class="@ViewBag.GecmisRandevular"><a href="/NursePanel/GecmisPaketler"><i class="sl sl-icon-list"></i>Paketler</a></li>
+            @*<li>
+                    <a><i class="sl sl-icon-layers"></i> Makale Listesi</a>
+                    <ul>
+                        <li><a href="/DoctorPanel/Makalelerim"> Son Etkileşimler <span class="nav-tag yellow">1</span></a></li>
+                        <li><a href="/DoctorPanel/Makalelerim">Bütün Makaleler <span class="nav-tag green">6</span></a></li>
+                        <li><a href="/DoctorPanel/Makalelerim">Silinen Makaleler <span class="nav-tag red">2</span></a></li>
+                    </ul>
+                </li>
+                <li><a href="/DoctorPanel/YorumveSikayetler"><i class="sl sl-icon-star"></i> Yorum/Şikayetler</a></li>*@
+            <li><a href="/Doctorla/Cikis"><i class="sl sl-icon-power"></i> Çıkış</a></li>
+        </ul>
+    </div>
+</div>

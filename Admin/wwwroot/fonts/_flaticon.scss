@@ -1,0 +1,332 @@
+    /*
+    Flaticon icon font: Flaticon
+    Creation date: 19/07/2020 15:07
+    */
+
+    @font-face {
+  font-family: "Flaticon";
+  src: url("./Flaticon.eot");
+  src: url("./Flaticon.eot?#iefix") format("embedded-opentype"),
+       url("./Flaticon.woff2") format("woff2"),
+       url("./Flaticon.woff") format("woff"),
+       url("./Flaticon.ttf") format("truetype"),
+       url("./Flaticon.svg#Flaticon") format("svg");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+  @font-face {
+    font-family: "Flaticon";
+    src: url("./Flaticon.svg#Flaticon") format("svg");
+  }
+}
+
+    .fi:before{
+        display: inline-block;
+  font-family: "Flaticon";
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  line-height: 1;
+  text-decoration: inherit;
+  text-rendering: optimizeLegibility;
+  text-transform: none;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  font-smoothing: antialiased;
+    }
+
+    .flaticon-nutrition:before { content: "\f100"; }
+.flaticon-pediatry:before { content: "\f101"; }
+.flaticon-cough:before { content: "\f102"; }
+.flaticon-blood-test:before { content: "\f103"; }
+.flaticon-mother:before { content: "\f104"; }
+.flaticon-physiotherapy:before { content: "\f105"; }
+.flaticon-physical:before { content: "\f106"; }
+.flaticon-welfare:before { content: "\f107"; }
+.flaticon-united:before { content: "\f108"; }
+.flaticon-stay-home:before { content: "\f109"; }
+.flaticon-drop-counter:before { content: "\f10a"; }
+.flaticon-diabetes:before { content: "\f10b"; }
+.flaticon-pregnant:before { content: "\f10c"; }
+.flaticon-null:before { content: "\f10d"; }
+.flaticon-valentines-day:before { content: "\f10e"; }
+.flaticon-test:before { content: "\f10f"; }
+.flaticon-analysis:before { content: "\f110"; }
+.flaticon-medical-report:before { content: "\f111"; }
+.flaticon-individual:before { content: "\f112"; }
+.flaticon-coronavirus:before { content: "\f113"; }
+.flaticon-check-list:before { content: "\f114"; }
+.flaticon-checklist:before { content: "\f115"; }
+.flaticon-hands-and-gestures:before { content: "\f116"; }
+.flaticon-healthcare-and-medical:before { content: "\f117"; }
+.flaticon-healthcare-and-medical-1:before { content: "\f118"; }
+.flaticon-architectonic:before { content: "\f119"; }
+.flaticon-profile:before { content: "\f11a"; }
+.flaticon-interface:before { content: "\f11b"; }
+.flaticon-avatar:before { content: "\f11c"; }
+.flaticon-oncology:before { content: "\f11d"; }
+.flaticon-baby:before { content: "\f11e"; }
+.flaticon-digestive-system:before { content: "\f11f"; }
+.flaticon-blood-tube:before { content: "\f120"; }
+.flaticon-blood-sample:before { content: "\f121"; }
+.flaticon-blood-sample-1:before { content: "\f122"; }
+.flaticon-cardiology:before { content: "\f123"; }
+.flaticon-mental-health:before { content: "\f124"; }
+.flaticon-heart:before { content: "\f125"; }
+.flaticon-x-ray:before { content: "\f126"; }
+.flaticon-newborn:before { content: "\f127"; }
+.flaticon-baby-boy:before { content: "\f128"; }
+.flaticon-kidneys:before { content: "\f129"; }
+.flaticon-kidneys-1:before { content: "\f12a"; }
+.flaticon-dermatology:before { content: "\f12b"; }
+.flaticon-infected-lungs:before { content: "\f12c"; }
+.flaticon-virus:before { content: "\f12d"; }
+.flaticon-lungs:before { content: "\f12e"; }
+.flaticon-medical-tools:before { content: "\f12f"; }
+.flaticon-chest-pain:before { content: "\f130"; }
+.flaticon-lung:before { content: "\f131"; }
+.flaticon-eye:before { content: "\f132"; }
+.flaticon-spinal-column:before { content: "\f133"; }
+.flaticon-stomach:before { content: "\f134"; }
+.flaticon-ribbon:before { content: "\f135"; }
+.flaticon-gynecology:before { content: "\f136"; }
+.flaticon-vaginal-speculum:before { content: "\f137"; }
+.flaticon-sexual-health:before { content: "\f138"; }
+.flaticon-heart-1:before { content: "\f139"; }
+.flaticon-kidney:before { content: "\f13a"; }
+.flaticon-neurology:before { content: "\f13b"; }
+.flaticon-neurology-1:before { content: "\f13c"; }
+.flaticon-bandage:before { content: "\f13d"; }
+.flaticon-injury:before { content: "\f13e"; }
+.flaticon-broken-leg:before { content: "\f13f"; }
+.flaticon-broken-arm:before { content: "\f140"; }
+.flaticon-surgery:before { content: "\f141"; }
+.flaticon-beauty:before { content: "\f142"; }
+.flaticon-rhinoplasty:before { content: "\f143"; }
+.flaticon-inspiration:before { content: "\f144"; }
+.flaticon-mental-health-2:before { content: "\f145"; }
+.flaticon-radiotherapy:before { content: "\f146"; }
+.flaticon-radiation:before { content: "\f147"; }
+.flaticon-joint:before { content: "\f148"; }
+.flaticon-pelvis:before { content: "\f149"; }
+.flaticon-quit-smoking:before { content: "\f14a"; }
+.flaticon-quit-smoking-1:before { content: "\f14b"; }
+.flaticon-quit-smoking-2:before { content: "\f14c"; }
+.flaticon-quit-smoking-3:before { content: "\f14d"; }
+.flaticon-radiotherapy-1:before { content: "\f14e"; }
+.flaticon-kidney-1:before { content: "\f14f"; }
+.flaticon-burn:before { content: "\f150"; }
+.flaticon-protection:before { content: "\f151"; }
+.flaticon-babies:before { content: "\f152"; }
+.flaticon-baby-girl:before { content: "\f153"; }
+.flaticon-sore-throat:before { content: "\f154"; }
+.flaticon-intestine:before { content: "\f155"; }
+.flaticon-respiratory-system:before { content: "\f156"; }
+.flaticon-care:before { content: "\f157"; }
+.flaticon-joint-1:before { content: "\f158"; }
+.flaticon-neurosurgery:before { content: "\f159"; }
+.flaticon-surgery-1:before { content: "\f15a"; }
+.flaticon-adrenal-gland:before { content: "\f15b"; }
+.flaticon-kulakburunbugaz:before { content: "\f15c"; }
+.flaticon-uroloji:before { content: "\f15d"; }
+.flaticon-baby-1:before { content: "\f15e"; }
+.flaticon-height:before { content: "\f15f"; }
+.flaticon-newborn-1:before { content: "\f160"; }
+.flaticon-mother-1:before { content: "\f161"; }
+.flaticon-baby-drinking-bottle:before { content: "\f162"; }
+.flaticon-breastfeeding:before { content: "\f163"; }
+.flaticon-sleep:before { content: "\f164"; }
+.flaticon-slumber:before { content: "\f165"; }
+.flaticon-bed:before { content: "\f166"; }
+.flaticon-newborn-2:before { content: "\f167"; }
+.flaticon-listening:before { content: "\f168"; }
+.flaticon-analysis-1:before { content: "\f169"; }
+.flaticon-newspaper:before { content: "\f16a"; }
+.flaticon-profits:before { content: "\f16b"; }
+.flaticon-coronavirus-1:before { content: "\f16c"; }
+.flaticon-monitor:before { content: "\f16d"; }
+.flaticon-internet:before { content: "\f16e"; }
+.flaticon-blood-pressure-meter:before { content: "\f16f"; }
+.flaticon-blood-pressure-gauge:before { content: "\f170"; }
+.flaticon-thermometer:before { content: "\f171"; }
+.flaticon-fever:before { content: "\f172"; }
+.flaticon-diabetes-1:before { content: "\f173"; }
+.flaticon-heart-2:before { content: "\f174"; }
+.flaticon-heartbeat:before { content: "\f175"; }
+.flaticon-medical-insurance:before { content: "\f176"; }
+.flaticon-drinking-water:before { content: "\f177"; }
+.flaticon-glass-of-water:before { content: "\f178"; }
+.flaticon-body-mass:before { content: "\f179"; }
+.flaticon-weighing-machine:before { content: "\f17a"; }
+.flaticon-mental-health-3:before { content: "\f17b"; }
+.flaticon-drugs:before { content: "\f17c"; }
+.flaticon-blood-test-1:before { content: "\f17d"; }
+.flaticon-cholesterol:before { content: "\f17e"; }
+.flaticon-cholesterol-1:before { content: "\f17f"; }
+.flaticon-vitamin:before { content: "\f180"; }
+.flaticon-vitamins:before { content: "\f181"; }
+.flaticon-insulin:before { content: "\f182"; }
+.flaticon-analytics:before { content: "\f183"; }
+.flaticon-pill:before { content: "\f184"; }
+.flaticon-reminder:before { content: "\f185"; }
+.flaticon-technological-support:before { content: "\f186"; }
+.flaticon-nurse:before { content: "\f187"; }
+.flaticon-parental-control:before { content: "\f188"; }
+.flaticon-insurance:before { content: "\f189"; }
+.flaticon-medical-report-1:before { content: "\f18a"; }
+.flaticon-energy:before { content: "\f18b"; }
+.flaticon-body:before { content: "\f18c"; }
+.flaticon-contact:before { content: "\f18d"; }
+.flaticon-success:before { content: "\f18e"; }
+.flaticon-check:before { content: "\f18f"; }
+.flaticon-medicine:before { content: "\f190"; }
+.flaticon-file:before { content: "\f191"; }
+    
+    $font-Flaticon-nutrition: "\f100";
+    $font-Flaticon-pediatry: "\f101";
+    $font-Flaticon-cough: "\f102";
+    $font-Flaticon-blood-test: "\f103";
+    $font-Flaticon-mother: "\f104";
+    $font-Flaticon-physiotherapy: "\f105";
+    $font-Flaticon-physical: "\f106";
+    $font-Flaticon-welfare: "\f107";
+    $font-Flaticon-united: "\f108";
+    $font-Flaticon-stay-home: "\f109";
+    $font-Flaticon-drop-counter: "\f10a";
+    $font-Flaticon-diabetes: "\f10b";
+    $font-Flaticon-pregnant: "\f10c";
+    $font-Flaticon-null: "\f10d";
+    $font-Flaticon-valentines-day: "\f10e";
+    $font-Flaticon-test: "\f10f";
+    $font-Flaticon-analysis: "\f110";
+    $font-Flaticon-medical-report: "\f111";
+    $font-Flaticon-individual: "\f112";
+    $font-Flaticon-coronavirus: "\f113";
+    $font-Flaticon-check-list: "\f114";
+    $font-Flaticon-checklist: "\f115";
+    $font-Flaticon-hands-and-gestures: "\f116";
+    $font-Flaticon-healthcare-and-medical: "\f117";
+    $font-Flaticon-healthcare-and-medical-1: "\f118";
+    $font-Flaticon-architectonic: "\f119";
+    $font-Flaticon-profile: "\f11a";
+    $font-Flaticon-interface: "\f11b";
+    $font-Flaticon-avatar: "\f11c";
+    $font-Flaticon-oncology: "\f11d";
+    $font-Flaticon-baby: "\f11e";
+    $font-Flaticon-digestive-system: "\f11f";
+    $font-Flaticon-blood-tube: "\f120";
+    $font-Flaticon-blood-sample: "\f121";
+    $font-Flaticon-blood-sample-1: "\f122";
+    $font-Flaticon-cardiology: "\f123";
+    $font-Flaticon-mental-health: "\f124";
+    $font-Flaticon-heart: "\f125";
+    $font-Flaticon-x-ray: "\f126";
+    $font-Flaticon-newborn: "\f127";
+    $font-Flaticon-baby-boy: "\f128";
+    $font-Flaticon-kidneys: "\f129";
+    $font-Flaticon-kidneys-1: "\f12a";
+    $font-Flaticon-dermatology: "\f12b";
+    $font-Flaticon-infected-lungs: "\f12c";
+    $font-Flaticon-virus: "\f12d";
+    $font-Flaticon-lungs: "\f12e";
+    $font-Flaticon-medical-tools: "\f12f";
+    $font-Flaticon-chest-pain: "\f130";
+    $font-Flaticon-lung: "\f131";
+    $font-Flaticon-eye: "\f132";
+    $font-Flaticon-spinal-column: "\f133";
+    $font-Flaticon-stomach: "\f134";
+    $font-Flaticon-ribbon: "\f135";
+    $font-Flaticon-gynecology: "\f136";
+    $font-Flaticon-vaginal-speculum: "\f137";
+    $font-Flaticon-sexual-health: "\f138";
+    $font-Flaticon-heart-1: "\f139";
+    $font-Flaticon-kidney: "\f13a";
+    $font-Flaticon-neurology: "\f13b";
+    $font-Flaticon-neurology-1: "\f13c";
+    $font-Flaticon-bandage: "\f13d";
+    $font-Flaticon-injury: "\f13e";
+    $font-Flaticon-broken-leg: "\f13f";
+    $font-Flaticon-broken-arm: "\f140";
+    $font-Flaticon-surgery: "\f141";
+    $font-Flaticon-beauty: "\f142";
+    $font-Flaticon-rhinoplasty: "\f143";
+    $font-Flaticon-inspiration: "\f144";
+    $font-Flaticon-mental-health-2: "\f145";
+    $font-Flaticon-radiotherapy: "\f146";
+    $font-Flaticon-radiation: "\f147";
+    $font-Flaticon-joint: "\f148";
+    $font-Flaticon-pelvis: "\f149";
+    $font-Flaticon-quit-smoking: "\f14a";
+    $font-Flaticon-quit-smoking-1: "\f14b";
+    $font-Flaticon-quit-smoking-2: "\f14c";
+    $font-Flaticon-quit-smoking-3: "\f14d";
+    $font-Flaticon-radiotherapy-1: "\f14e";
+    $font-Flaticon-kidney-1: "\f14f";
+    $font-Flaticon-burn: "\f150";
+    $font-Flaticon-protection: "\f151";
+    $font-Flaticon-babies: "\f152";
+    $font-Flaticon-baby-girl: "\f153";
+    $font-Flaticon-sore-throat: "\f154";
+    $font-Flaticon-intestine: "\f155";
+    $font-Flaticon-respiratory-system: "\f156";
+    $font-Flaticon-care: "\f157";
+    $font-Flaticon-joint-1: "\f158";
+    $font-Flaticon-neurosurgery: "\f159";
+    $font-Flaticon-surgery-1: "\f15a";
+    $font-Flaticon-adrenal-gland: "\f15b";
+    $font-Flaticon-kulakburunbugaz: "\f15c";
+    $font-Flaticon-uroloji: "\f15d";
+    $font-Flaticon-baby-1: "\f15e";
+    $font-Flaticon-height: "\f15f";
+    $font-Flaticon-newborn-1: "\f160";
+    $font-Flaticon-mother-1: "\f161";
+    $font-Flaticon-baby-drinking-bottle: "\f162";
+    $font-Flaticon-breastfeeding: "\f163";
+    $font-Flaticon-sleep: "\f164";
+    $font-Flaticon-slumber: "\f165";
+    $font-Flaticon-bed: "\f166";
+    $font-Flaticon-newborn-2: "\f167";
+    $font-Flaticon-listening: "\f168";
+    $font-Flaticon-analysis-1: "\f169";
+    $font-Flaticon-newspaper: "\f16a";
+    $font-Flaticon-profits: "\f16b";
+    $font-Flaticon-coronavirus-1: "\f16c";
+    $font-Flaticon-monitor: "\f16d";
+    $font-Flaticon-internet: "\f16e";
+    $font-Flaticon-blood-pressure-meter: "\f16f";
+    $font-Flaticon-blood-pressure-gauge: "\f170";
+    $font-Flaticon-thermometer: "\f171";
+    $font-Flaticon-fever: "\f172";
+    $font-Flaticon-diabetes-1: "\f173";
+    $font-Flaticon-heart-2: "\f174";
+    $font-Flaticon-heartbeat: "\f175";
+    $font-Flaticon-medical-insurance: "\f176";
+    $font-Flaticon-drinking-water: "\f177";
+    $font-Flaticon-glass-of-water: "\f178";
+    $font-Flaticon-body-mass: "\f179";
+    $font-Flaticon-weighing-machine: "\f17a";
+    $font-Flaticon-mental-health-3: "\f17b";
+    $font-Flaticon-drugs: "\f17c";
+    $font-Flaticon-blood-test-1: "\f17d";
+    $font-Flaticon-cholesterol: "\f17e";
+    $font-Flaticon-cholesterol-1: "\f17f";
+    $font-Flaticon-vitamin: "\f180";
+    $font-Flaticon-vitamins: "\f181";
+    $font-Flaticon-insulin: "\f182";
+    $font-Flaticon-analytics: "\f183";
+    $font-Flaticon-pill: "\f184";
+    $font-Flaticon-reminder: "\f185";
+    $font-Flaticon-technological-support: "\f186";
+    $font-Flaticon-nurse: "\f187";
+    $font-Flaticon-parental-control: "\f188";
+    $font-Flaticon-insurance: "\f189";
+    $font-Flaticon-medical-report-1: "\f18a";
+    $font-Flaticon-energy: "\f18b";
+    $font-Flaticon-body: "\f18c";
+    $font-Flaticon-contact: "\f18d";
+    $font-Flaticon-success: "\f18e";
+    $font-Flaticon-check: "\f18f";
+    $font-Flaticon-medicine: "\f190";
+    $font-Flaticon-file: "\f191";

@@ -1,0 +1,543 @@
+﻿@model PagedList.Core.IPagedList<Data.Domain.DailyCheckPackages>
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *,PagedList.Core.Mvc
+
+@{
+    ViewData["Title"] = "Paket Listesi";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    string degerler = "";
+}
+@section css{
+    <link href="~/css/select2.min.css" rel="stylesheet" />
+    <link href="~/css/style.css" rel="stylesheet" />
+
+}
+<style>
+    .islemler-yazi a {
+        font-size: 1.2rem;
+    }
+
+    .islemler-yazi {
+        padding: 5px !important;
+    }
+
+    .booking-table td, .booking-table th {
+        padding: 3px !important;
+    }
+
+    .swal-update {
+        width: 700px;
+    }
+
+    .swal-delete {
+        font-size: 1.5rem;
+    }
+
+    .updatePrices {
+        display: flex;
+        align-items: center;
+    }
+
+        .updatePrices i {
+            color: #ff0000;
+            font-size: 2rem;
+            cursor: pointer;
+        }
+
+            .updatePrices i:hover {
+                color: #db0808;
+            }
+
+        .updatePrices:not(:last-child) {
+            border-bottom: 1px solid #ddd3d3;
+        }
+
+        .updatePrices div {
+            display: flex;
+            margin: 0.5rem;
+            align-items: center;
+            flex: 2;
+        }
+
+            .updatePrices div label {
+                flex: 2;
+            }
+
+            .updatePrices div input {
+                flex: 1;
+            }
+
+
+
+            .updatePrices div:first-child {
+            }
+
+    .yeniTarife {
+        text-align: right;
+    }
+
+        .yeniTarife a {
+            font-size: 1.5rem;
+            color: rgb(0, 163, 200);
+        }
+
+    .select2-container {
+        width: 100% !important;
+    }
+
+    .select2-container {
+        height: 100% !important;
+        width: 100% !important;
+    }
+
+    .select2-selection {
+        overflow: hidden;
+    }
+
+    .select2-selection__rendered[title] {
+        background-color: #cc0f0f;
+    }
+
+    .select2-results__option[aria-selected=true] {
+        pointer-events: none;
+        background-color: #808080;
+        opacity: 0.7;
+    }
+
+    .select2-results {
+        margin: 0 !important;
+    }
+
+    .select2-container--default .select2-selection--multiple .select2-selection__choice {
+        color: #fff !important;
+        background-color: #00a3c8 !important;
+        border: none;
+        display: flex;
+        align-items: center;
+    }
+
+    .select2-selection__choice__remove {
+        color: #fa1818 !important;
+        margin-top: 2px;
+    }
+
+        .select2-selection__choice__remove:hover {
+            color: #cc0f0f !important;
+        }
+</style>
+
+
+
+<div class="container" style="width:100%">
+    <div class="row justify-content-end">
+        <div class="col-xs-12 islem-Button" style="text-align:right">
+
+            <a href="javascript:void(0)" onclick="createPackage()" class="green">Paket Ekle</a>
+            <a href="/AdminPanel/GetDailyCheckPackagesValues" class="blue">Ölçümler</a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div id="tabid1">
+                <div class="dashboard-content" style="        padding: 0px 0px 0px 0px;
+        margin-left: 0px
+">
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12 col-xs-12">
+                            <div class="dashboard-list-box">
+                                <h4 class="gray">Paket Listesi</h4>
+                                <div class="table-box">
+                                    <table class="basic-table booking-table" id="paketler-liste">
+                                        <thead>
+                                            <tr>
+                                                <th>Paket Adı</th>
+                                                <th>Fiyatlar</th>
+                                                <th>Paket Değerleri</th>
+                                                <th>Premium</th>
+                                                <th>Aktiflik</th>
+                                                <th>İşlemler</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var item in Model)
+                                            {
+                                                degerler = "";
+                                                List<DailyCheckPackagesView> prices = Newtonsoft.Json.JsonConvert.DeserializeObject<List<DailyCheckPackagesView>>(item.Price);
+
+                                                <tr>
+                                                    <td>@item.Name</td>
+                                                    <td>
+                                                        @foreach (var item2 in prices)
+                                                        {
+                                                            <span>@item2.Ay Ay | @item2.OncekiFiyat TL -> @item2.Fiyat</span> <br />
+                                                        }
+                                                    </td>
+                                                    <td class="uzun-yazi">
+                                                        @foreach (var item3 in item.DailyCheckPackagesValues)
+                                                        {
+                                                            if (item3 != null && item3.Id != 1100 && item3.Id != 1101 && item3.Id != 1102)
+                                                            {
+                                                                degerler = degerler + item3.Name + ", ";
+                                                            }
+                                                        }
+                                                        @{
+                                                            if (degerler.Length > 0)
+                                                            {
+                                                                degerler = degerler.Substring(0, degerler.Length - 2);
+                                                            }
+
+                                                        }
+
+                                                        <span>@degerler</span>
+                                                    </td>
+                                                    <td>@(item.IsPremium==false?" Hayır":"Evet")</td>
+                                                    <td class="IsActive">
+                                                        <a class="@(item.IsActive == false?"kapat":"ac")" id="isactive-@item.Id" data-ajax="true" data-ajax-method="GET" data-ajax-success="updateStatus" href="/AdminPanel/UpdateDailyCheckPackagesActivity?PackageId=@item.Id">@(item.IsActive == false?" Pasif":"Aktif")</a>
+
+                                                    </td>
+                                                    <td class="islemler-yazi">
+                                                        <a href="javascript:void(0)" class="blue" onclick="updatePackage(@item.Id,'@item.Price','@item.Name')">Güncelle</a>
+                                                        <a href="javascript:void(0)" onclick="OlcumBelirle(@item.Id)" class="yellow" style="@(item.IsPremium?"display:none":"")">Ölçümler</a>
+                                                        <a href="javascript:void(0)" onclick="deletePackage(@item.Id)" class="red" style="@(item.IsPremium?"display:none":"")">Sil</a>
+                                                    </td>
+                                                </tr>
+                                            }
+
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12 sayfalama">
+                            <div class="sayfalama-bilgi">Toplam <span>@Model.TotalItemCount</span> Kayıt Bulunuyor. Şu anda <span>@Model.FirstItemOnPage</span> - <span>@Model.LastItemOnPage</span> Arasındaki Kayıtlar Gösteriliyor. </div>
+
+                            <pager list="@Model" asp-controller="AdminPanel" options="@PagedList.Core.Mvc.PagedListRenderOptions.Bootstrap4PageNumbersOnly" asp-action="GetDailyCheckPackages" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="olcumbelirle" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+
+</div>
+
+<script src="~/js/select2.full.min.js"></script>
+
+<script>
+    var counter = 0;
+    var counter2 = 0;
+    function updateStatus(data) {
+        console.log(data.activeStatus);
+        if (data.activeStatus) {
+            document.getElementById("isactive-" + data.id).innerHTML = "Aktif";
+
+            document.getElementById("isactive-" + data.id).classList.remove('kapat');
+            document.getElementById("isactive-" + data.id).classList.add('ac');
+        } else {
+            document.getElementById("isactive-" + data.id).innerHTML = "Pasif";
+
+            document.getElementById("isactive-" + data.id).classList.remove('ac');
+            document.getElementById("isactive-" + data.id).classList.add('kapat');
+        }
+
+        OnSuccess(data);
+    }
+    function updatePackage(packageId, prices, packgeName) {
+
+        var price = JSON.parse(prices);
+        var string = "";
+        for (counter = 0; counter < price.length; counter++) {
+            string += '<div class="updatePrices" id="item-' + counter + '"> <i class="fa fa-times-circle" title="Tarifeyi Sil" onclick="deletePriceItem(' + counter + ')" ></i> <div style="flex:1"><label for="ay-' + counter + '">Ay</label> <input type="number" data-type="ay" name="ay-' + counter + '" id="ay-' + counter + '" value="' + price[counter].Ay + '" max="12" min="1" onblur="kontrol(this.id)" /></div><div> <label for="gecmisfiyat-' + counter + '">Geçmiş Fiyat (₺)</label> <input type="number" name="gecmisfiyat-' + counter + '" id="gecmisfiyat-' + counter + '" value="' + price[counter].OncekiFiyat + '" min="1" onblur="kontrol(this.id)" /></div><div><label for="yenifiyat-' + counter + '">Yeni Fiyat (₺)</label> <input type="number" name="yenifiyat-' + counter + '" id="yenifiyat-' + counter + '" value="' + price[counter].Fiyat + '" min="1" onblur="kontrol(this.id)" /></div> </div>';
+        }
+        Swal.fire({
+            title: '<strong>Paket Güncelle</strong>',
+            html: '<div class="hatirlatici-form">' +
+                '<div class="hatirlatici-form-group" >' +
+                '<label for="paketadi">Paket Adı</label><div><input type="text" name="paketadi" value="' + packgeName + '" id="paketadi" placeholder="Paket Adı" /></div>' +
+                '</div>' +
+                '<div class="hatirlatici-form-group" id="tarifeler1" style="flex-direction:column;">' +
+                string +
+                '</div>' +
+                '<div class="yeniTarife">' +
+                '<a title="Yeni Tarife Ekle"  onclick="createPriceItem(1)" href="javascript:void(0)">Yeni Tarife Ekle</a>' +
+
+                '</div>' +
+                '</div>',
+            showCloseButton: true,
+            customClass: 'swal-update',
+            showCancelButton: true,
+            focusConfirm: false,
+            confirmButtonText:
+                'Güncelle',
+            confirmButtonAriaLabel: 'update',
+            cancelButtonColor: '#d33',
+            cancelButtonText:
+                'İptal Et',
+            cancelButtonAriaLabel: 'cancel'
+        }).then((result) => {
+            if (result.value) {
+                var paketAdi = document.getElementById("paketadi").value;
+                var paketListeTablo = document.getElementById("paketler-liste");
+                var paketAdlari = [];
+                for (var i = 1; i < paketListeTablo.rows.length; i++) {
+                    paketAdlari.push(paketListeTablo.rows[i].cells[0].innerHTML);
+                }
+
+
+                if (paketAdi == "" || paketAdi === null) {
+                    toastr.error('Lütfen Eksik Alan Bırakmayınız!', 'Hata!');
+                    updatePackage(packageId, prices, packgeName);
+                } else if (paketAdi != packgeName && paketAdlari.indexOf(paketAdi) != -1) {
+                    toastr.error('Girilen Paket Zaten Mevcut!', 'Hata!');
+                    updatePackage(packageId, prices, packgeName);
+                }
+                else {
+                    var itemCount = document.getElementById("tarifeler1").querySelectorAll(".updatePrices");
+                    var fiyatlar = "[";
+                    for (var i = 0; i < counter; i++) {
+                        if (document.getElementById("ay-" + i) || document.getElementById("gecmisfiyat-" + i) || document.getElementById("yenifiyat-" + i)) {
+                            fiyatlar += '{"Ay":"' + document.getElementById("ay-" + i).value + '","OncekiFiyat":"' + document.getElementById("gecmisfiyat-" + i).value + '","Fiyat":"' + document.getElementById("yenifiyat-" + i).value + '"}'
+                            if (i != counter - 1) {
+                                fiyatlar += ","
+                            }
+                        }
+                    }
+                    fiyatlar += "]"
+
+                    console.log(fiyatlar);
+                    console.log(counter);
+
+                    $.ajax({
+                        url: '/AdminPanel/UpdateDailyCheckPackages',
+                        data: { Id: packageId, packageName: paketAdi, prices: fiyatlar },
+                        type: 'post',
+                        dataType: 'json',
+                        success: function (data) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Paket Başarıyla Güncellendi',
+                                showConfirmButton: false,
+                                timer: 1500
+                            })
+                            location.reload();
+
+                        },
+                        error: function (data) {
+                            toastr.error('Bir Hata İle Karşılaştık', 'Hata!');
+                        }
+                    });
+
+
+
+                }
+            }
+        })
+    }
+
+    function createPriceItem(id) {
+        console.log(id);
+        $("#tarifeler" + id).append('<div class="updatePrices" id="item-' + counter + '"> <i class="fa fa-times-circle" title="Tarifeyi Sil" onclick="deletePriceItem(' + counter + ')"></i> <div style="flex:1"><label for="ay-' + counter + '">Ay</label> <input type="number" data-type="ay" name="ay-' + counter + '" id="ay-' + counter + '" value="0" max="12" min="1" onblur="kontrol(this.id)" /></div><div> <label for="gecmisfiyat-' + counter + '">Geçmiş Fiyat (₺)</label> <input type="number" name="gecmisfiyat-' + counter + '" id="gecmisfiyat-' + counter + '" value="0" min="1" onblur="kontrol(this.id)" /></div><div><label for="yenifiyat-' + counter + '">Yeni Fiyat (₺)</label> <input type="number" name="yenifiyat-' + counter + '" id="yenifiyat-' + counter + '" value="0" min="1" onblur="kontrol(this.id)"  /></div> </div>');
+        counter++;
+
+    }
+
+    function createPriceItem2(id) {
+        console.log(counter2);
+        counter2++;
+        $("#tarifeler" + id).append('<div class="updatePrices" id="item-' + counter2 + '"> <i class="fa fa-times-circle" title="Tarifeyi Sil" onclick="deletePriceItem(' + counter2 + ')"></i> <div style="flex:1"><label for="ay-' + counter2 + '">Ay</label> <input type="number" data-type="ay" name="ay-' + counter2 + '" id="ay-' + counter2 + '" value="0" max="12" min="1" onblur="kontrol(this.id)" /></div><div> <label for="gecmisfiyat-' + counter2 + '">Geçmiş Fiyat (₺)</label> <input type="number" name="gecmisfiyat-' + counter2 + '" id="gecmisfiyat-' + counter2 + '" value="0" min="1" onblur="kontrol(this.id)" /></div><div><label for="yenifiyat-' + counter2 + '">Yeni Fiyat (₺)</label> <input type="number" name="yenifiyat-' + counter2 + '" id="yenifiyat-' + counter2 + '" value="0" min="1" onblur="kontrol(this.id)"  /></div> </div>');
+
+    }
+    function kontrol(id) {
+        console.log(id);
+        var deger = document.getElementById(id).value;
+        if (deger == "" || deger == null || deger < 0) {
+            document.getElementById(id).value = "0";
+        }
+        if (document.getElementById(id).dataset.type.indexOf("ay") != -1) {
+            if (deger > 12) {
+                document.getElementById(id).value = "12";
+
+            }
+
+        }
+    }
+    function deletePriceItem(id) {
+        console.log(id);
+        document.getElementById("item-" + id).remove();
+    }
+
+
+    function createPackage() {
+        counter2 = 0;
+        var paketListeTablo = document.getElementById("paketler-liste");
+        var paketAdlari = [];
+        for (var i = 1; i < paketListeTablo.rows.length; i++) {
+            paketAdlari.push(paketListeTablo.rows[i].cells[0].innerHTML);
+        }
+
+        Swal.fire({
+            title: '<strong>Paket Ekle</strong>',
+            html: '<div class="hatirlatici-form">' +
+                '<div class="hatirlatici-form-group" >' +
+                '<label for="paketadi">Paket Adı</label><div><input type="text" name="paketadi" id="paketadi" placeholder="Paket Adı" /></div>' +
+                '</div>' +
+                '<div class="hatirlatici-form-group" id="tarifeler2" style="flex-direction:column;">' +
+                '<div class="updatePrices" id="item-' + counter2 + '"> <i class="fa fa-times-circle" title="Tarifeyi Sil" onclick="deletePriceItem(' + counter2 + ')" ></i> <div style="flex:1"><label for="ay-' + counter2 + '">Ay</label> <input type="number" data-type="ay" name="ay-' + counter2 + '" id="ay-' + counter2 + '" value="0" max="12" min="1" onblur="kontrol(this.id)" /></div><div> <label for="gecmisfiyat-' + counter2 + '">Geçmiş Fiyat (₺)</label> <input type="number" name="gecmisfiyat-' + counter2 + '" id="gecmisfiyat-' + counter2 + '" value="0" min="1" onblur="kontrol(this.id)" /></div><div><label for="yenifiyat-' + counter2 + '">Yeni Fiyat (₺)</label> <input type="number" name="yenifiyat-' + counter2 + '" id="yenifiyat-' + counter2 + '" value="0" min="1" onblur="kontrol(this.id)" /></div> </div>' +
+                '</div>' +
+                '<div class="yeniTarife">' +
+                '<a title="Yeni Tarife Ekle"  onclick="createPriceItem2(2)" href="javascript:void(0)">Yeni Tarife Ekle</a>' +
+
+                '</div>' +
+                '</div>',
+            showCloseButton: true,
+            customClass: 'swal-update',
+            showCancelButton: true,
+            focusConfirm: false,
+            confirmButtonText:
+                'Yeni Paket Ekle',
+            confirmButtonAriaLabel: 'add',
+            cancelButtonColor: '#d33',
+            cancelButtonText:
+                'İptal Et',
+            cancelButtonAriaLabel: 'cancel'
+        }).then((result) => {
+            if (result.value) {
+                var paketAdi = document.getElementById("paketadi").value;
+
+
+
+                if (paketAdi == "" || paketAdi === null) {
+                    toastr.error('Lütfen Eksik Alan Bırakmayınız!', 'Hata!');
+                    createPackage();
+                } else if (paketAdlari.indexOf(paketAdi) != -1) {
+                    toastr.error('Girilen Paket Zaten Mevcut!', 'Hata!');
+                    createPackage();
+                } else {
+                    var itemCount = document.getElementById("tarifeler2").querySelectorAll(".updatePrices");
+                    var fiyatlar = "[";
+                    for (var i = 0; i <= counter2; i++) {
+                        if (document.getElementById("ay-" + i) || document.getElementById("gecmisfiyat-" + i) || document.getElementById("yenifiyat-" + i)) {
+                            fiyatlar += '{"Ay":"' + document.getElementById("ay-" + i).value + '","OncekiFiyat":"' + document.getElementById("gecmisfiyat-" + i).value + '","Fiyat":"' + document.getElementById("yenifiyat-" + i).value + '"}'
+                            if (i != counter2) {
+                                fiyatlar += ","
+                            }
+                        }
+                    }
+                    fiyatlar += "]"
+
+                    console.log(fiyatlar);
+                    console.log(counter2);
+
+                    $.ajax({
+                        url: '/AdminPanel/AddDailyCheckPackages',
+                        data: { packageName: paketAdi, prices: fiyatlar },
+                        type: 'post',
+                        dataType: 'json',
+                        success: function (data) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Paket Başarıyla Eklendi',
+                                showConfirmButton: false,
+                                timer: 1500
+                            })
+                            location.reload();
+
+                        },
+                        error: function (data) {
+                            toastr.error('Bir Hata İle Karşılaştık', 'Hata!');
+                        }
+                    });
+
+
+
+                }
+            }
+        });
+    }
+
+
+
+
+
+
+    function deletePackage(packageid) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Emin Misiniz?',
+            text: 'Bu Paketi Silmek İstediğinize Emin Misiniz?',
+            showCloseButton: true,
+            showCancelButton: true,
+            focusConfirm: false,
+            customClass: 'swal-delete',
+
+            confirmButtonText:
+                'Paketi Sil',
+            confirmButtonAriaLabel: 'delete',
+            cancelButtonText:
+                'İptal Et',
+            confirmButtonColor:
+                '#d33',
+            cancelButtonAriaLabel: 'cancel'
+        }).then((result) => {
+            if (result.value) {
+                console.log("sd");
+                $.ajax({
+                    url: '/AdminPanel/deletePackage',
+                    data: { packageId: packageid },
+                    type: 'post',
+                    dataType: 'json',
+                    success: function (data) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Paket Başarıyla Silindi',
+                            showConfirmButton: false,
+                            timer: 1500
+                        })
+                        location.reload();
+
+                    },
+                    error: function (data) {
+                        toastr.error('Bir Hata İle Karşılaştık', 'Hata!');
+                    }
+                });
+
+            }
+        })
+    }
+
+
+
+
+
+
+
+
+
+    var updatedailycheckdetailId;
+
+    function OlcumBelirle(id) {
+        updatedailycheckdetailId = id;
+        $.ajax({
+            url: '/AdminPanel/GetPackagesValues',
+            data: { Id: id },
+            type: 'POST',
+            dataType: 'html',
+            success: function (data) {
+                $("#olcumbelirle").html(data);
+                toastr.success('Veriler Başarılı Bir Şekilde Getirildi', 'Başarılı!');
+                $('#olcumbelirle').modal('show');
+            },
+            error: function (data) {
+                toastr.error('Veriler Yüklenirken Bir Sorunla Karşılaşıldı. Lütfen Bu Durumu Bize Bildiriniz..', 'Hata!');
+            }
+        });
+    }
+
+
+</script>

@@ -1,0 +1,538 @@
+﻿@model List<Data.Domain.Appointment>
+@using Data.Domain
+
+@{
+    Layout = "~/Views/DoctorPanel/Shared/_DoctorLayout.cshtml";
+    ViewData["Title"] = "Anasayfa";
+    List<RelUserDepartment> userdepartmans = ViewBag.Departments as List<RelUserDepartment>;
+    string departments = "";
+    @foreach (var item in userdepartmans)
+    {
+        departments += "'<option value=" + item.Department.Id + ">" + item.Department.Name + "</option>'";
+    }
+    ViewBag.Anasayfa = "active";
+}
+<style>
+    .tt-table tr:nth-child(even) {
+        background: #fbfbfb;
+    }
+
+    .popover {
+        max-width: 100%;
+    }
+
+    .dashboard-stat-content span {
+        font-size: 36px;
+        font-weight: 600;
+        padding: 0;
+        margin: 0;
+        color: #fff;
+        font-family: 'Poppins', sans-serif;
+        letter-spacing: -1px;
+    }
+    .appointment-table{
+        table-layout: fixed; 
+        width: 100%;
+    }
+</style>
+<link rel="stylesheet" href="~/css/swiper.min.css">
+
+<!--  Messages CSS -->
+<link href="~/css/packagechat.css" rel="stylesheet" />
+
+
+
+<div class="row">
+    <div class="col-xs-12">
+        <div class="swiper-container">
+            <div class="swiper-wrapper">
+                <div class="swiper-slide">
+                    <div class="dashboard-stat color-2">
+                        <div class="dashboard-stat-content"><h4><span id="TodayEarn">@ViewBag.TodayEarn</span>  <span style="font-size:30px;">₺</span></h4><i class="im im-icon-Money"></i> </div>
+                        <div class="dashboard-stat-title"><span>Günlük Bakiye</span></div>
+                    </div>
+                </div>
+                <div class="swiper-slide">
+                    <div class="dashboard-stat color-1">
+                        <div class="dashboard-stat-content"><h4><span id="TodaySuccessAppointment">@ViewBag.TodaySuccessAppointment</span></h4> <i class="fa fa-calendar-check-o"></i></div>
+                        <div class="dashboard-stat-title"><span>Başarılı Randevular</span></div>
+                    </div>
+                </div>
+                <div class="swiper-slide">
+                    <div class="dashboard-stat color-3">
+                        <div class="dashboard-stat-content"><h4><span id="TodayWaitingAppointment">@ViewBag.TodayWaitingAppointment</span></h4> <i class="far fa-calendar-alt"></i></div>
+                        <div class="dashboard-stat-title"><span>Bekleyen Randevular</span></div>
+                    </div>
+                </div>
+                <div class="swiper-slide">
+                    <div class="dashboard-stat color-4">
+                        <div class="dashboard-stat-content"><h4><span id="TodayDeletedAppointment">@ViewBag.TodayDeletedAppointment</span></h4><i class="fa fa-calendar-times-o"></i></div>
+                        <div class="dashboard-stat-title"> <span>İptal Edilen</span></div>
+                    </div>
+                </div>
+                <div class="swiper-slide">
+                    <div class="dashboard-stat color-1">
+                        <div class="dashboard-stat-content"><h4><span id="TodayEarn">@ViewBag.PageView</span></h4> <i class="im im-icon-Add-UserStar"></i></div>
+                        <div class="dashboard-stat-title"><span>Profil Görüntülenmesi</span></div>
+                    </div>
+                </div>
+                <div class="swiper-slide">
+                    <div class="dashboard-stat color-3">
+                        <div class="dashboard-stat-content"><h4>@ViewBag.BlogView</h4><i class="fa fa-eye"></i> </div>
+                        <div class="dashboard-stat-title"><span>Blog Okunması</span></div>
+                    </div>
+                </div>
+
+                <div class="swiper-slide">
+                    <div class="dashboard-stat color-1">
+                        <div class="dashboard-stat-content"><h4>@ViewBag.TotalSuccessAppointment</h4> <i class="fa fa-calendar-check-o"></i></div>
+                        <div class="dashboard-stat-title"><span> Aylık Başarılı Randevular</span></div>
+                    </div>
+                </div>
+                <div class="swiper-slide">
+                    <div class="dashboard-stat color-3">
+                        <div class="dashboard-stat-content"><h4><span id="TotalWaitingAppointment">@ViewBag.TotalWaitingAppointment</span></h4> <i class="far fa-calendar-alt"></i></div>
+                        <div class="dashboard-stat-title"><span>Toplam Bekleyen Randevular</span></div>
+                    </div>
+                </div>
+                <div class="swiper-slide">
+                    <div class="dashboard-stat color-4">
+                        <div class="dashboard-stat-content"><h4>@(ViewBag.TotalDeletedAppointment == null ? 0 : ViewBag.TotalDeletedAppointment)</h4><i class="fa fa-calendar-times-o"></i> </div>
+                        <div class="dashboard-stat-title"><span>Aylık İptal Edilen</span></div>
+                    </div>
+                </div>
+                <div class="swiper-slide">
+                    <div class="dashboard-stat color-2">
+                        <div class="dashboard-stat-content"><h4>@ViewBag.TotalAccountBalance  <span style="font-size:30px;">₺</span></h4><i class="im im-icon-Money"></i> </div>
+                        <div class="dashboard-stat-title"><span>Toplam Bakiye</span></div>
+                    </div>
+                </div>
+
+            </div>
+            <!-- Add Pagination -->
+            <div class="swiper-pagination" style="bottom:-1rem;"></div>
+            
+             <!-- If we need navigation buttons -->
+            <div class="swiper-button-prev" style="color:#000"></div>
+            <div class="swiper-button-next" style="color:#000"></div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-xs-12">
+        <div id="randevutakvim">
+            @Html.Partial("~/Views/DoctorPanel/Shared/_takvim.cshtml", Model)
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade goruntulu-konusma" id="userdetailmodal" tabindex="1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+
+</div>
+
+<div id="video" class="modal" tabindex="-1" role="dialog">
+    @* Randevu Oluştur Video *@
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <video class="randevuvideo" id="videoplayer" controls><source src="~/images/randevuolusturma.mp4" type="video/mp4">Tarayıcınız Bu Dosya Türünü Desteklemiyor</video>
+        </div>
+    </div>
+</div>
+
+
+<div id="departments" style="display:none">
+    @if (userdepartmans.Count == 0)
+    {
+        <option value="-1">Lütfen Profilden Departman Ekleyin</option>
+    }
+    else
+    {
+        foreach (var item in userdepartmans)
+        {
+            <option data-sessiontime="@item.SessionTime" data-price="@item.Price" value="@item.DepartmentId">@item.Department.Name</option>
+        }
+    }
+</div>
+
+<script src="~/js/swiper.min.js"></script>
+
+<script type="text/javascript">
+    var swiper = new Swiper('.swiper-container', {
+        slidesPerView: 8,
+        spaceBetween: 10,
+        // init: false,
+        
+
+        a11y: true,
+        keyboardControl: true,
+        grabCursor: true,
+
+        // Navigation arrows
+        navigation: {
+            nextEl: '.swiper-button-next',
+            prevEl: '.swiper-button-prev',
+        },
+        pagination: {
+            el: '.swiper-pagination',
+            clickable: true,
+            dynamicBullets: true,
+
+        },
+        breakpoints: {
+            100: {
+                slidesPerView: 1,
+                spaceBetween: 10,
+            },
+            400: {
+                slidesPerView: 2,
+                spaceBetween: 10,
+            },
+            640: {
+                slidesPerView: 3,
+                spaceBetween: 20,
+            },
+            768: {
+                slidesPerView: 3,
+                spaceBetween: 40,
+            },
+            1024: {
+                slidesPerView: 4,
+                spaceBetween: 50,
+            },
+        }
+    });
+
+    $("#userdetailmodal").on('show.bs.modal', function () {
+        document.getElementById("dashboard-sticky-nav").style.zIndex = "10";
+    });
+    $("#userdetailmodal").on('hide.bs.modal', function () {
+        document.getElementById("dashboard-sticky-nav").style.zIndex = "12";
+    });
+       $('#video').on('hidden.bs.modal', function (e) {
+            document.getElementById("videoplayer").pause(1);
+        })
+
+         $( document ).ready(function() {
+            setInterval(function () {
+                refreshAppointments(document.getElementById("selecteddate").innerText);
+            }, 10000);
+
+
+
+        });
+
+    function getUserDetailToModal(sessionkey) {
+        $.ajax({
+            url: '/DoctorPanel/GetUserDetail',
+            data: { sessionkey:sessionkey},
+            type: 'GET',
+            dataType: 'html',
+            success: function (data) {
+                $("#userdetailmodal").html(data);
+                toastr.success('Veriler Başarılı Bir Şekilde Getirildi', 'Başarılı!');
+                $('#userdetailmodal').modal('show');
+            },
+            error: function (data) {
+                toastr.error('Veriler Yüklenirken Bir Sorunla Karşılaşıldı. Lütfen Bu Durumu Bize Bildiriniz..', 'Hata!');
+            }
+        });
+    }
+
+    function setPopup(key, name, surname, department, popupdate, status) {
+        document.getElementById("popupname").innerText = name;
+        document.getElementById("popupsurname").innerText = surname;
+        document.getElementById("popupdepartment").innerText = department;
+        document.getElementById("popupdate").innerText = popupdate;
+        document.getElementById("popupDetailbtn").setAttribute('onclick', "getAppointmentDetail(" + key + ")");
+        document.getElementById("popupSessionbtn").setAttribute('href', "/Doctorla/LiveChat?id=" + key);
+        if (status == '0') {
+            document.getElementById("popupSessionbtn").setAttribute("disabled","disabled");
+            document.getElementById("popupSessionbtn").style.pointerEvents = "none";
+            document.getElementById("popupSessionbtn").style.backgroundColor = "red";
+            document.getElementById("popupSessionbtn").style.color = "white";
+        }
+        else {
+            document.getElementById("popupSessionbtn").removeAttribute("disabled");
+            document.getElementById("popupSessionbtn").style.pointerEvents = "pointer";
+            document.getElementById("popupSessionbtn").style.backgroundColor = "";
+            document.getElementById("popupSessionbtn").style.color = "";
+        }
+    }
+    var IsMultiAppointment = 0
+
+    function changeDepartment() {
+        document.getElementById("sessionPrice").value = $('#Departments').find(':selected').data('price');
+        document.getElementById("sessionminute").value = $('#Departments').find(':selected').data('sessiontime');
+    }
+    function kontrol(id) {
+        var deger = document.getElementById(id).value;
+        if (deger == "" || deger == null || deger <0) {
+            document.getElementById(id).value = "0";
+        }
+
+    }
+    var sessionprice, sessiontime,IsPreview;
+    function addAppointmentMenu() {
+        IsPreview = 0;
+        var dataS = document.getElementById("departments").innerHTML.toString();
+        var selecteddepartment;
+        var startdate;
+        var enddate;
+        var mola;
+         sessionprice = '@(ViewBag.SessionPrice)';
+         sessiontime = '@(ViewBag.SessionTime)';
+                Swal.fire({
+            title: '<strong>Randevu Oluştur</strong>',
+            html:
+                '<div class="randevualma">' +
+                '<span>Bölüm:</span>' +
+                '<select class="form-control" onchange="changeDepartment()" id="Departments" name="DepartmentId">' +
+                dataS
+                + '</select>' +
+                '<div class="ucret-sure">'+
+                '<div class="ucret">'+
+                '<span>Ücret (₺):</span>'+
+                '<input type="number" id="sessionPrice" onkeydown="javascript: return event.keyCode === 8 || event.keyCode === 46 ? true : !isNaN(Number(event.key))" onblur="kontrol(this.id)" name="sessionPrice" placeholder="Ücret (₺)" class="form-control sessionPrice" value="' + sessionprice + '" required />' +
+                '</div>' +
+                '<div class="sure">' +
+                '<span>Süre (Dk):</span>'+
+                '<input type="number" id="sessionminute" onkeydown="javascript: return event.keyCode === 8 || event.keyCode === 46 ? true : !isNaN(Number(event.key))" onblur="kontrol(this.id)" name="sessionminute" placeholder="Süre (Dk)" class="form-control sessionminute" value="' + sessiontime + '" required />' +
+                '</div>' +
+                '</div>' +
+                '<div class="tanismakapsa">' +
+                ' <div class="custom-control custom-checkbox tanisma" id="tanisma" onclick="tanismarandevu()">' +
+                        '  <input type="checkbox" class="custom-control-input" id="tanismacheck">' +
+                ' <label class="custom-control-label" for="tanismacheck" id="tanismachecklabel">Tanışma Randevusu Olarak Oluştur</label>' +
+                '      </div >' +
+                '</div>' +
+
+                '<div class="tekli-coklu">' +
+                ' <div class="custom-control custom-radio tekli" id="teklikapsa" onclick="coklusecimkapat()">'+
+                '<input type="radio" class= "custom-control-input" id="tekli" name="tekli-coklu" value="Tekli" checked>'+
+                  ' <label class="custom-control-label" for="tekli" id="teklirandevu">Tekli Randevu</label>'+
+                      '      </div >'+
+                   '  <div class="custom-control custom-radio coklu" id="coklukapsa" onclick="coklusecimac()">'+
+                             '   <input type="radio" class="custom-control-input" id="coklu" name="tekli-coklu" value="Çoklu" >'+
+                   ' <label class="custom-control-label" for="coklu" id="coklurandevu">Çoklu Randevu</label>'+
+                         '   </div>'+
+                    '</div>' +
+
+                '<span id="baslangic">Tarih ve Zaman:</span>'+
+                '<input type="datetime-local" id="startdate" name="startdate" class="form-control startdate" value="@DateTime.Now.ToString("yyyy-MM-dd HH:mm").Replace(' ','T')" required />' +
+                '<div id="coklu-secim" style="display:none" >' +
+                '<div class="bitis-zamani" >' +
+                '<span>Bitiş Zamanı:</span>' +
+                '<input type="time" id="enddate" name="enddate" class="form-control startdate" value="@DateTime.Now.ToString("yyyy-MM-dd HH:mm").Replace(' ','T')" required />' +
+                '</div>' +
+                '<div class="moladk" >' +
+
+                '<span>Mola (Dk) </span>' +
+                '<input type="number" id="mola" onkeydown="javascript: return event.keyCode === 8 || event.keyCode === 46 ? true : !isNaN(Number(event.key))" onblur="kontrol(this.id)" name="mola" placeholder="Mola (Dk)" class="form-control sessionminute" value="0" required />' +
+                '</div>' +
+
+                '</div>' +
+
+                '</div>',
+            showCancelButton: true,
+                    cancelButtonText: 'İptal Et',
+                    cancelButtonColor: '#d33',
+                    focusConfirm: false,
+                    customClass: 'swal-resetPassword',
+
+            confirmButtonText:
+                        'Randevuyu Oluştur',
+                    showLoaderOnConfirm: true,
+
+                    preConfirm: () => {
+                        startdate = document.getElementById("startdate").value;
+                        enddate = document.getElementById("enddate").value.toString();
+                        time = document.getElementById("sessionminute").value.toString();
+                        price = document.getElementById("sessionPrice").value.toString();
+                        mola = document.getElementById("mola").value.toString();
+                        var selectedDate = new Date(startdate);
+                        var now = new Date();
+
+                        if (startdate == "" || startdate == null || time == "" || time == null || price == "" || price == null || mola == "" || mola == null ) {
+                            Swal.showValidationMessage('Lütfen Boş Alan Bırakmayınız!');
+
+                        } else if (IsMultiAppointment == 1) {
+                            if (enddate == "" || enddate == null) {
+                                Swal.showValidationMessage('Lütfen Boş Alan Bırakmayınız!');
+                            }
+                        }
+                        else if (selectedDate < now) {
+                            Swal.showValidationMessage('Geçmiş Bir Tarih Seçemezsiniz!');
+                        }
+                    },
+        }).then((result) => {
+            if (result.value) {
+                selecteddepartment = $('#Departments option:selected').val();
+                startdate = document.getElementById("startdate").value.toString().replace('T', ' ');
+                time = document.getElementById("sessionminute").value.toString();
+                price = document.getElementById("sessionPrice").value.toString();
+                mola = document.getElementById("mola").value.toString();
+                enddate = document.getElementById("enddate").value.toString();
+                var nextmessage;
+                if (IsMultiAppointment==1)
+                     nextmessage= startdate + '  ->  ' + enddate + ' Saatine Kadar ' + mola + ' Dakika Molalar ile Randevular Oluşturulacaktır' + '  ' + '<br><b>Süre</b>:' + time + ' Dakika ';
+                else
+                     nextmessage = startdate + '  ' + '<br><b>Süre</b>:' + time + ' Dakika';
+
+                var ucret = '<br><b>Ücret</b>:' + price + ' ₺';
+                Swal.fire({
+                    title: '<strong>Randevu Oluşturmak İstiyor Musunuz?</strong>',
+                    html: '<b>Bölüm:</b> ' + $('#Departments option:selected').text() + ' <br> <b>Tarih:</b> ' + nextmessage + ' '+ucret+'',
+                    icon: 'question',
+                    showCancelButton: true,
+                    cancelButtonColor: '#d33',
+                    cancelButtonText: 'İptal',
+                    confirmButtonText:'Randevuyu Oluştur',
+                }).then((result) => {
+                    if (result.value) {
+                         $.ajax({
+                             url: '/DoctorPanel/CreateSession',
+                             data: { DepartmentId: selecteddepartment, startdate: startdate, Price: price, Time: time, IsMultiAppointment: IsMultiAppointment, Enddate: enddate, Mola: mola, IsPreview: IsPreview },
+                            type: 'POST',
+                            dataType: 'json',
+                             success: function (data) {
+                                 if (data.status == 1) {
+                                     refreshAppointments(data.date);
+                                     Swal.fire({
+                                         title: data.title,
+                                         text:data.message,
+                                         icon: 'success',
+                                         timer: 2000,
+                                         showConfirmButton: false,
+                                     })
+                                 } else {
+                                    Swal.fire({
+                                         title: data.title,
+                                         text:data.message,
+                                         icon: 'error',
+                                         timer: 2000,
+                                         showConfirmButton: false,
+                                     })
+                                 }
+                            },
+                             error: function (data) {
+                                 $.ajax({
+                                     url: '/DoctorPanel/ErrorLogs',
+                                     data: { page: "DoctorPanel  - Anasayfa - addAppointmentMenu" },
+                                     type: 'post',
+                                     dataType: 'json',
+                                     success: function (data) {
+
+                                     },
+                                     error: function (data) {
+
+                                     }
+                                 });
+                                Swal.fire({
+                                        title: 'Hata ile Karşılaşıldı',
+                                        text: 'Sistemsel bir hata ile karşılaşıldı.Lütfen sayfayı Yenileyiniz ve bu durumu bize bildiriniz',
+                                        icon: 'error',
+                                        timer: 2000,
+                                        showConfirmButton: false,
+                                    })
+                            }
+                        });
+
+                    }
+                })
+            }
+        })
+    }
+    function coklusecimac() {
+        document.getElementById("coklu-secim").style.display = "flex";
+        document.getElementById("baslangic").innerHTML = "Başlangıç Zamanı";
+        IsMultiAppointment = 1;
+    }
+    function coklusecimkapat() {
+        document.getElementById("coklu-secim").style.display = "none";
+        document.getElementById("baslangic").innerHTML = "Tarih ve Zaman:";
+        IsMultiAppointment = 0;
+    }
+    function tanismarandevu() {
+        if (document.getElementById("tanismacheck").checked == true) {
+            IsPreview = 1; // TANIŞMA RANDEVUSU
+            document.getElementById("sessionPrice").disabled = true;
+            document.getElementById("sessionPrice").value = "10";
+            document.getElementById("sessionminute").disabled = true;
+            document.getElementById("sessionminute").value = "2";
+        } else if (document.getElementById("tanismacheck").checked == false) {
+            IsPreview = 0; // NORMAL RANDEVU
+            document.getElementById("sessionPrice").disabled = false;
+            console.log(sessionprice);
+            console.log(sessiontime);
+            document.getElementById("sessionPrice").value = sessionprice.toString();
+            document.getElementById("sessionminute").disabled = false;
+            document.getElementById("sessionminute").value = sessiontime.toString();
+        }
+    }
+
+
+
+    function deleteAppointment(_sessionkey, _deleteReason) {
+        $.ajax({
+            url: '/DoctorPanel/deleteAppointment',
+            data: { sessionkey: _sessionkey,deleteReason:_deleteReason },
+            type: 'post',
+            dataType: 'json',
+            success: function (data) {
+                if (data.status == 1) {
+                    Swal.fire({
+                        title: data.title,
+                        text: data.message,
+                        icon: 'success',
+                        timer: 4000,
+                        showConfirmButton: false,
+                    })
+                }
+                else  if (data.status == -1) {
+                    Swal.fire({
+                        title: data.title,
+                        text: data.message,
+                        icon: 'error',
+                        timer: 4000,
+                        showConfirmButton: false,
+                    })
+                }
+                else {
+                     Swal.fire({
+                        title: '<strong>Lütfen Alınmış Olan Randevunun İptal Sebebini Giriniz. <span style="color:red"> (Sözleşmeniz Gereği 1 Ay İçerisinde 3 Alınmış Randevuyu İptal Edebilirsiniz.)</span></strong>',
+                        html: '<input type="textarea" min="10" cols="20" rows="20" id="deletereason" name="deletereason" class="form-control" placeholder="En Az 10 Harf Giriniz" required />',
+                        showCancelButton: true,
+                        confirmButtonText: 'Anladım, Randevuyu İptal Etmek İstiyorum',
+                         cancelButtonText: 'İptal',
+                         cancelButtonColor: 'green',
+                         confirmButtonColor: 'red',
+                        showLoaderOnConfirm: true,
+                    }).then((result) => {
+                        if (result.value ) {
+                            var deletereasontext = document.getElementById("deletereason").value;
+                            if (deletereasontext.length>=10)
+                                deleteAppointment(data.session, deletereasontext);
+                            else
+                                deleteAppointment(data.session, '');
+
+                        }
+                    })
+
+                }
+            },
+            error: function (data) {
+                toastr.error('Silme İşlemi Sırasında. Lütfen Bu Durumu Bize Bildiriniz..', 'Hata!');
+            }
+        });
+    }
+
+
+
+
+
+
+
+
+</script>

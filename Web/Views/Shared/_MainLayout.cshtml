@@ -1,0 +1,884 @@
+﻿@using Data.Interfaces.Repositories
+@using Data.Domain
+
+@inject IMenuRepository menu
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta property="og:site_name" content="Online Sağlıkcim" />
+
+    <title>
+        Doctorla | Doktorlarla 7/24 Online Görüşme Hizmeti
+    </title>
+    <meta name="description" content="Doctorla, doktorlarla online görüşme yaparak, sağlık sorunlarınızın mutlak çözüme ulaşana kadar takip edildiği uluslararası sağlık platformudur." />
+    <meta name="keywords" content="Onlinesağlık,doktorlagörüşme,onlinesağlıkçım,psikolog,emzirme,cerrah,korona,diyet,sağlıklıyaşam,sağlık,çocuk,aile,anne,doğum,cinsellik,işitmesorunları,sokakhayvanlarınayardım,öğrencibursu" />
+
+
+
+    <title>@ViewData["Title"] - Web</title>
+    <link href="~/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+    <!--Default CSS-->
+    @*<link href="~/css/default.css" rel="stylesheet" type="text/css">    DEĞİŞTİR      *@
+    <link href="~/css/default.min.css" rel="stylesheet" type="text/css">
+    @* <link href="~/css/dental.css" rel="stylesheet" type="text/css"> *@
+    <!--Custom CSS-->
+    @*<link href="~/css/style.css" rel="stylesheet" type="text/css"> DEĞİŞTİR   *@
+    <link href="~/css/style.min.css" rel="stylesheet" type="text/css">
+    <!--Plugin CSS-->
+    <link href="~/css/plugin.css" rel="stylesheet" type="text/css">
+    <link rel="shortcut icon" href="~/images/favicon.ico" type="image/x-icon" />
+    <!--Flaticons CSS-->
+    <link href="~/fonts/flaticon.css" rel="stylesheet" type="text/css">
+    <!--Font Awesome-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <!-- OUR css-->
+    @*<link href="~/css/site.css" rel="stylesheet" />  DEĞİŞTİR   *@
+    <link href="~/css/site.min.css" rel="stylesheet" />
+    @RenderSection("css", required: false)
+    @*<link href="~/css/randevual.css" rel="stylesheet" />  DEĞİŞTİR *@
+    <link href="~/css/randevual.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
+    <link href="~/css/toastr.min.css" rel="stylesheet" />
+    <!--  NOTIFICATIONS -->
+    <script src="https://www.gstatic.com/firebasejs/7.15.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.15.1/firebase-messaging.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.15.1/firebase-analytics.js"></script>
+    <script src="~/firebase.js"></script>
+    <!-- Google Tag Manager -->
+    @*<script>
+        (function (w, d, s, l, i) {
+            w[l] = w[l] || []; w[l].push({
+                'gtm.start':
+                    new Date().getTime(), event: 'gtm.js'
+            }); var f = d.getElementsByTagName(s)[0],
+                j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : ''; j.async = true; j.src =
+                    'https://www.googletagmanager.com/gtm.js?id=' + i + dl; f.parentNode.insertBefore(j, f);
+        })(window, document, 'script', 'dataLayer', 'GTM-P7JXQBC');</script>*@
+    <!-- End Google Tag Manager -->
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-2J1Y0EFWEG"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-2J1Y0EFWEG');
+    </script>
+    <style>
+        .dropdown-menu > li > a {
+            padding: 10px 20px !important;
+        }
+    </style>
+</head>
+<body style="padding-right:0px !important">
+    <!-- Google Tag Manager (noscript) -->
+    <noscript>
+        <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-P7JXQBC"
+                height="0" width="0" style="display:none;visibility:hidden"></iframe>
+    </noscript>
+    <!-- End Google Tag Manager (noscript) -->
+    <div id="preloader">
+        <div id="status"></div>
+    </div>
+
+    <!-- Header -->
+    @* @await Html.PartialAsync("~/Views/Shared/_Header.cshtml") *@
+    @Html.Partial("~/Views/Shared/_Header.cshtml", menu.Search(1))
+
+    <!-- Render Area -->
+    <div>
+        @RenderBody()
+    </div>
+    <!-- Footer -->
+    @await Html.PartialAsync("~/Views/Shared/_Footer.cshtml")
+    <!-- Back to top start -->
+    <div id="back-to-top">
+        <a href="#"></a>
+    </div>
+    <!-- search popup -->
+    <div id="search1">
+        <button type="button" class="close">×</button>
+        <form>
+            <input type="search" value="" placeholder="type keyword(s) here" />
+            <button type="submit" class="btn btn-primary">Search</button>
+        </form>
+    </div>
+    <div class="hizli-randevu">
+        <div class="kalp-atisi">  </div>
+        <button class="hizlibuton" id="hizlirandevubtn" data-toggle="modal" data-target="#hizlirandevu">Hızlı Randevu Al</button>
+    </div>
+    <div class="modal fade" id="hizlirandevu" role="dialog" aria-labelledby="hizlirandevu" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <button class="close-button modal-closebtn" data-dismiss="modal" aria-label="Close">
+                <div style="margin-top: -4px;">x</div>
+            </button>
+            <div class="modal-content">
+                <ul class="nav nav-pills sekmeler">
+                    <li class="nav-item active">
+                        <a class=" nav-link " id="giris-tab-link" data-toggle="tab" href="#giris-tab" role="tab" aria-controls="giris-tab" aria-selected="true"><i class="flaticon-avatar"></i></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class=" nav-link " id="bolumler-tab-link" data-toggle="tab" href="#bolumler-tab" role="tab" aria-controls="nav-profile" aria-selected="false"><i class="flaticon-architectonic"></i></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class=" nav-link yasakla" id="doktorlar-tab-link" data-toggle="tab" href="#doktorlar-tab" role="tab" aria-controls="nav-contact" aria-selected="false"><i class="flaticon-healthcare-and-medical"></i></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class=" nav-link yasakla" id="takvim-tab-link" data-toggle="tab" href="#takvim-tab" role="tab" aria-controls="nav-contact" aria-selected="false"><i class="flaticon-interface"></i></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class=" nav-link yasakla" id="bagis-tab-link" data-toggle="tab" href="#bagis-tab" role="tab" aria-controls="nav-contact" aria-selected="false"><i class="flaticon-hands-and-gestures"></i></a>
+                    </li>
+                </ul>
+                <div class="tab-content" id="nav-tabContent">
+                    <div class="tab-pane  active bolumler" id="giris-tab" role="tabpanel" aria-labelledby="nav-home-tab">
+                        <div id="giris">
+                            <h4 class="text-center">Giriş Yap</h4>
+                            <form action="/Doctorla/Giris" data-ajax="true" data-ajax-failure="OnFailure" data-ajax-method="POST" data-ajax-success="LoginCheck" id="form0" method="post">
+                                <div class="form-group">
+                                    <p>E-Posta Adresi</p>
+                                    <input type="email" name="Email" placeholder="E-Posta Adresi" class="form-control" />
+                                </div>
+                                <div class="form-group">
+                                    <p>Şifre</p>
+                                    <input type="password" name="Password" placeholder="Şifre" class="form-control" />
+                                </div>
+                                <div class="form-group">
+                                    <button type="submit" class="btn btn-primary btn-block butongonder" id="girisbuton" style="border-radius: 5px;">Giriş Yap</button>
+                                </div>
+                            </form>
+                            <div class="form-group">
+                                <p><a href="/Doctorla/Giris" class="kayit">Kayıt Ol</a></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane bolumler" id="bolumler-tab" role="tabpanel" aria-labelledby="nav-profile-tab">
+                        <p style="font-weight:bold;">Lütfen Bölüm Seçiniz</p>
+                        <div class="list-group listeler" id="departmentlist">
+
+
+                        </div>
+                    </div>
+                    <div class="tab-pane bolumler" id="doktorlar-tab" role="tabpanel" aria-labelledby="nav-contact-tab">
+                        <p style="font-weight:bold;">Lütfen Doktor Seçiniz</p>
+                        <div class="list-group listeler" id="doktorlistesi">
+
+                        </div>
+                    </div>
+                    <div class="tab-pane bolumler" id="takvim-tab" role="tabpanel" aria-labelledby="nav-contact-tab">
+                        <p id="randevuTalepleri" class="randevuTalepButtons"></p>
+                        <div class="hizli-randevu-takvim">
+                            @Html.Partial("~/Views/Shared/_KullaniciRandevuTakvimi.cshtml")
+                        </div>
+                    </div>
+                    <div class="tab-pane bolumler" id="bagis-tab" role="tabpanel" aria-labelledby="nav-contact-tab">
+                        <p style="font-weight:bold;">İşlem Detaylarınız.</p>
+                        <div class="bagis-secenek">
+                            <div class="row text-center" id="resultDoctor">
+
+                            </div>
+                            <div class="row text-center" id="resultDate">
+
+                            </div>
+                            <div class="row text-center" id="resultDetail">
+
+                            </div>
+                            <div class="row">
+
+                            </div>
+                            @*<div class="custom-control custom-radio">
+                                    <input type="radio" class="custom-control-input" id="aytac" name="destek" value="Doctorla Askıda Sağlık" checked>
+                                    <label class="custom-control-label" for="aytac">Doctorla Askıda Sağlık</label>
+                                </div>
+                                <div class="custom-control custom-radio ">
+                                    <input type="radio" class="custom-control-input" id="ulker" name="destek" value="AB Academy ( Kız Öğrencilerine Burs)">
+                                    <label class="custom-control-label" for="ulker">AB Academy ( Kız Öğrencilerine Burs)</label>
+                                </div>
+                                <div class="custom-control custom-radio">
+                                    <input type="radio" class="custom-control-input" id="ebursum" name="destek" value="Minik Dostlar Paketi">
+                                    <label class="custom-control-label" for="ebursum">Minik Dostlar Paketi</label>
+                                </div>*@
+
+
+                        </div>
+                        <button type="button" onclick="randevuodeme()" class="btn btn-primary btn-block butongonder" style="border-radius:5px;">Randevuyu Al</button>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- *Scripts* -->
+    <script src="~/js/jquery-3.3.1.min.js"></script>
+    <script src="~/js/jquery.unobtrusive-ajax.min.js"></script>
+    <script src="~/js/bootstrap.min.js"></script>
+    <script src="~/js/plugin.js"></script>
+    <script src="~/js/main.js"></script>
+    <script src="~/js/custom-nav.js"></script>
+    <script src="~/js/randevual.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+    <script src="~/js/toastr.min.js"></script>
+
+    @RenderSection("script", required: false)
+
+    <script type="text/javascript">
+    $(function () {
+        $("[rel='tooltip']").tooltip();
+    });
+        var loginstatus,paymentprocess=false;
+        $( document ).ready(function() {
+            fillDepartments();
+            loginstatus = '@(User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.Email) != null)' == 'True';
+            Appointmentloginchecked();
+        });
+
+        function Appointmentloginchecked() {
+            if (loginstatus) {
+                var ele = document.getElementById('bolumler-tab-link');
+                document.getElementById('giris-tab-link').classList.add("yasakla");
+                document.getElementById('bolumler-tab-link').classList.remove("yasakla");
+                if(typeof ele.click == 'function') {
+                  ele.click()
+                } else if(typeof ele.onclick == 'function') {
+                  ele.onclick()
+                }
+                if (document.getElementById("giristab")!=null)
+                document.getElementById("giristab").style.cursor = "none";
+            }
+        }
+        function LoginCheck(data) {
+            if (data.status == 1) {
+                document.getElementById("girisbtn").style.display = "none";
+                document.getElementById("profilebtn").style.display = "";
+                document.getElementById("profilename").innerText = data.name;
+                loginstatus = true;
+                if (data.usertype == "Hasta")
+                    document.getElementById("userprofile").style.display = "";
+                else
+                    document.getElementById("doctorprofile").style.display = "";
+                Appointmentloginchecked();
+                if (paymentprocess)
+                     $("#bagis-tab-link").click();
+            }
+            OnSuccess(data);
+        }
+
+        function OnSuccess(data) {
+            if (data.status == 1) {
+                    Swal.fire({
+                    title: data.title,
+                    text: data.message,
+                    icon: 'success',
+                    timer: 2000,
+                    showConfirmButton: false,
+                });
+            } else {
+                    Swal.fire({
+                    title: data.title,
+                    text: data.message,
+                    icon: 'error',
+                    timer: 2000,
+                    showConfirmButton: false,
+                });
+            }
+        }
+        function OnFailure() {
+               Swal.fire({
+                    title: 'İşlem Hatası Oluştu',
+                    text: 'Bu İşlem Sırasında Bir Hata Oluştu. Tekrarı Durumunda Lütfen Bu Hatayı Bize Bildiriniz',
+                    icon: 'error',
+                    timer: 2000,
+                    showConfirmButton: false,
+                });
+        }
+
+        function kayit() {
+            document.getElementById("giris").style.display = "none";
+            document.getElementById("kayit").style.display = "block";
+        }
+        function giris() {
+            document.getElementById("kayit").style.display = "none";
+            document.getElementById("giris").style.display = "block";
+        }
+
+        @* ----------       HIZLI RANDEVU İŞLEMLERİ   ---------- *@
+
+        var bolum = 0, doktor = 0;
+        function fillDepartments() {
+           $.ajax({
+                url: '/Saglikcim/GetDepartments',
+                type: 'GET',
+                dataType: 'json',
+               success: function (data) {
+                   $("#departmentlist").html('');
+                   data.forEach(function (item) {
+                       $("#departmentlist").append(' <a onclick="bolumsec(' + item.id + ')" class="list-group-item list-group-item-action ">' + item.name + ' </a>')
+                   });
+                },
+               error: function (data) {
+                   $.ajax({
+                       url: '/Saglikcim/ErrorLogs',
+                       data: { page: "Shared  - _MainLayout - fillDepartments" },
+                       type: 'post',
+                       dataType: 'json',
+                       success: function (data) {
+
+                       },
+                       error: function (data) {
+
+                       }
+                   });
+                  Swal.fire({
+                    title: 'İşlem Hatası Oluştu',
+                    text: 'Departmanları Doldururken Bir Hata Oluştu. Tekrarı Durumunda Lütfen Bu Hatayı Bize Bildiriniz',
+                    icon: 'error',
+                    timer: 2000,
+                    showConfirmButton: false,
+                });
+                }
+            });
+        }
+
+
+
+        function bolumsec(id) {
+            bolum = id;
+            document.getElementById('doktorlar-tab-link').classList.remove("yasakla");
+            document.getElementById('takvim-tab-link').classList.add("yasakla");
+            document.getElementById('bagis-tab-link').classList.add("yasakla");
+
+            $.ajax({
+                url: '/Saglikcim/GetDoctors',
+                type: 'GET',
+                data: {departmentId:id,token:_token},
+                dataType: 'json',
+                success: function (data) {
+                    if (data.length == 0)
+                        $("#doktorlistesi").html('<a  class="list-group-item list-group-item-action ">Doktor Bulunmamaktadır</a>');
+                    else {
+                       $("#doktorlistesi").html('');
+                        data.forEach(function (item) {
+                            $("#doktorlistesi").append(' <a  class="list-group-item list-group-item-action"><span style="display:block;" onclick="suresec(' + item.id + ',null,' + item.departmentId + ',\' ' + item.name + ' \' ,' + item.minprice + ',' + item.minprictetime + ')">' + item.name + '<br><strong>' + item.minprictetime + 'Dk - ' + item.minprice + '₺</strong> </span> </a>');
+                        });
+                    }
+
+                },
+                error: function (data) {
+                  Swal.fire({
+                    title: 'İşlem Hatası Oluştu',
+                    text: 'Doktorları Getirirken Bir Hata Oluştu. Tekrarı Durumunda Lütfen Bu Hatayı Bize Bildiriniz',
+                    icon: 'error',
+                    timer: 2000,
+                    showConfirmButton: false,
+                });
+                }
+            });
+            $("#doktorlar-tab-link").click();
+    }
+    function RandevuTalepBilgi(bildirimid, doctorid, departmentId, doktorAdi, seansSuresi, seansUcreti) {
+        Swal.fire({
+            title: '<strong>Randevu Talebi Nedir?</strong>',
+            icon: 'info',
+            html: '<div class="randevuTalepBilgi">' +
+                '<p>Eğer aradığınız bir tarihte randevu bulunmuyorsa ilgili doktorumuzdan istediğiniz tarih ve zaman için bir randevu talep edebilirsiniz.</p>' +
+                '<ol>'+
+                '<li><strong>Randevu Talep Et</strong> butonuna tıklayarak randevu talebi oluşturmaya başlayabilirsiniz.</li>' +
+                '<li>İstediğiniz tarih ve zamanı seçtikten sonra dilerseniz bir not ekleyerek randevu talebinde bulunabilirsiniz.</li>' +
+                '<li>Doktorunuz, oluşturduğunuz randevu talebinizi kabul ederse size bir SMS gelecektir.</li>' +
+                '<li>Randevu zamanı gelince profilinizden ilgili randevuya giriş yapabilirsiniz.</li>' +
+                '</ol>'+
+                '</div>',
+            showCloseButton: true,
+            showCancelButton: true,
+            focusConfirm: false,
+            confirmButtonText:
+                'Randevu Talep Et',
+            confirmButtonAriaLabel: 'Randevu Talep Et',
+            cancelButtonText:
+                'İptal Et',
+            cancelButtonColor: '#d33',
+            cancelButtonAriaLabel: 'İptal Et'
+        }).then((result) => {
+            if (result.value) {
+                bildirimayarla(bildirimid, doctorid, departmentId, doktorAdi, seansSuresi, seansUcreti)            }
+        });
+    }
+    function bildirimayarla(bildirimid, doctorid, departmentId, doktorAdi, seansSuresi, seansUcreti) { // Randevu alarmı
+        if (loginstatus == true) {
+            Swal.fire({
+                title: '<strong>Randevu Talebi Oluştur</strong>',
+                html: '<div class="hatirlatici-form">' +
+                    '<p><strong>' + doktorAdi + '</strong> isimli doktorumuzdan randevu talebinde bulunmak için bir tarih ve saat belirlemeniz gerekmektedir.</p>' +
+                    '<div class="hatirlatici-form-group">' +
+                    '<label>Randevu Süresi</label><div style="text-align:left; font-size:15px;"><strong>' + seansSuresi + ' Dakika</strong></div>' +
+                    '</div>' +
+                    '<div class="hatirlatici-form-group">' +
+                    '<label>Randevu Ücreti</label><div style="text-align:left; font-size:15px;"><strong>' + seansUcreti + ' ₺</strong></div>' +
+                    '</div>' +
+                    '<div class="hatirlatici-form-group">' +
+                    '<label for="tarihvezaman">Tarih ve Zaman</label><div><input type="datetime-local" id="tarihvezaman" name="tarihvezaman" class="form-control startdate" value="dd/mm/yy hh:mm" required /></div>' +
+                    '</div>' +
+                    '<div class="hatirlatici-form-group" style="align-items:self-start">' +
+                    '<label for="not">Not</label><div class="not-olustur"><textarea onkeyup="notcounter()" maxlength="150" class= "not" id="not" ></textarea><div class="counter-ekle" > <div id="the-count" style="text-align:right"><span id="current" > 0 </span><span id="maximum">/ 150</span></div>' +
+                    '</div>' +
+                    '</div>',
+                showCloseButton: true,
+                showCancelButton: true,
+                focusConfirm: false,
+                confirmButtonText:
+                    'Randevu Talep Et',
+                confirmButtonAriaLabel: 'Randevu Talep Et',
+                cancelButtonText:
+                    'İptal Et',
+                cancelButtonColor: '#d33',
+                showLoaderOnConfirm: true,
+
+                preConfirm: () => {
+                    startdate = document.getElementById("tarihvezaman").value;
+                    var selectedDate = new Date(startdate);
+
+                    var now = new Date();
+                    console.log(startdate);
+                    console.log(selectedDate);
+                    if (startdate == null || startdate == "") {
+                        Swal.showValidationMessage('Tarih Alanı Boş Bırakılamaz!');
+
+                    }
+                    else if (selectedDate < now) {
+                        Swal.showValidationMessage('Geçmiş Bir Tarih Seçemezsiniz');
+                    } else {
+
+                        var tarih = $("#tarihvezaman").val();
+                        var not = $("#not").val();
+                        return $.ajax({
+                            url: '/Saglikcim/RandevuTalepEt',
+                            data: { DoctorId: doctorid, DepartmentId: departmentId, Tarih: tarih, Not: not, requestType: 0 },
+                            type: 'POST',
+                            dataType: 'json',
+                            success: function (data) {
+                                console.log(data.status);
+                                if (data.status == -1) {
+                                    Swal.showValidationMessage(data.message);
+                                } else if (data.status == 1) {
+                                    toastr.success(data.message, data.title);
+                                }
+                                else {
+                                    toastr.error(data.message, data.title);
+                                }
+                            },
+                            error: function (data) {
+                                $.ajax({
+                                    url: '/Saglikcim/ErrorLogs',
+                                    data: { page: "DoctorPanel  - _MainLayout - bildirimayarla" },
+                                    type: 'post',
+                                    dataType: 'json',
+                                    success: function (data) {
+
+                                    },
+                                    error: function (data) {
+
+                                    }
+                                });
+                            }
+                        });
+                    }
+                },
+                cancelButtonAriaLabel: 'İptal Et'
+            }).then((result) => {
+                if (result.value) {
+
+
+
+                }
+
+            });
+
+        }
+        else {
+            Swal.fire({
+                title: 'Lütfen Giriş Yapın',
+                text: 'Giriş Yapamadan Bu Özelliği Kullanamazsınız',
+                icon: 'error',
+                timer: 1500,
+                showConfirmButton: false,
+
+            });
+            $("#giris-tab-link").click();
+
+        }
+    }
+    function RandevuTalepBilgi(bildirimid, doctorid, departmentId, doktorAdi, seansSuresi, seansUcreti) {
+        Swal.fire({
+            title: '<strong>Tanışma Randevusu Talebi Nedir?</strong>',
+            icon: 'info',
+            html: '<div class="randevuTalepBilgi">' +
+                '<p>Eğer aradığınız bir tarihte tanışma randevusu bulunmuyorsa ilgili doktorumuzdan istediğiniz tarih ve zaman için bir tanışma randevusu talep edebilirsiniz.</p>' +
+                '<ol>' +
+                '<li><strong>Tanışma Randevusu Talep Et</strong> butonuna tıklayarak tanışma randevusu talebi oluşturmaya başlayabilirsiniz.</li>' +
+                '<li>İstediğiniz tarih ve zamanı seçtikten sonra dilerseniz bir not ekleyerek tanışma randevusu talebinde bulunabilirsiniz.</li>' +
+                '<li>Doktorunuz, oluşturduğunuz tanışma randevusu talebinizi kabul ederse size bir SMS gelecektir.</li>' +
+                '<li>Randevu zamanı gelince profilinizden ilgili randevuya giriş yapabilirsiniz.</li>' +
+                '</ol>' +
+                '</div>',
+            showCloseButton: true,
+            showCancelButton: true,
+            focusConfirm: false,
+            confirmButtonText:
+                'Tanışma Randevusu Talep Et',
+            confirmButtonAriaLabel: 'Tanışma Randevusu Talep Et',
+            cancelButtonText:
+                'İptal Et',
+            cancelButtonColor: '#d33',
+
+            cancelButtonAriaLabel: 'İptal Et'
+        }).then((result) => {
+            if (result.value) {
+                tanismaRandevusuTalebi(bildirimid, doctorid, departmentId, doktorAdi, seansSuresi, seansUcreti)
+            }
+        });
+    }
+    function tanismaRandevusuTalebi(bildirimid, doctorid, departmentId, doktorAdi, seansSuresi, seansUcreti) {
+        if (loginstatus == true) {
+            Swal.fire({
+                title: '<strong>Tanışma Randevusu Talebi Oluştur</strong>',
+                html: '<div class="hatirlatici-form">' +
+                    '<p><strong>' + doktorAdi + '</strong> isimli doktorumuzdan tanışma randevusu talebinde bulunmak için bir tarih ve saat belirlemeniz gerekmektedir.</p>' +
+                    '<div class="hatirlatici-form-group">' +
+                    '<label>Randevu Süresi</label><div style="text-align:left; font-size:15px;"><strong>2 Dakika</strong></div>' +
+                    '</div>' +
+                    '<div class="hatirlatici-form-group">' +
+                    '<label>Randevu Ücreti</label><div style="text-align:left; font-size:15px;"><strong>10 ₺</strong></div>' +
+                    '</div>' +
+                    '<div class="hatirlatici-form-group">' +
+                    '<label for="tarihvezaman">Tarih ve Zaman</label><div><input type="datetime-local" id="tarihvezaman" name="tarihvezaman" class="form-control startdate" value="dd/mm/yy hh:mm" required /></div>' +
+                    '</div>' +
+                    '<div class="hatirlatici-form-group" style="align-items:self-start">' +
+                    '<label for="not">Not</label><div class="not-olustur"><textarea onkeyup="notcounter()" maxlength="150" class= "not" id="not" ></textarea><div class="counter-ekle" > <div id="the-count" style="text-align:right"><span id="current" > 0 </span><span id="maximum">/ 150</span></div>' +
+                    '</div>' +
+                    '</div>',
+                showCloseButton: true,
+                showCancelButton: true,
+                showLoaderOnConfirm: true,
+
+                focusConfirm: false,
+                confirmButtonText:
+                    'Tanışma Randevusu Talep Et',
+                confirmButtonAriaLabel: 'Tanışma Randevusu Talep Et',
+                cancelButtonText:
+                    'İptal Et',
+                cancelButtonColor: '#d33',
+                preConfirm: () => {
+                    startdate = document.getElementById("tarihvezaman").value;
+                    var selectedDate = new Date(startdate);
+
+                    var now = new Date();
+                    console.log(startdate);
+                    console.log(selectedDate);
+                    if (startdate == null || startdate == "") {
+                        Swal.showValidationMessage('Tarih Alanı Boş Bırakılamaz!');
+
+                    }
+                    else if (selectedDate < now) {
+                        Swal.showValidationMessage('Geçmiş Bir Tarih Seçemezsiniz');
+                    } else {
+                        var tarih = $("#tarihvezaman").val();
+                        var not = $("#not").val();
+                        return $.ajax({
+                            url: '/Saglikcim/RandevuTalepEt',
+                            data: { DoctorId: doctorid, DepartmentId: departmentId, Tarih: tarih, Not: not, requestType: 1 },
+                            type: 'POST',
+                            dataType: 'json',
+                            success: function (data) {
+
+                                console.log(data.status);
+                                if (data.status == -1) {
+                                    Swal.showValidationMessage(data.message);
+                                } else if (data.status == 1) {
+                                    toastr.success(data.message, data.title);
+                                }
+                                else {
+                                    toastr.error(data.message, data.title);
+                                }
+                            },
+                            error: function (data) {
+                                $.ajax({
+                                    url: '/Saglikcim/ErrorLogs',
+                                    data: { page: "DoctorPanel  - _MainLayout - bildirimayarla" },
+                                    type: 'post',
+                                    dataType: 'json',
+                                    success: function (data) {
+
+                                    },
+                                    error: function (data) {
+
+                                    }
+                                });
+                            }
+                        });
+                    }
+                },
+                cancelButtonAriaLabel: 'İptal Et'
+            }).then((result) => {
+                if (result.value) {
+
+                }
+
+            });
+
+        }
+        else {
+            Swal.fire({
+                title: 'İşlem Hatası Oluştu',
+                text: 'Giriş Yapamadan Bu Özelliği Kullanamazsınız',
+                icon: 'error',
+                timer: 1500,
+                showConfirmButton: false,
+
+            });
+            $("#giris-tab-link").click();
+
+        }
+    }
+
+
+    function suresec(id, datechange, departmentId, name, minprice, minprictetime) {
+            document.getElementById('doktorlar-tab-link').classList.remove("yasakla");
+            document.getElementById('bagis-tab-link').classList.add("yasakla");
+            if (id == -1)
+                id = doktor;
+            else
+                doktor = id;
+            if (datechange==null) {
+                document.getElementById("appointdate").innerText = '@DateTime.Now.ToShortDateString()';
+                datechange = -1;
+            }
+        var date = document.getElementById("appointdate").innerText;
+        document.getElementById("randevuTalepleri").innerHTML = "";
+        $("#randevuTalepleri").append('<label   data-toggle="tooltip" data-placement="left" title="Randevu Talebi Oluştur"  id="zil' + id + '" ><span onclick="bildirimayarla(this.id,' + id + ',' + departmentId + ',\'' + name + '\',\'' + minprictetime + '\',\'' + minprice + '\');">Randevu Talep Et </span> <i class="fas fa-question-circle"  onclick="RandevuTalepBilgi(this.id,' + id + ',' + departmentId + ',\'' + name + '\',\'' + minprictetime + '\',\'' + minprice + '\')"></i></label><label   data-toggle="tooltip" data-placement="left" title="Tanışma Randevusu Talebi Oluştur"  id="zil' + id + '" ><span onclick="tanismaRandevusuTalebi(this.id,' + id + ',' + departmentId + ',\'' + name + '\',\'' + minprictetime + '\',\'' + minprice + '\');">Tanışma Randevusu Talep Et </span> <i class="fas fa-question-circle"  onclick="RandevuTalepBilgi(this.id,' + id + ',' + departmentId + ',\'' + name + '\',\'' + minprictetime + '\',\'' + minprice + '\')"></i></label>');
+            //if (date) {
+            //    var datepart = date.split('.');
+            //    if (datechange == 0)
+            //        date = new Date(datepart[1] + ' ' + (parseInt(datepart[0]) - 1)+' ' + datepart[2]).toDateString();
+            //    else
+            //        date = new Date(datepart[1] + ' ' + (parseInt(datepart[0]) + 1)+' ' + datepart[2]).toDateString();
+            //}
+              $.ajax({
+                url: '/Saglikcim/getAppointments',
+                type: 'GET',
+                data: {departmentId:bolum,doctorid:id,date:date,IsNextDate:datechange},
+                dataType: 'json',
+                  success: function (data) {
+                      if (data.rightarrow == false)
+                          document.getElementById("ileri-tarih").classList.add("gorunmez");
+                      else
+                          document.getElementById("ileri-tarih").classList.remove("gorunmez");
+                       if (data.leftarrow == false)
+                          document.getElementById("geri-tarih").classList.add("gorunmez");
+                      else
+                          document.getElementById("geri-tarih").classList.remove("gorunmez");
+
+                          document.getElementById("appointdate").innerText = data.date;
+                          document.getElementById("appointdoctor").innerText = data.doctorname + ' | ' + data.department ;
+                          document.getElementById("appointdate").innerText = data.date;
+                          if (data.appointments.length == 0) {
+                              $("#appointtimes").html('<a class="list-group-item list-group-item-action ">Bütün Randevular Doludur</a>'); }
+                          else {
+                                $("#appointtimes").html('');
+                                var counter = 0,record=0;
+                              data.appointments.forEach(function (item) {
+                                  console.log(item);
+                                    if (counter == 0)
+                                      $("#appointtimes").append('<tr>');
+                                  if (item.userId == 1 && item.isPreview == false) {
+                                      $("#appointtimes").append("<td><a style='cursor:pointer' id='datas-" + record + "' data-id=" + item.id + " onclick='randevual(this," + record + ")'>" + item.date.split('T')[1].split(':')[0] + ":" + item.date.split('T')[1].split(':')[1] + ' | ' + item.sessiontime + ' Dk' + ' | ' + item.sessionprice + ' TL' + "</a></td>")
+                                  }else if ( item.userId == 1 && item.isPreview == true) {
+                                      $("#appointtimes").append("<td><a style='background-color:#fb7813;cursor:pointer' style='cursor:pointer' id='datas-" + record + "' data-id=" + item.id + " onclick='randevual(this," + record + ")'>" + item.date.split('T')[1].split(':')[0] + ":" + item.date.split('T')[1].split(':')[1] + ' | ' + item.sessiontime + ' Dk' + ' | ' + item.sessionprice + ' TL' + "</a></td>")
+                                  }
+                                  else if (item.userId != 1) {
+                                      $("#appointtimes").append("<td style='    cursor: not-allowed !important;' data-toggle='tooltip' data-placement='top' title='Bu Randevu Alınmıştır' ><a  class='tiklanamaz'   id='datas-" + record + "' data-id=" + item.id + "  >" + item.date.split('T')[1].split(':')[0] + ":" + item.date.split('T')[1].split(':')[1] + ' | ' + item.sessiontime + ' Dk' + ' | ' + item.sessionprice + ' TL' + "</a></td>")
+                                  }
+                                    if (counter == 2) {
+                                        $("#appointtimes").append('</tr>'); counter = -1;
+                                    }
+                                    counter++;
+                                    record++;
+                               });
+                          }
+
+
+                },
+                error: function (data) {
+                  Swal.fire({
+                    title: 'İşlem Hatası Oluştu',
+                    text: 'Randevular Getirilirken Bir Hata Oluştu. Tekrarı Durumunda Lütfen Bu Hatayı Bize Bildiriniz',
+                    icon: 'error',
+                    timer: 2000,
+                    showConfirmButton: false,
+                });
+                }
+              });
+
+            $("#takvim-tab-link").click();
+            document.getElementById('takvim-tab-link').classList.remove("yasakla");
+
+        }
+    var sessionkeys;
+        function randevual(sender, dataid) {
+            sessionkeys = document.getElementById("datas-" + sender).dataset.id;
+        detail = $(sender).html();
+        doctor = $('#appointdoctor').html();
+        date = $('#appointdate').html()
+        $('#resultDoctor').html("<h5>"+doctor+"</h5>");
+        $('#resultDate').html(date);
+        $('#resultDetail').html(detail);
+             document.getElementById('bagis-tab-link').classList.remove("yasakla");$("#bagis-tab-link").click();
+        }
+
+    function randevuodeme() {
+        if (loginstatus) {
+                // var discount = confirm("Eğer var ise randevu alımında kredinizi kullanmak ister misiniz? İstemiyorsanız İptale Basın.");
+                 var discount = 1;
+            if (discount == true)
+                discount = 1;
+            else
+                discount = 0;
+
+            var DonationCompany="";
+
+              $.ajax({
+                url: '/Saglikcim/TakeAppointment',
+                type: 'POST',
+                //data: {appointmentKey:sessionkeys,DonationCompany:DonationCompany,discount:discount},
+                data: {appointmentKey:sessionkeys,discount:discount},
+                dataType: 'json',
+                   success: function (data) {
+                       if (data.status == 1) {
+                           Swal.fire({
+                               html: '<iframe src="' + data.token + '" id="paytriframe" frameborder="0" scrolling="yes" style="width: 100%;height:580px"></iframe>',
+                               showCancelButton: false,
+                               timer: 999999,
+                               showConfirmButton: false,
+                           });
+                       }
+                           else if (data.status == 2) {
+                             Swal.fire({
+                                    title: data.title,
+                                    text: data.message,
+                                    icon: 'success',
+                                    timer: 4000,
+                                    showConfirmButton: false,
+                             });
+                           setTimeout(function () { window.location.href = "/Doctorla/Profilim"; }, 5000)
+                            } else {
+                                    Swal.fire({
+                                    title: data.title,
+                                    text: data.message,
+                                    icon: 'error',
+                                    timer: 4000,
+                                    showConfirmButton: false,
+                                });
+                            }
+
+                },
+                error: function (data) {
+                  Swal.fire({
+                    title: 'İşlem Hatası Oluştu',
+                    text: 'Doktorları Getirirken Bir Hata Oluştu. Lütfen Tekrar Giriş Yapınız',
+                    icon: 'error',
+                    timer: 3000,
+                    showConfirmButton: false,
+                  });
+                    setTimeout(function () { window.location.href = "/Doctorla/Giris"; }, 3000)
+                }
+            });
+        } else {
+               Swal.fire({
+                    title: 'Lütfen Giriş Yapınız',
+                    text: 'Randevu Alabilmek İçin Giriş Yapmalısınız',
+                    icon: 'warning',
+                    timer: 3000,
+                    showConfirmButton: false,
+               });
+            $("#giris-tab-link").click(); paymentprocess = true;
+        }
+    }
+
+
+
+        function bagisyap(id) {
+            if (bolum == 0 && doktor == 0) {
+                alert("Lütfen öncelikle Bölüm ve Doktor Seçtiğinizden Emin Olunuz..");
+            } else {
+                alert("Bağış Sayfasına Yönlendiriliyorsunuz..");
+            }
+        }
+
+            function Contact(data) {
+            if (data.status == 1) {
+                    Swal.fire({
+                    title: data.title,
+                    text: data.message,
+                    icon: 'success',
+                    timer: 2000,
+                    showConfirmButton: false,
+                    });
+               document.getElementById("form5").reset();
+            } else {
+                    Swal.fire({
+                    title: data.title,
+                    text: data.message,
+                    icon: 'error',
+                    timer: 2000,
+                    showConfirmButton: false,
+                    });
+                 $("#validation").val('')
+            }
+    }
+    function notcounter() {
+        var characterCount = $("#not").val().length,
+            current = $('#current'),
+            maximum = $('#maximum'),
+            theCount = $('#the-count');
+
+        current.text(characterCount + " ");
+
+        if (characterCount < 30) {
+            current.css('color', '#666');
+            maximum.css('color', '#666');
+
+        }
+        if (characterCount > 30 && characterCount < 50) {
+            maximum.css('color', '#6d5555');
+            current.css('color', '#6d5555');
+        }
+        if (characterCount > 50 && characterCount < 80) {
+            maximum.css('color', '#793535');
+
+            current.css('color', '#793535');
+        }
+        if (characterCount > 80 && characterCount < 110) {
+            maximum.css('color', '#841c1c');
+
+            current.css('color', '#841c1c');
+        }
+        if (characterCount > 110 && characterCount < 140) {
+            maximum.css('color', '#8f0001');
+
+            current.css('color', '#8f0001');
+        }
+
+        if (characterCount >= 140) {
+            maximum.css('color', '#8f0001');
+            current.css('color', '#8f0001');
+            theCount.css('font-weight', 'bold');
+        } else {
+            theCount.css('font-weight', 'normal');
+        }
+    }
+    </script>
+
+</body>
+</html>

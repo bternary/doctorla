@@ -1,0 +1,145 @@
+﻿@using Data.Domain
+@model PagedList.Core.PagedList<Data.Domain.DailyCheck>
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *,PagedList.Core.Mvc
+@{
+    ViewData["Title"] = "Paketler";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewBag.Paketler = "active";
+    List<User> nurses = ViewBag.NurseData as List<User>;
+}
+
+<div class="row panelSearch">
+    <div class="form-group" id="appointmentforms">
+        <input type="text" name="id" id="id" value="@ViewBag.PaketId" style="display:none" />
+
+        <div class="col-xs-12 col-sm-9 panelSearchInputs">
+            <input type="text" name="name" placeholder="Ad ve Soyad Giriniz" id="username" value="@ViewBag.UserName" />
+
+        </div>
+        <div class="col-xs-12 col-sm-3 panelSearchButtons">
+
+            <input class="btn " type="submit" value="Filtrele" onclick="getPackageList()" />
+            <input class="btn " type="button" value="Temizle" onclick="$('#packageforms')[0].reset();" />
+        </div>
+
+    </div>
+</div>
+
+
+<div id="packageList">
+    @Html.Partial("~/views/Shared/_PackageList.cshtml", Model)
+</div>
+
+
+<div class="modal fade goruntulu-konusma" id="dailydetailmodal" tabindex="1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+
+</div>
+
+<div id="nurses" style="display:none">
+    @if (nurses.Count == 0)
+    {
+        <option value="-1">Hemşire Bulunamadı</option>
+    }
+    else
+    {
+        foreach (var item in nurses)
+        {
+            <option value="@item.Id">@item.Name @item.SurName</option>
+        }
+    }
+</div>
+
+<script src="~/js/swiper.min.js"></script>
+
+<script type="text/javascript">
+    function getPackageList() {
+        var username = document.getElementById("username").value;
+        if (!username) username = "x";
+        var id = document.getElementById("id").value;
+        const adress = window.location.href;
+        const words = adress.split('/');
+        var link = (words[0] + "//" + words[2] + "/AdminPanel/Paketler/" + id + "/" + username);
+        console.log("adres: ", link);
+        location.replace(link);
+    }
+
+    function getDailyCheckToModal(Id) {
+        $.ajax({
+            url: '/AdminPanel/GetDailyCheckDetail',
+            data: { Id: Id },
+            type: 'GET',
+            dataType: 'html',
+            success: function (data) {
+                $("#dailydetailmodal").html(data);
+                toastr.success('Veriler Başarılı Bir Şekilde Getirildi', 'Başarılı!');
+                $('#dailydetailmodal').modal('show');
+            },
+            error: function (data) {
+                toastr.error('Veriler Yüklenirken Bir Sorunla Karşılaşıldı. Lütfen Bu Durumu Bize Bildiriniz..', 'Hata!');
+            }
+        });
+    }
+    function getNurses(id) {
+        var dataS = document.getElementById("nurses").innerHTML.toString();
+        var NurselHtml = "";
+        Swal.fire({
+            title: '<strong>Randevu Oluştur</strong>',
+            html:
+                '<div class="randevualma">' +
+                '<span>Hemşire Seçin:</span>' +
+                '<select class="form-control" onchange="changeDepartment()" id="nurse" name="nurse">' +
+                dataS
+                + '</select>',
+            showCancelButton: true,
+            cancelButtonText: "Kapat",
+            cancelButtonColor: "#d33",
+            focusConfirm: false,
+            confirmButtonText:
+                'Hemşireyi Ata',
+        }).then((result) => {
+            if (result.value) {
+                var selectednurse = $('#nurse option:selected').val();
+                $.ajax({
+                    url: '/AdminPanel/ChangeNurse',
+                    data: { id: id, nurseId: selectednurse },
+                    type: 'POST',
+                    dataType: 'json',
+                    success: function (data) {
+                        if (data.status == 1) {
+
+                            Swal.fire({
+                                title: data.title,
+                                text: data.message,
+                                icon: 'success',
+                                timer: 2000,
+                                showConfirmButton: false,
+                            }).then((result) => {
+                                if (result) {
+                                    document.location.reload();
+                                }
+                            })
+                        } else {
+                            Swal.fire({
+                                title: data.title,
+                                text: data.message,
+                                icon: 'error',
+                                timer: 2000,
+                                showConfirmButton: false,
+                            })
+                        }
+                    },
+                    error: function (data) {
+                        Swal.fire({
+                            title: 'Hata ile Karşılaşıldı',
+                            text: 'Sistemsel bir hata ile karşılaşıldı.Lütfen sayfayı Yenileyiniz ve bu durumu bize bildiriniz',
+                            icon: 'error',
+                            timer: 2000,
+                            showConfirmButton: false,
+                        })
+                    }
+                });
+            }
+        });
+    }
+</script>

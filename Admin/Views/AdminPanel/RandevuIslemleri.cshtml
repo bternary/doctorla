@@ -1,0 +1,287 @@
+﻿@model PagedList.Core.PagedList<Data.Domain.Appointment>
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *,PagedList.Core.Mvc
+@{
+    ViewData["Title"] = "Randevu Islemleri";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewBag.GecmisRandevular = "active";
+}
+@section css{
+    <style>
+
+        .oylama {
+            display: flex;
+        }
+
+            .oylama label {
+                padding-left: 0.4rem;
+            }
+
+        .oylama-kapsa textarea {
+            resize: none;
+            overflow: auto;
+            height: 250px;
+        }
+    </style>
+}
+
+<div class="row">
+    <div class="form-group" id="appointmentforms">
+        <input type="text" name="id" id="id" value="@ViewBag.Id" style="display:none" />
+
+        <div class="col-md-3">
+            <input type="text" name="username" id="username" placeholder="Kullanıcı Adı Giriniz" value="@ViewBag.UserName"/>
+        </div>
+        <div class="col-md-3">
+            <input type="text" name="doctorname" id="doctorname" placeholder="Doktor Adı Giriniz" value="@ViewBag.DoctorName"/>
+        </div>
+        <div class="col-md-3">
+            <input type="text" name="sessioncode" id="sessioncode" placeholder="Randevu Kodu Giriniz" value="@ViewBag.SessionCode"/>
+        </div>
+        <div class="col-md-1">
+            <input class="btn btn-primary" type="submit" value="Filtrele" onclick="getAppointmentList()" />
+        </div>
+        <div class="col-md-1">
+            <input class="btn btn-danger" type="button" value="Temizle" onclick="$('#appointmentforms')[0].reset();" />
+        </div>
+    </div>
+</div>
+
+<div id="appointmentList">
+    @Html.Partial("~/views/Shared/_AppointmentList.cshtml", Model)
+ 
+</div>
+
+
+<div class="modal fade goruntulu-konusma" id="userdetailmodal" tabindex="1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+
+</div>
+
+<script type="text/javascript">
+
+    function getAppointmentList() {
+        var username = document.getElementById("username").value;
+        var doctorname = document.getElementById("doctorname").value;
+        var sessioncode = document.getElementById("sessioncode").value;
+        if (!username) username = "x";
+        if (!doctorname) doctorname = "x";
+        if (!sessioncode) sessioncode = "x";
+        var id = document.getElementById("id").value;
+        const adress = window.location.href;
+        const words = adress.split('/');
+        var link = (words[0] + "//" + words[2] + "/AdminPanel/RandevuIslemleri/" + id + "/" + username + "/" + doctorname + "/" + sessioncode);
+        console.log("adres: ",link);
+        location.replace(link);
+    }
+
+    function getAppointmentProcess(sessionkey) {
+        $.ajax({
+            url: '/AdminPanel/getAppointmentProcess',
+            data: { sessionkey: sessionkey },
+            type: 'post',
+            dataType: 'json',
+            success: function (data) {
+                var process = JSON.parse(data.process);
+                if (data.status == 1) {
+                    var inputs = "";
+                    process.forEach(function (item) {
+                        inputs += "<li>" + item.date.replace('T', ' ').split('.')[0] + " - " + item.process + "</li>";
+                    });
+                    Swal.fire({
+                        title: '<strong>Randevu İşlemleri</strong>',
+                        html: inputs,
+                        showCancelButton: true,
+                        confirmButtonText: 'Kaydet',
+                        cancelButtonText: 'İptal',
+                        cancelButtonColor: '#d33',
+                        confirmButtonColor: 'green',
+                        showLoaderOnConfirm: true,
+                    })
+                } else {
+                    error();
+                }
+            },
+            error: function (data) {
+                toastr.error('İşlem Sırasında Hata Oluştu..', 'Hata!');
+            }
+        });
+    }
+
+    function changeAppointmentStatus(sessionkey, status) {
+        var inputs = "";
+        inputs += "<div class='oylama-kapsa'>";
+        inputs += "<div class='oylama-notlar col-xs-12 '>";
+        if (status == -100)
+            inputs += '<div class="oylama"><input type="radio" class="radio" value="-1" id="rate1" name="rate" checked/><label for="rate1" style="color:red">Admin Tarafından Silindi</label></div>';
+        else
+            inputs += '<div class="oylama"><input type="radio" class="radio" value="-1" id="rate1" name="rate" /><label for="rate1" style="color:red">Admin Tarafından Silindi</label></div>';
+        if (status == -3)
+            inputs += '<div class="oylama"><input type="radio" class="radio" value="1" id="rate2" name="rate" checked/><label for="rate2" >Doktor Gelmedi</label></div>';
+        else
+            inputs += '<div class="oylama"><input type="radio" class="radio" value="1" id="rate2" name="rate" /><label for="rate2" >Doktor Gelmedi</label></div>';
+        if (status == -2)
+            inputs += '<div class="oylama"><input type="radio" class="radio" value="2" id="rate3" name="rate" checked/><label for="rate3" >Hasta İptal Etti</label></div>';
+        else
+            inputs += '<div class="oylama"><input type="radio" class="radio" value="2" id="rate3" name="rate" /><label for="rate3" >Hasta İptal Etti</label></div>';
+        if (status == -1)
+            inputs += '<div class="oylama"><input type="radio" class="radio" value="3" id="rate4" name="rate" checked/><label for="rate4" >Doktor İptali</label></div>';
+        else
+            inputs += '<div class="oylama"><input type="radio" class="radio" value="3" id="rate4" name="rate" /><label for="rate4" >Doktor İptali</label></div>';
+        if (status == 0)
+            inputs += '<div class="oylama"><input type="radio" class="radio" value="4" id="rate5" name="rate" checked/><label for="rate5" >İşlemde</label></div>';
+        else
+            inputs += '<div class="oylama"><input type="radio" class="radio" value="4" id="rate5" name="rate" /><label for="rate5" >İşlemde</label></div>';
+        if (status == 1)
+            inputs += '<div class="oylama"><input type="radio" class="radio" value="5" id="rate6" name="rate" checked/><label for="rate6">Başarılı Bitiş</label></div>';
+        else
+            inputs += '<div class="oylama"><input type="radio" class="radio" value="5" id="rate6" name="rate" /><label for="rate6">Başarılı Bitiş</label></div>';
+
+        inputs += "</div>";
+        inputs += "</div>";
+
+        Swal.fire({
+            title: '<strong>Randevu Durum Güncellemesi</strong>',
+            html: inputs,
+            showCancelButton: true,
+            confirmButtonText: 'Kaydet',
+            cancelButtonText: 'İptal',
+            cancelButtonColor: '#d33',
+            confirmButtonColor: 'green',
+            showLoaderOnConfirm: true,
+        }).then((result) => {
+            if (result.value) {
+                var rate;
+                if (document.getElementById("rate1").checked)
+                    rate = -100;
+                else if (document.getElementById("rate2").checked)
+                    rate = -3;
+                else if (document.getElementById("rate3").checked)
+                    rate = -2;
+                else if (document.getElementById("rate4").checked)
+                    rate = -1;
+                else if (document.getElementById("rate5").checked)
+                    rate = 0;
+                else if (document.getElementById("rate6").checked)
+                    rate = 1;
+
+                $.ajax({
+                    url: '/AdminPanel/changeAppointmentStatus',
+                    data: { sessionkey: sessionkey, appointmentstatus: rate },
+                    type: 'post',
+                    dataType: 'json',
+                    success: function (data) {
+                        if (data.status == 1) {
+                            Swal.fire({
+                                title: data.title,
+                                text: data.message,
+                                confirmButtonText: 'Tamam',
+                                confirmButtonColor: 'green',
+                                icon: 'success',
+                                showConfirmButton: true,
+                            })
+                        }
+                        else {
+                            Swal.fire({
+                                title: data.title,
+                                text: data.message,
+                                confirmButtonText: 'Tamam',
+                                confirmButtonColor: 'red',
+                                icon: 'error',
+                                showConfirmButton: true,
+                            })
+                        }
+                    },
+                    error: function (data) {
+                        toastr.error('Silme İşlemi Sırasında. Lütfen Bu Durumu Bize Bildiriniz..', 'Hata!');
+                    }
+                });
+            }
+        })
+
+    }
+
+
+
+    function error() {
+        Swal.fire({
+            title: 'Hata',
+            text: 'İşlem Sırasında Bir Hata Oluştu',
+            icon: 'error',
+            timer: 4000,
+            showConfirmButton: false,
+        })
+    }
+
+
+    function getUserDetailToModal(sessionkey) {
+        $.ajax({
+            url: '/AdminPanel/GetUserDetail',
+            data: { sessionkey: sessionkey },
+            type: 'GET',
+            dataType: 'html',
+            success: function (data) {
+                $("#userdetailmodal").html(data);
+                toastr.success('Veriler Başarılı Bir Şekilde Getirildi', 'Başarılı!');
+                $('#userdetailmodal').modal('show');
+            },
+            error: function (data) {
+                toastr.error('Veriler Yüklenirken Bir Sorunla Karşılaşıldı. Lütfen Bu Durumu Bize Bildiriniz..', 'Hata!');
+            }
+        });
+    }
+
+    function deleteAppointment(_sessionkey, _deleteReason) {
+        $.ajax({
+            url: '/AdminPanel/deleteAppointment',
+            data: { sessionkey: _sessionkey, deleteReason: _deleteReason },
+            type: 'post',
+            dataType: 'json',
+            success: function (data) {
+                if (data.status == 1) {
+                    Swal.fire({
+                        title: data.title,
+                        text: data.message,
+                        icon: 'success',
+                        timer: 4000,
+                        showConfirmButton: false,
+                    })
+                }
+                else if (data.status == -1) {
+                    Swal.fire({
+                        title: data.title,
+                        text: data.message,
+                        icon: 'error',
+                        timer: 4000,
+                        showConfirmButton: false,
+                    })
+                }
+                else {
+                    Swal.fire({
+                        title: '<strong>Lütfen Alınmış Olan Randevunun İptal Sebebini Giriniz. <span style="color:red"> (Sözleşmeniz Gereği 1 Ay İçerisinde 3 Alınmış Randevuyu İptal Edebilirsiniz.)</span></strong>',
+                        html: '<input type="textarea" min="10" cols="20" rows="20" id="deletereason" name="deletereason" class="form-control" placeholder="En Az 10 Harf Giriniz" required />',
+                        showCancelButton: true,
+                        confirmButtonText: 'Anladım, Randevuyu İptal Etmek İstiyorum',
+                        cancelButtonText: 'İptal',
+                        cancelButtonColor: 'green',
+                        confirmButtonColor: 'red',
+                        showLoaderOnConfirm: true,
+                    }).then((result) => {
+                        if (result.value) {
+                            var deletereasontext = document.getElementById("deletereason").value;
+                            if (deletereasontext.length >= 10)
+                                deleteAppointment(data.session, deletereasontext);
+                            else
+                                deleteAppointment(data.session, '');
+
+                        }
+                    })
+
+                }
+            },
+            error: function (data) {
+                toastr.error('Silme İşlemi Sırasında. Lütfen Bu Durumu Bize Bildiriniz..', 'Hata!');
+            }
+        });
+    }
+
+</script>

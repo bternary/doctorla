@@ -1,0 +1,254 @@
+﻿@model PagedList.Core.PagedList<Data.Domain.Campaign>
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *,PagedList.Core.Mvc
+@{
+    ViewData["Title"] = "Kampanya Listesi";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewBag.Contact = "active";
+}
+@section css{
+    <link href="~/css/style.css" rel="stylesheet" />
+    <link href="~/fonts/flaticon.css" rel="stylesheet" />
+
+}
+<style>
+    .item-icon i {
+        font-size: 4rem;
+    }
+
+    #olcumler-liste a {
+        font-size: 1.3rem;
+    }
+
+    .swal-update {
+        width: 450px;
+    }
+
+        .swal-update .hatirlatici-form-group div {
+            flex: unset;
+        }
+
+    .swal-delete {
+        font-size: 1.5rem;
+    }
+</style>
+<div class="container" style="width:100%">
+    <div class="row justify-content-end">
+        <div class="col-xs-12 islem-Button" style="text-align:right">
+            <a href="javascript:void(0)" onclick="Create()" class="green ">Kampanya Ekle</a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div id="tabid1">
+                <div class="dashboard-content" style="padding: 0px 0px 0px 0px;margin-left: 0px">
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12 col-xs-12">
+                            <div class="dashboard-list-box">
+                                <h4 class="gray">Kampanya Listesi</h4>
+                                <div class="table-box">
+                                    <table class="basic-table booking-table" id="olcumler-liste">
+                                        <thead>
+                                            <tr>
+                                                <th>Kampanya Adı</th>
+                                                <th>Kampanya Kodu</th>
+                                                <th>Kampanya Tipi</th>
+                                                <th>Kampanya Değeri</th>
+                                                <th>Kampanya Başlangıç</th>
+                                                <th>Kampanya Bitiş</th>
+                                                <th>Kampanya Aktif</th>
+                                                <th>İşlemler</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @if (Model.Count == 0)
+                                            {
+                                                <tr>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                </tr>
+                                            }
+                                            @foreach (var item in Model)
+                                            {
+                                                <tr>
+                                                    <td>@item.Name</td>
+                                                    <td>@item.Code</td>
+                                                    <td>@item.CampaignType</td>
+                                                    <td>@item.Value</td>
+                                                    <td>@item.StartDate.ToString("dd/MM/yyyy")</td>
+                                                    <td>@item.EndDate.ToString("dd/MM/yyyy")</td>
+                                                    <td>@item.IsActive</td>
+                                                    <td class="islemler-yazi">
+                                                        <a href="javascript:void(0)" data-id="@item.Id" onclick="Update(this)" class="blue">Güncelle</a>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12 sayfalama">
+            <div class="sayfalama-bilgi">Toplam <span>@Model.TotalItemCount</span> Kayıt Bulunuyor. Şu anda <span>@Model.FirstItemOnPage</span> - <span>@Model.LastItemOnPage</span> Arasındaki Kayıtlar Gösteriliyor. </div>
+
+            <pager list="@Model" asp-controller="AdminPanel" options="@PagedList.Core.Mvc.PagedListRenderOptions.Bootstrap4PageNumbersOnly" asp-action="UsedCampaignes" />
+        </div>
+    </div>
+</div>
+
+<script>
+    function Update(item) {
+        $.ajax({
+            url: '/AdminPanel/GetCampaignDetail',
+            type: 'POST',
+            data: { CampaignId: $(item).data('id') },
+            dataType: 'html',
+            success: function (data) {
+                Swal.fire({
+                    title: '<strong>Kampanya Düzenle</strong>',
+                    html: data,
+                    showCloseButton: true,
+                    customClass: 'swal-update',
+                    showCancelButton: true,
+                    focusConfirm: false,
+                    confirmButtonText:
+                        'Güncelle',
+                    confirmButtonAriaLabel: 'update',
+                    cancelButtonColor: '#d33',
+                    cancelButtonText:
+                        'İptal Et',
+                    cancelButtonAriaLabel: 'cancel',
+                    preConfirm: (login) => {
+                        if ($('#Name').val().trim() == '' ||
+                            $('#Code').val().trim() == '' ||
+                            $('#CreditAmount').val().trim() == '' ||
+                            $('#StartDate').val().trim() == '' ||
+                            $('#EndDate').val().trim() == '' ||
+                            $('#CampaignType').val().trim() == '')
+                            Swal.showValidationMessage(
+                                'Lütfen Tüm Alanları Doldurunuz!'
+                            );
+                        return true;
+                    }
+                }).then((result) => {
+                    if (result.value) {
+                        $.ajax({
+                            url: '/AdminPanel/UpdateCampaignDetail',
+                            type: 'POST',
+                            data: {
+                                campaignId: $(item).data('id')
+                                , name: $('#Name').val().trim()
+                                , code: $('#Code').val().trim()
+                                , creditAmount: $('#CreditAmount').val().trim().replace(".", ",")
+                                , startDate: $('#StartDate').val().trim()
+                                , endDate: $('#EndDate').val().trim()
+                                , isActive: $('#IsActive').val().trim()
+                                , campaignType: $('#CampaignType').val().trim()
+                            },
+                            dataType: 'json',
+                            success: function (data) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Kampanya Başarıyla Güncellendi',
+                                    showConfirmButton: false,
+                                    timer: 1500
+                                }).then((result) => {
+                                    location.reload();
+                                });
+                            },
+                            error: function (data) {
+                                toastr.error('Bir Hata İle Karşılaştık', 'Hata!');
+                            }
+                        });
+                    }
+                });
+            },
+            error: function (data) {
+                toastr.error('Bir Hata İle Karşılaştık', 'Hata!');
+            }
+        });
+    }
+    function Create() {
+        $.ajax({
+            url: '/AdminPanel/GetCampaignDetail',
+            type: 'POST',
+            dataType: 'html',
+            success: function (data) {
+                Swal.fire({
+                    title: '<strong>Kampanya Ekle</strong>',
+                    html: data,
+                    showCloseButton: true,
+                    customClass: 'swal-update',
+                    showCancelButton: true,
+                    focusConfirm: false,
+                    confirmButtonText:
+                        'Ekle',
+                    confirmButtonAriaLabel: 'create',
+                    cancelButtonColor: '#d33',
+                    cancelButtonText:
+                        'İptal Et',
+                    cancelButtonAriaLabel: 'cancel',
+                    preConfirm: (login) => {
+                        if ($('#Name').val().trim() == '' ||
+                            $('#Code').val().trim() == '' ||
+                            $('#CreditAmount').val().trim() == '' ||
+                            $('#StartDate').val().trim() == '' ||
+                            $('#EndDate').val().trim() == '' ||
+                            $('#CampaignType').val().trim() == '')
+                            Swal.showValidationMessage(
+                                'Lütfen Tüm Alanları Doldurunuz!'
+                            );
+                        return true;
+                    }
+                }).then((result) => {
+                    if (result.value) {
+                        $.ajax({
+                            url: '/AdminPanel/CreateCampaignDetail',
+                            type: 'POST',
+                            data: {
+                                name: $('#Name').val().trim()
+                                , code: $('#Code').val().trim()
+                                , creditAmount: $('#CreditAmount').val().trim().replace(".", ",")
+                                , startDate: $('#StartDate').val().trim()
+                                , endDate: $('#EndDate').val().trim()
+                                , isActive: $('#IsActive').val().trim()
+                                , campaignType: $('#CampaignType').val().trim()
+                            },
+                            dataType: 'json',
+                            success: function (data) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Kampanya Başarıyla Eklendi',
+                                    showConfirmButton: false,
+                                    timer: 1500
+                                }).then((result) => {
+                                    location.reload();
+                                });
+                            },
+                            error: function (data) {
+                                toastr.error('Bir Hata İle Karşılaştık', 'Hata!');
+                            }
+                        });
+                    }
+                });
+            },
+            error: function (data) {
+                toastr.error('Bir Hata İle Karşılaştık', 'Hata!');
+            }
+        });
+    }
+</script>
+
+

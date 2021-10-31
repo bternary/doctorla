@@ -1,0 +1,93 @@
+﻿@model PagedList.Core.PagedList<Data.Domain.DailyCheck>
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *,PagedList.Core.Mvc
+
+
+<div class="row">
+    <div class="col-lg-12 col-md-12 col-xs-12">
+        <div class="dashboard-list-box">
+            <h4 class="gray">Premium Paketlerim</h4>
+            <div class="table-box table-responsive">
+                <table class="basic-table booking-table">
+                    <thead>
+                        <tr>
+
+                            <th>Hemşire Ad Soyad</th>
+                            <th>Paket Adi</th>
+                            <th>Paket Başlangıç</th>
+                            <th>Paket Bitiş</th>
+                            <th>Sonraki Hatırlatma Günü</th>
+                            <th>Hatırlatma Saatleri</th>
+                            <th>Paket İşlemleri</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr id="paket-@item.Id">
+                                <td>
+                                    @if (item.NurseId == 1 && !item.IsPremium)
+                                    {
+                                        <span> - </span>
+                                    }
+                                    else if (item.NurseId == 1)
+                                    {
+                                        <span>Hemşire Bekleniyor</span>
+                                    }
+                                    else
+                                    {
+                                        @item.Nurse.Name @item.Nurse.SurName
+                                    }
+
+                                </td>
+                                <td>@item.PackageName</td>
+                                <td>@item.Start.ToShortDateString()</td>
+                                <td>@item.Finish.ToShortDateString()</td>
+                                <td>
+                                    @item.AlertDay.ToShortDateString()
+                                    @*<span>@(item2 == "1" ? "Pazartesi" : item2 == "2" ? "Salı" : item2 == "3" ? "Çarşamba" : item2 == "4" ? "Perşembe" : item2 == "5" ? "Cuma" : item2 == "6" ? "Cumartesi" : "Pazar")</span>*@
+                                </td>
+                                <td>@item.NurseAlertDaysHours</td>
+
+                                <td class="islemler-yazi">
+                                    @if (item.IsPremium && item.Status == -1)
+                                    {
+                                        <a href="#" id="olcumler" onclick="NurseWaitingAlert()" class="blue" title="Ölçümlerim">Ölçümlerim</a>
+                                    }
+                                    else
+                                    {
+                                        <a href="#" id="olcumler" onclick="getDailyCheckToModal(@item.Id)" class="blue" title="Ölçümlerim">Ölçümlerim</a>
+                                    }
+                                    <a href="#" id="grafikler" onclick="grafikler(@item.Id)" class="red" title="Grafiklerim">Grafiklerim</a>
+                                    <a href="#" id="hatirlatici-link" onclick="createReminders(@item.Id,'@item.ExtraPhone','@item.AlertDay.ToString("yyyy-MM-dd")',@item.AlertDayCounter,'@item.AlertDayHours')" class="yellow" title="Hatırlatıcılarım">Hatırlatıcılarım</a>
+                                    @if (item.IsPremium && item.Status == -1)
+                                    {
+                                        <a href="#" id="premium-dosya-yukle" onclick="setFirstFileModalId(@item.Id)" data-toggle="modal" data-target="#premium-files" class="green" title="Dosya Yükle">Dosyalarım</a>
+                                    }
+
+                                </td>
+                            </tr>
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        @*<div class="pagination-container">
+                <nav class="pagination">
+                    <ul>
+                        <li><a href="#" class="current-page">1</a></li>
+                        <li><a href="#">2</a></li>
+                        <li><a href="#"><i class="sl sl-icon-arrow-right"></i></a></li>
+                    </ul>
+                </nav>
+            </div>*@
+    </div>
+</div>
+<div class="row">
+    <div class="col-xs-12 sayfalama">
+        <div class="sayfalama-bilgi">Toplam <span>@Model.TotalItemCount</span> Kayıt Bulunuyor. Şu anda <span>@Model.FirstItemOnPage</span> - <span>@Model.LastItemOnPage</span> Arasındaki Kayıtlar Gösteriliyor. </div>
+
+        <pager list="@Model" asp-controller="Saglikcim" options="@PagedList.Core.Mvc.PagedListRenderOptions.Bootstrap4PageNumbersOnly" asp-action="getPackages" />
+    </div>
+</div>

@@ -1,0 +1,376 @@
+﻿@model List<Data.Domain.DailyCheckPackages>
+@using  Newtonsoft.Json;
+@{
+    ViewData["Title"] = "Premium Satın Al";
+}
+<style>
+    section#premium-satin-al {
+        padding: 30px 0;
+    }
+
+    .premium-fiyat {
+        color: #00A3C8;
+        font-size: 2.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+    }
+
+        .premium-fiyat span {
+            font-size: 1.5rem;
+        }
+
+        .premium-fiyat .gecmis-fiyat {
+            margin-right: 0.5rem;
+            position: relative;
+            opacity: 0.7;
+        }
+
+            .premium-fiyat .gecmis-fiyat:before {
+                content: "";
+                position: absolute;
+                height: 2px;
+                width: 110%;
+                top: 50%;
+                left: 0;
+                background-color: #00A3C8;
+            }
+
+        .premium-fiyat .gecmis-fiyat {
+        }
+
+    .premium-paketleri {
+        font-size: 4rem;
+        text-align: center;
+    }
+
+        .premium-paketleri h1 {
+            color: #00A3C8;
+        }
+
+    .premium-card {
+        border-color: #f0a500 !important;
+        box-shadow: 0 4px 8px 0 #f0a500 !important;
+        position: relative;
+    }
+
+        .premium-card:before {
+            font-family: FontAwesome;
+            content: "\f005 \f005 \f005";
+            position: absolute;
+            left: 50%;
+            top: -23px;
+            color: #f0a500;
+            font-size: 2rem;
+            transform: translate(-50%,0%);
+        }
+
+        .premium-card h4, .premium-card .premium-fiyat {
+            color: #f0a500;
+        }
+
+            .premium-card .premium-fiyat .gecmis-fiyat:before {
+                background-color: #f0a500 !important;
+            }
+
+        .premium-card .destekOlButon a.btn {
+            background: linear-gradient(to right, #ffb40f 50%, #f0a500 50%);
+            background-size: 200% 100%;
+            background-position: right bottom;
+        }
+
+            .premium-card .destekOlButon a.btn:hover {
+                background-position: left bottom;
+            }
+
+    section#premium-satin-al .sponsorCard {
+        min-height: 650px;
+    }
+
+        section#premium-satin-al .sponsorCard .ozel {
+            color: #f0a500;
+            font-weight: 600;
+        }
+
+    .paket-satin-al {
+        display: flex;
+        flex-direction: column;
+    }
+
+        .paket-satin-al > div {
+            display: flex;
+            margin: 1rem 0;
+        }
+
+            .paket-satin-al > div > span {
+                flex: 1;
+                text-align: left;
+            }
+
+            .paket-satin-al > div strong, .paket-satin-al > div select {
+                flex: 2;
+                text-align: left;
+            }
+
+            .paket-satin-al > div .premium-fiyat {
+                display: flex;
+                font-size: 1.5rem;
+                flex-direction: row;
+                justify-content: start;
+            }
+
+                .paket-satin-al > div .premium-fiyat .guncel-fiyat {
+                    margin-left: 1rem;
+                }
+   
+    .premium strong, strong.premium {
+        color: #f0a500;
+    }
+   .premium .gecmis-fiyat:before {
+        background-color: #f0a500 !important;
+    }
+</style>
+<section id="premium-satin-al" class="sponsor">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 premium-paketleri">
+                <h1><span style="color:#f0a500;">PREMİUM</span> PAKETLERİ</h1>
+            </div>
+        </div>
+        <div class="row ortala">
+
+            @foreach (var item in Model)
+            {
+                List<DailyCheckPackagesView> prices = Newtonsoft.Json.JsonConvert.DeserializeObject<List<DailyCheckPackagesView>>(item.Price);
+                if (item.IsPremium)
+                {
+                    int a = 5;
+                    a++;
+                    <div class="col-sm-4 ">
+                        <div class="card sponsorCard premium-card">
+                            <div class="card-header text-align-center"><h4>@item.Name</h4></div>
+                            <div class="sponsorLogo">
+                                <div class="premium-fiyat">
+                                    <div class="gecmis-fiyat">@prices.FirstOrDefault().OncekiFiyat<span>.99 ₺/ay</span></div>
+                                    <div class="guncel-fiyat blue">@prices.FirstOrDefault().Fiyat<span>.99 ₺/ay</span></div>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <ul class="list-group paketIcerigi" style="margin-bottom:0px;">
+                                    <li class="list-group-item">
+                                        <i class="far fa-check-circle"></i> 30 Günlük Medikal Takip
+                                    </li>
+                                    <li class="list-group-item ozel"><i class="far fa-check-circle"></i> Profesyonel Canlı Destek </li>
+                                    <li class="list-group-item ozel"><i class="far fa-check-circle"></i> Sağlık Danışmanıyla 8 Kez Sesli Seans</li>
+                                    <li class="list-group-item ozel"><i class="far fa-check-circle"></i> Ayrıntılı Sağlık Karnesi </li>
+                                    <li class="list-group-item">
+                                        <i class="far fa-check-circle"></i> Spesifik İlaç Hatırlatma Sistemi (Sms-Bildirim)
+                                    </li>
+                                    <li class="list-group-item">
+                                        <i class="far fa-check-circle"></i> Tüm Sağlık Ölçümlerini Kaydetme
+                                    </li>
+                                    <li class="list-group-item">
+                                        <i class="far fa-check-circle"></i> Kişiye Özel Sağlık ve Ölçüm Grafikleri
+                                    </li>
+                                    <li class="list-group-item">
+                                        <i class="far fa-check-circle"></i> 7/24 Kullanım İmkanı
+                                    </li>
+                                    <li class="list-group-item">
+                                        <i class="far fa-check-circle"></i> Sağlık Dokümanlarını Paylaşım
+                                    </li>
+                                </ul>
+                                <div class="destekOlButon">
+                                    <a id="destekbtn-2" href="#" onclick="buyPackage(@item.Id,'@item.Price','@item.Name','premium')" class="btn btn-primary">PREMİUM OL</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-sm-4">
+                        <div class="card sponsorCard">
+                            <div class="card-header text-align-center"><h4>Ücretsiz Takip Paketi</h4></div>
+                            <div class="sponsorLogo">
+                                <div class="premium-fiyat">
+                                    <div class="gecmis-fiyat">@prices.FirstOrDefault().OncekiFiyat<span>.99 ₺/ay</span></div>
+                                    @if (prices.FirstOrDefault().Fiyat == "0")
+                                    {
+                                        <div class="guncel-fiyat blue">ÜCRETSİZ</div>
+                                    }
+                                    else
+                                    {
+                                        <div class="guncel-fiyat blue">@prices.FirstOrDefault().Fiyat<span>.99 ₺/ay</span></div>
+                                    }
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <ul class="list-group paketIcerigi" style="margin-bottom: 0px; ">
+                                    @if (prices.FirstOrDefault().Fiyat == "0")
+                                    {
+                                        <li class="list-group-item">
+                                            <i class="far fa-check-circle"></i> 10 Günlük Medikal Takip
+                                        </li>
+                                    }
+                                    else
+                                    {
+                                        <li class="list-group-item">
+                                            <i class="far fa-check-circle"></i> 30 Günlük Medikal Takip
+                                        </li>
+                                    }
+
+                                    <li class="list-group-item">
+                                        <i class="far fa-check-circle"></i> Spesifik İlaç Hatırlatma Sistemi (Sms-Bildirim)
+                                    </li>
+                                    <li class="list-group-item">
+                                        <i class="far fa-check-circle"></i> Tüm Sağlık Ölçümlerini Kaydetme
+                                    </li>
+                                    <li class="list-group-item">
+                                        <i class="far fa-check-circle"></i> Kişiye Özel Sağlık ve Ölçüm Grafikleri
+                                    </li>
+                                    <li class="list-group-item">
+                                        <i class="far fa-check-circle"></i> 7/24 Kullanım İmkanı
+                                    </li>
+                                    <li class="list-group-item">
+                                        <i class="far fa-check-circle"></i> Sağlık Dokümanları Paylaşım
+                                    </li>
+                                </ul>
+
+                                <div class="destekOlButon">
+                                    <a id="destekbtn-1" href="#" class="btn btn-primary" onclick="buyPackage(@item.Id,'@item.Price','@item.Name','normal')">Paketi Satın Al</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                }
+            }
+
+        </div>
+    </div>
+</section>
+
+
+<script>
+    var price;
+    var finalePrice; var ay;
+    function buyPackage(packageId, prices, packgeName, className) {
+        price = JSON.parse(prices);
+        console.log(price[0].OncekiFiyat); console.log(1);
+        var sorgu = price[0].Fiyat == "0" ? 'style="display:none"' : '';
+        var sorgu2 = price[0].Fiyat == "0" ? 'style="display:block"' : 'style="display:none"';
+        var sorgu3 = price[0].Fiyat == "0" ? 'ÜCRETSİZ' : (price[0].Fiyat + '<span>.99 ₺/ay</span>');
+        //<strong>' + packgeName + '</strong>
+        Swal.fire({
+            title: '<strong class="' + className + '">' + packgeName + '</strong>',
+            html: '<div class="paket-satin-al ' + className + '">' +
+                '<div><span>Paket Adı:</span> ' + '<strong>' + packgeName + '</strong></div>' +
+                '<div><span>Paket Süresi:</span> <select id="paket-suresi" onchange="setPrices()" ' + sorgu + '> ' +
+                '<option value="1">1 ay</option>' +
+                '<option value="3">3 ay</option>' +
+                '<option value="6">6 ay</option>' +
+                '<option value="12">12 ay</option>' +
+                '</select> ' +
+                '<strong ' + sorgu2 + '>10 Gün</strong>' +
+                '</div><div><span>Paket Fiyatı</span>' + '<strong id="paket-fiyati" class="premium-fiyat"><div class="gecmis-fiyat" id="oldPrice">' + price[0].OncekiFiyat + '<span>.99 ₺/ay</span></div><div class="guncel-fiyat" id="newPrice">' + sorgu3 + '</div></strong></div>' +
+                '</div>',
+            showCloseButton: true,
+            showCancelButton: true,
+            focusConfirm: false,
+            cancelButtonColor: '#d33',
+
+
+            confirmButtonText:
+                'Paketi Satın Al',
+            confirmButtonAriaLabel: 'Paketi Satın Al',
+            cancelButtonText:
+                'İptal',
+            cancelButtonAriaLabel: 'İptal'
+        }).then((result) => {
+            if (result.value) {
+                var day;
+                if (ay == 0)
+                    day = 10;
+                else
+                    day = ay * 30;
+               $.ajax({
+                url: '/Saglikcim/BuyDailyCheck',
+                type: 'POST',
+                data: { packageId: packageId, prices: finalePrice, day: day },
+                dataType: 'json',
+                   success: function (data) {
+                       if (data.status == 1) {
+                           Swal.fire({
+                               html: '<iframe src="' + data.token + '" id="paytriframe" frameborder="0" scrolling="yes" style="width: 100%;height:580px"></iframe>',
+                               showCancelButton: false,
+                               timer: 999999,
+                               showConfirmButton: false,
+                               onClose: setTimeout(function () { buyPackage(packageId, prices, packgeName, className); }, 1000)
+                           });
+                       }
+                           else if (data.status == 2) {
+                             Swal.fire({
+                                    title: data.title,
+                                    text: data.message,
+                                    icon: 'success',
+                                    timer: 4000,
+                                    showConfirmButton: false,
+                             });
+                           setTimeout(function () { window.location.href = "/Doctorla/Profilim"; }, 5000)
+                            } else {
+                                    Swal.fire({
+                                    title: data.title,
+                                    text: data.message,
+                                    icon: 'error',
+                                    timer: 4000,
+                                    showConfirmButton: false,
+                                });
+                            }
+
+                },
+                   error: function (data) {
+                       $.ajax({
+                           url: '/Saglikcim/ErrorLogs',
+                           data: { page: "Saglikcim  - PremiumSatinAl - buyPackage" },
+                           type: 'post',
+                           dataType: 'json',
+                           success: function (data) {
+
+                           },
+                           error: function (data) {
+
+                           }
+                       });
+                  Swal.fire({
+                    title: 'İşlem Hatası Oluştu',
+                    text: 'Paketi Getirirken Bir Hata Oluştu. Lütfen Tekrar Giriş Yapınız',
+                    icon: 'error',
+                    timer: 3000,
+                    showConfirmButton: false,
+                  });
+                       setTimeout(function () { window.location.href = "/Doctorla/Giris"; }, 3000)
+                }
+            });
+            }
+        })
+    }
+    function setPrices() {
+        ay = document.getElementById("paket-suresi").value;
+        console.log(ay);
+        console.log(price[ay].OncekiFiyat);
+
+        document.getElementById("oldPrice").innerHTML = price[ay].OncekiFiyat + '<span>.99 ₺/ay</span>';
+        document.getElementById("newPrice").innerHTML = price[ay].Fiyat + '<span>.99 ₺/ay</span>';
+        finalePrice = price[ay].Fiyat;
+    }
+    function kapandi(packageId2, prices2, packgeName2, className2) {
+        console.log(packageId2);
+        console.log(prices2);
+        console.log(packgeName2);
+        console.log(className2);
+        ;
+        
+    }
+
+</script>

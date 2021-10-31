@@ -1,0 +1,18 @@
+﻿@model List<Data.Domain.User>
+@{
+    ViewData["Title"] = "TibbiBirimler";
+}
+@Html.Partial("~/shared/DoctorPanel/Shared/_takvim")
+<section id="doctorTeam" class="specialist team">
+    @Html.Partial("Partials/_DoctorTeam.cshtml", Model);
+</section>
+@*@Html.Partial("Partials/_DoctorTeam.cshtml")*@
+
+
+@section script {
+    <script src="~/js/jquery-3.3.1.min.js"></script>
+    <script src="~/js/bootstrap.min.js"></script>
+    <script src="~/js/plugin.js"></script>
+    <script src="~/js/main.js"></script>
+    <script src="~/js/custom-nav.js"></script>
+}

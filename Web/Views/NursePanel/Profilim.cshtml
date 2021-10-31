@@ -1,0 +1,368 @@
+﻿@model Data.Domain.User
+@{
+    Layout = "~/Views/NursePanel/Shared/_DoctorLayout.cshtml";
+    ViewData["Title"] = "Profilim";
+    List<Data.Domain.Country> countrys = TempData["Countrys"] as List<Data.Domain.Country>;
+    List<Data.Domain.RelUserDepartment> userdepartmans = ViewBag.Departments as List<Data.Domain.RelUserDepartment>;
+    ViewBag.Profilim = "active";
+}
+@section css{
+    @*<link href="~/css/dashboard.css" rel="stylesheet" type="text/css"> DEĞİŞTİR *@
+    <link href="~/css/dashboard.min.css" rel="stylesheet" type="text/css">
+    <link href="~/css/dropzone.min.css" rel="stylesheet" />
+    <style>
+        .my-profile textarea {
+            height: auto;
+        }
+
+        .label {
+            margin: 0px
+        }
+
+        .sidebar-content ul li a, .sidebar-box form, .recent-item {
+            background: #1db9a0;
+        }
+
+        .change-photo-btn {
+            bottom: 0px;
+            top: 30px;
+            left: -16px;
+            height: 74px;
+            width: 226px;
+        }
+    </style>
+}
+
+<div class="dashboard-form">
+    <div class="row">
+        @using (Html.BeginForm("Profilim", "DoctorPanel", FormMethod.Post, new { @id = "profileform", enctype = "multipart/form-data" }))
+        {
+            <!-- Profile -->
+            <div class="col-lg-6 col-md-6 col-xs-12">
+                <div class="dashboard-list-box">
+                    <h4 class="gray">
+
+                        <span class="yardim" onclick="randevuvideo()">Hemşire Profil Detayları <i class="fa fa-question-circle"></i></span>
+                    </h4>
+
+                    <div class="dashboard-list-box-static">
+                        <div class="row">
+
+                            <div class="col-lg-6 col-md-6 col-xs-12">
+                                <div class="edit-profile-photo">
+                                    <img id="profilephoto" src="@Model.PhotoUrl" alt="Profil Fotoğrafı" />
+
+                                </div>
+                            </div>
+                            @*<div class="col-lg-6 col-md-6 col-xs-12">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        <div id="dZUpload" class="dropzone" style="background-repeat: round;">
+                                            <div class="dz-default dz-message">Resim Yükle</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-12 col-md-12 col-xs-12" id="filescontainer">
+
+                                    </div>
+                                </div>*@
+
+                            <!-- Avatar -->
+                        </div>
+
+
+
+                        <!-- Details -->
+                        <div class="my-profile">
+
+                            <div class="row">
+                                <div class="form-group col-xs-6">
+                                    <label>Adınız*</label>
+                                    @Html.TextBoxFor(x => x.Name)
+                                </div>
+                                <div class="form-group col-xs-6">
+                                    <label>Soyadınız*</label>
+                                    @Html.TextBoxFor(x => x.SurName)
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="form-group col-xs-6">
+                                    <label>T.C Kimlik Numaranız*</label>
+                                    @Html.TextBoxFor(x => x.TC, new { @placeholder = "T.C Kimlik Numaranız" })
+                                </div>
+                                <div class="form-group col-xs-6">
+                                    <label>Telefon Numaranız *</label>
+                                    @Html.TextBoxFor(x => x.Phone, new { @placeholder = "Telefon Numarası" })
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="form-group col-xs-6">
+                                    <label>Email Adresiniz*</label>
+                                    @Html.TextBoxFor(x => x.Email, new { @placeholder = "Email" })
+                                </div>
+                                <div class="form-group col-xs-6">
+                                    <label>Doğum Tarihi*</label>
+                                    @Html.TextBoxFor(x => x.Birthdate, "{0:yyyy-MM-dd}", new { type = "date" })
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-group col-xs-6">
+                                    <label>Cinsiyet *</label>
+                                    @Html.DropDownListFor(x => x.Gender, new List<SelectListItem> { new SelectListItem { Text = "Kadın", Value = "F" }, new SelectListItem { Text = "Erkek", Value = "M" } }, "Cinsiyetiniz")
+                                </div>
+                                <div class="form-group col-xs-6">
+                                    <label>Çalıştığınız Hastane*</label>
+                                    @Html.TextBoxFor(x => x.DoctorDetail.HospitalName, new { @placeholder = "Hastane Adı Girin" })
+                                </div>
+
+                            </div>
+                            
+                            <div class="row" style="padding-top:30px">
+                                <div class="form-group col-xs-6">
+                                    <label>Eski Şifreniz</label>
+                                    <input type="number" name="oldpass" placeholder="Eski Şifrenizi Girin" min="1" />
+                                </div>
+                                <div class="form-group col-xs-6">
+                                    <label>Yeni Şifreniz </label>
+                                    <input type="number" name="newpass" placeholder="Yeni Şifrenizi Girin" min="1" />
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- Change Password -->
+            <div class="col-lg-6 col-md-6 col-xs-12">
+                <div class="dashboard-list-box margin-top-0">
+                    <h4 class="gray">Diğer Bilgiler</h4>
+                    <div class="dashboard-list-box-static">
+
+                        <!-- Change Password -->
+                        <div class="my-profile">
+                            <div class="row">
+                                <div class="form-group col-xs-4">
+                                    <label>Ülkeniz:</label>
+                                    <select onchange="GetCitys()" id="Country" name="Country" class="form-control">
+                                        <option value="-1">Ülke Seçiniz</option>
+                                        @foreach (var item in countrys)
+                                        {
+                                            if (Model.Address.FirstOrDefault().CountryId == item.Id)
+                                            {
+                                                <option value="@item.Id" selected>@item.Name</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@item.Id">@item.Name</option>
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                                <div class="form-group col-xs-4">
+                                    <label>İl:</label>
+                                    <select onchange="GetCounty()" id="City" name="City" class="form-control">
+                                        <option value="-1" selected>Ülke Seç</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-xs-4">
+                                    <label>İlçe:</label>
+                                    <select id="County" name="County" class="form-control">
+                                        <option value="-1" selected>Şehir Seç</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-group col-xs-9">
+                                    <label>Mahalle:</label>
+                                    @Html.TextBoxFor(x => x.Address.FirstOrDefault().AddressDetail, new { @placeholder = "Mahallenizi Giriniz" })
+                                </div>
+                            </div>
+                            <div class="row" style="text-align:center">
+                                <button type="button" id="kaydetbtn" class="btn"><span class="fa fa-pencil-square-o"></span> Kaydet</button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <input type="submit" style="display:none" id="hiddensubmit" />
+        }
+    </div>
+</div>
+
+
+<div id="video" class="modal" tabindex="-1" role="dialog">
+    @* Randevu Oluştur Video *@
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <video class="randevuvideo" id="videoplayer" controls><source src="~/images/profil.mp4" type="video/mp4">Tarayıcınız Bu Dosya Türünü Desteklemiyor</video>
+        </div>
+    </div>
+</div>
+
+<script src="~/js/dashboard-custom.js"></script>
+<script src="~/js/dropzone.js"></script>
+<script type="text/javascript">
+
+
+      function changeDepartment() {
+        document.getElementById("sessionprice").value = $('#userdepartments').find(':selected').data('price');
+        document.getElementById("sessiontime").value = $('#userdepartments').find(':selected').data('sessiontime');
+    }
+
+
+        function randevuvideo() {
+        $('#video').modal('show')
+          }
+
+      $('#video').on('hidden.bs.modal', function (e) {
+            document.getElementById("videoplayer").pause(1);
+        })
+
+
+        Dropzone.autoDiscover = false;
+
+        function deletefile(index) {
+            document.querySelectorAll("#filescontainer p")[index].innerHTML=""
+            files.pop(index); counter--;
+            document.getElementById("dZUpload").style.backgroundImage = '';
+            document.getElementById("dZUpload").style.color = 'black';
+        }
+        var counter = 0;
+        var files = new Array();
+        $(function () {
+            //-----------------  UPLOAD FILES
+
+            var base64 = '';
+            var filelimit = 1;
+            //var acceptedtype = "image/*,application/pdf,.doc,.docx";
+            var acceptedtype = "image/png,image/jpg,image/jpeg,"; //İzin Verilen Dosya Türleri
+            Dropzone.autoDiscover = false;
+            $("#kaydetbtn").click(function (e) { //Görünüz Buton
+                e.preventDefault();
+                files.forEach(function (file) {
+                    $("#profileform").append("<input type='text' name='photofile' value='"+file+"'/>");//Container
+                });
+                $('#hiddensubmit').trigger('click'); //Gizli Submit Button
+            });
+             $("#dZUpload").dropzone({
+                 maxFiles: filelimit,
+                 maxFilesize: 10024,
+                 acceptedFiles: acceptedtype,
+                 uploadMultiple: true,
+                 parallelUploads: true,
+                 paramName: "Userphoto", //Önemsiz
+                 autoProcessQueue: false,
+                 url: '/', //Önemsiz
+                 addedfile: function (file) {
+                     console.log(file);
+                        var reader = new FileReader();
+                     reader.onload = function (event) {
+                         if (counter < filelimit) {
+                             base64 = event.target.result;
+                             files.push(base64);
+                             $("#filescontainer").append("<p class='label label-primary '><span class='fa fa-times' style='cursor:pointer' onclick='deletefile(" + counter + ")'></span> " + file.name + "</p> ");
+                             counter++;
+                             document.getElementById("dZUpload").style.backgroundImage ='url('+base64+')';
+                             document.getElementById("dZUpload").style.color ='white';
+                         } else {
+                               Swal.fire({
+                                    title: 'Dosya Ekleme Hatası',
+                                    text:'Daha Fazla Dosya Ekleyemezsiniz',
+                                    icon: 'error',
+                                    showConfirmButton: false,
+                               })
+                         }
+
+                    };
+                     reader.readAsDataURL(file);
+                 }
+             });
+
+
+            //-----------------  UPLOAD FILES
+
+
+
+            GetCitys();
+        });
+        var cityid=@Model.Address.FirstOrDefault().CityId;
+        var countyid=@Model.Address.FirstOrDefault().CountyId;
+        var lasttabid = 1;
+        function tab(tabid) {
+            document.getElementById("tabid" + lasttabid).style.display = "none";
+            document.getElementById("tabli" + lasttabid).classList.remove("active");
+            document.getElementById("tabid" + tabid).style.display = "";
+            document.getElementById("tabli" + tabid).classList.add("active");
+            lasttabid = tabid;
+        }
+
+
+        function GetCitys() {
+            var countryid = $("#Country").val();
+            if (countryid) {
+                $.ajax({
+                    url: "/Doctorla/GetCity",
+                type: "get",
+                dataType: "json",
+                data: { CountryId: countryid },
+                success: function (data) {
+                    $("#City").html('');
+                    data.forEach(function (item) {
+
+                        if(item.id==cityid)
+                            $("#City").append('<option value="' + item.id + '" selected>' + item.name + '</option>');
+                        else
+                            $("#City").append('<option value="' + item.id + '" >' + item.name + '</option>');
+
+
+                    });
+                         GetCounty();
+                    },
+                    error: function (data) {
+                        $.ajax({
+                            url: '/NursePanel/ErrorLogs',
+                            data: { page: "NursePanel  - Profilim - GetCitys" },
+                            type: 'post',
+                            dataType: 'json',
+                            success: function (data) {
+
+                            },
+                            error: function (data) {
+
+                            }
+                        });
+                    }
+            });
+            }
+
+        }
+        function GetCounty() {
+            var cityid = $("#City").val();
+            if (cityid) {
+                $.ajax({
+                    url: "/Doctorla/GetCounty",
+                type: "get",
+                dataType: "json",
+                data: { CityId: cityid },
+                success: function (data) {
+                    $("#County").html('');
+                    data.forEach(function (item) {
+                        if (item.id == countyid)
+                            $("#County").append('<option value="' + item.id + '" selected>' + item.name + '</option>');
+                        else
+                            $("#County").append('<option value="' + item.id + '">' + item.name + '</option>');
+
+                    });
+
+                }
+            });
+            }
+
+        }
+
+</script>
+
+

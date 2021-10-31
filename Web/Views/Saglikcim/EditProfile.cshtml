@@ -1,0 +1,1659 @@
+﻿@model Data.Domain.User
+@{
+    ViewData["Title"] = "Profili Düzenle";
+    List<Data.Domain.Country> countrys = TempData["Countrys"] as List<Data.Domain.Country>;
+    int filecounter = 0;
+
+}
+@section css{
+    @*<link href="~/css/dashboard.css" rel="stylesheet" type="text/css"> DEĞİŞTİR *@
+    <link href="~/css/dashboard.min.css" rel="stylesheet" type="text/css">
+    <link href="~/css/dropzone.min.css" rel="stylesheet" />
+    <style>
+        .doktor-randevu-detay .modal-body {
+            height: calc(100% - 140px);
+        }
+
+        .my-profile h2 {
+            font-size: 1.3rem;
+        }
+
+        input[type=text], input[type=email], input[type=number], input[type=search], input[type=password], input[type=tel], input[type=date], textarea, select {
+            font-size: 14px;
+            font-weight: 300;
+            background-color: rgb(255, 255, 255);
+            border: 1px solid rgb(241,241,241);
+            border-radius: 0;
+            padding: 10px 15px;
+            width: 100%;
+            color: rgb(68, 68,68);
+            margin-bottom: 15px;
+            font-family: 'Poppins',sans-serif;
+            height: 42px;
+            box-shadow: none;
+            margin-bottom: 0;
+        }
+
+        .edit-profile-photo {
+            margin-bottom: 0px;
+        }
+    </style>
+}
+<div class="detaylar">
+    <div class="modal2 fade goruntulu-konusma karart" id="appointmentmodal" tabindex="-1" role="dialog">
+    </div>
+</div>
+<section class="service-detail">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-10">
+
+                <!-- Nasil Çalisir -->
+                <div id="tabid2">
+                    <div class="dashboard-form validationCheck profil">
+                        <div class="row">
+                            @using (Html.BeginForm("Profilim", "Doctorla", FormMethod.Post, new { @id = "profileform", enctype = "multipart/form-data" }))
+                            {
+                                <!-- Profile -->
+                                <div class="col-xs-12">
+                                    <div class="dashboard-list-box">
+                                        <h4 class="gray">Profil Bilgileri</h4>
+                                        <div class="dashboard-list-box-static">
+                                            <div class="col-xs-12 col-md-6">
+                                                <div class="row">
+
+                                                    <div class="col-xs-12 col-lg-6 col-md-6 ">
+                                                        <div class="edit-profile-photo">
+                                                            <img id="profilephoto" src="@Model.PhotoUrl?t=@DateTime.Now.Ticks" alt="Profil Fotoğrafı" />
+
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-6 col-md-6 col-xs-12">
+                                                        <div class="col-lg-12 col-md-12 col-xs-12">
+                                                            <div id="dZUpload" class="dropzone" style="background-repeat: round;">
+                                                                <div class="dz-default dz-message">Resim Yükle</div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-lg-12 col-md-12 col-xs-12" style="overflow:hidden;" id="filescontainer">
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Avatar -->
+                                                </div>
+                                                <br />
+
+                                                <!-- Details -->
+                                                <div class="my-profile">
+                                                    <div class="row"><h2>Kişisel Bilgiler</h2></div>
+
+                                                    <div class="row">
+                                                        <div class="form-group col-xs-12 col-md-6">
+                                                            <label>Adınız*</label>
+                                                            @Html.TextBoxFor(x => x.Name, new { @type = "text", @placeholder = "Adınızı Giriniz", @class = "form-control" })
+                                                            <i class="fas fa-exclamation-circle"></i>
+
+                                                        </div>
+                                                        <div class="form-group col-xs-12 col-md-6">
+                                                            <label>Soyadınız*</label>
+                                                            @Html.TextBoxFor(x => x.SurName, new { @type = "text", @placeholder = "Soyadınızı Giriniz", @class = "form-control" })
+                                                            <i class="fas fa-exclamation-circle"></i>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="form-group col-xs-12 col-md-6">
+                                                            <label>T.C Kimlik Numaranız*</label>
+                                                            @Html.TextBoxFor(x => x.TC, new { @type = "text", @placeholder = "T.C Kimlik Numaranızı  Giriniz", @class = "form-control", @maxlength = "11" })
+                                                            <i class="fas fa-exclamation-circle"></i>
+                                                        </div>
+
+                                                        <div class="form-group col-xs-12 col-md-6">
+                                                            <label>Doğum Tarihi*</label>
+                                                            @Html.TextBoxFor(x => x.Birthdate, "{0:yyyy-MM-dd}", new { type = "date" })
+                                                            <i class="fas fa-exclamation-circle"></i>
+
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="form-group col-xs-12 col-md-6">
+                                                            <label>Mesleğiniz</label>
+                                                            @Html.TextBoxFor(x => x.UserDetail.UserJob, new { @placeholder = "Mesleğinizi Giriniz" })
+                                                        </div>
+                                                        <div class="form-group col-xs-12 col-md-6">
+                                                            <label>Cinsiyet *</label>
+                                                            @Html.DropDownListFor(x => x.Gender, new List<SelectListItem> { new SelectListItem { Text = "Kadın", Value = "F" }, new SelectListItem { Text = "Erkek", Value = "M" } }, "Cinsiyetiniz")
+                                                            <i class="fas fa-exclamation-circle"></i>
+
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="form-group col-xs-12">
+                                                            <label>Not</label>
+                                                            @Html.TextAreaFor(x => x.UserDetail.Note, 11, 30, new { @placeholder = "Özel Notunuzu Giriniz", id = "notes", @type = "textarea" })
+                                                        </div>
+                                                    </div>
+                                                    <div class="row"><h2>İletişim Bilgileri</h2></div>
+                                                    <div class="row">
+                                                        <div class="form-group col-xs-12 col-md-6">
+                                                            <label>E-posta Adresiniz*</label>
+                                                            @Html.TextBoxFor(x => x.Email, new { @type = "email", @placeholder = "E-posta Adresinizi Giriniz", @class = "form-control" })
+                                                            <i class="fas fa-exclamation-circle"></i>
+                                                        </div>
+
+                                                        <div class="form-group col-xs-12 col-md-6">
+                                                            <label>Telefon Numaranız*</label>
+                                                            @Html.TextBoxFor(x => x.Phone, new { @type = "text", @placeholder = "Telefon Numaranızı Giriniz", @class = "form-control" })
+                                                            <i class="fas fa-exclamation-circle"></i>
+                                                        </div>
+
+                                                    </div>
+                                                    <div class="row"><h2>Adres Bilgileri</h2></div>
+                                                    <div class="row">
+                                                        <div class="form-group col-xs-6 col-md-4">
+                                                            <label>Ülkeniz*</label>
+                                                            <select onchange="GetCitys()" id="Country" name="Country" class="form-control">
+                                                                <option value="-1">Ülke Seçiniz</option>
+                                                                @foreach (var item in countrys)
+                                                                {
+                                                                    if (Model.Address.FirstOrDefault().CountryId == item.Id)
+                                                                    {
+                                                                        <option value="@item.Id" selected>@item.Name</option>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <option value="@item.Id">@item.Name</option>
+                                                                    }
+                                                                }
+                                                            </select>
+                                                            <i class="fas fa-exclamation-circle"></i>
+
+                                                        </div>
+                                                        <div class="form-group col-xs-6 col-md-4">
+                                                            <label>İl*</label>
+                                                            <select onchange="GetCounty()" id="City" name="City" class="form-control">
+                                                                <option value="-1" selected>Ülke Seç</option>
+                                                            </select>
+                                                            <i class="fas fa-exclamation-circle"></i>
+
+                                                        </div>
+                                                        <div class="form-group col-xs-6 col-md-4">
+                                                            <label>İlçe*</label>
+                                                            <select id="County" name="County" class="form-control">
+                                                                <option value="-1" selected>Şehir Seç</option>
+                                                            </select>
+                                                            <i class="fas fa-exclamation-circle"></i>
+
+                                                        </div>
+
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="form-group col-xs-12">
+                                                            <label>Mahalle*</label>
+                                                            @Html.TextBoxFor(x => x.Address.FirstOrDefault().AddressDetail, new { @placeholder = "Mahallenizi Giriniz" })
+                                                            <i class="fas fa-exclamation-circle"></i>
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+
+                                            </div>
+                                            <div class="col-xs-12 col-md-6">
+                                                <div class="my-profile">
+                                                    <div class="row"><h2>Sağlık Bilgileri</h2></div>
+
+                                                    <div class="row">
+                                                        <div class="form-group col-xs-6">
+                                                            <label>Boy(cm)</label>
+                                                            @Html.TextBoxFor(x => x.UserDetail.Height, new { type = "number", @placeholder = "Boy(cm)" })
+                                                        </div>
+                                                        <div class="form-group col-xs-6">
+                                                            <label>Kilonuz(kg)</label>
+                                                            @Html.TextBoxFor(x => x.UserDetail.Weight, new { type = "number", @placeholder = "Kilo(kg)" })
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+
+                                                        <div class="form-group col-xs-12">
+                                                            <label>Kan Grubu</label>
+                                                            <select id="UserDetail_Bloodtype" name="UserDetail_Bloodtype">
+
+                                                                <option value="-1">Kan Grubu Seçiniz</option>
+                                                                <!option value="0 RH Negatif" @(ViewBag.BloodType == "0 RH Negatif" ? "selected" : "")>0 RH Negatif</!option>
+                                                                <!option value="0 RH Pozitif" @(ViewBag.BloodType == "0 RH Pozitif" ? "selected" : "")>0 RH Pozitif</!option>
+                                                                <!option value="A RH Negatif" @(ViewBag.BloodType == "A RH Negatif" ? "selected" : "")>A RH Negatif</!option>
+                                                                <!option value="A RH Pozitif" @(ViewBag.BloodType == "A RH Pozitif" ? "selected" : "")>A RH Pozitif</!option>
+                                                                <!option value="B RH Negatif" @(ViewBag.BloodType == "B RH Negatif" ? "selected" : "")>B RH Negatif</!option>
+                                                                <!option value="B RH Pozitif" @(ViewBag.BloodType == "B RH Pozitif" ? "selected" : "")>B RH Pozitif</!option>
+                                                                <!option value="AB RH Pozitif" @(ViewBag.BloodType == "AB RH Negatif" ? "selected" : "")>AB RH Pozitif</!option>
+                                                                <!option value="AB RH Pozitif" @(ViewBag.BloodType == "AB RH Pozitif" ? "selected" : "")>AB RH Pozitif</!option>
+                                                            </select>
+
+
+                                                        </div>
+
+                                                    </div>
+
+
+
+                                                    <label>Kronik Hastalıklarınız</label>
+                                                    @Html.TextAreaFor(x => x.UserDetail.ChronicDiseases, 2, 30, new { @placeholder = "Hastalıklarınızı Giriniz..", id = "notes", @type = "textarea" })
+                                                    <label>Aile Öyküsü</label>
+                                                    @Html.TextAreaFor(x => x.UserDetail.FamilyDiseases, 2, 30, new { @placeholder = "Lütfen Ailedeki Hastalıklarınızı Giriniz..", id = "notes", @type = "textarea" })
+                                                    <label>Düzenli Kullanılan İlaçlar</label>
+                                                    @Html.TextAreaFor(x => x.UserDetail.RegularlyMedicines, 2, 30, new { @placeholder = "Var ise Kullandığınız İlaçları Giriniz..", id = "notes", @type = "textarea" })
+                                                    <label>Ameliyat Geçmişiniz </label>
+                                                    @Html.TextAreaFor(x => x.UserDetail.SurgicalHistory, 2, 30, new { @placeholder = "Var ise Ameliyat Geçmişiniz / Tıbbi Girişimleriniz ..", id = "notes", @type = "textarea" })
+                                                    <label>Bizi Nereden Duydunuz? </label>
+                                                    @Html.TextAreaFor(x => x.UserDetail.HearUs, 2, 30, new { @placeholder = "Bizimle İlgili Nereden Bilgi Aldınız..", id = "notes", @type = "textarea" })
+
+
+
+                                                </div>
+
+                                            </div>
+                                            <div class="col-xs-12 " style="text-align:right;">
+                                                <button type="button" id="kaydetbtn" class="btn"><span class="fa fa-pencil-square-o"></span> Kaydet</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+
+                                <input type="submit" style="display:none" id="hiddensubmit" />
+                            }
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            @Html.Partial("Partials/_UserMenu.cshtml", Model, ViewData)
+        </div>
+    </div>
+
+
+</section>
+<div class="modal fade goruntulu-konusma" id="olcumModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+
+</div>
+
+
+@* DailyCheck Detail Modal*@
+<div class="modal fade goruntulu-konusma" id="grafikmodal" tabindex="-1" role="dialog" aria-labelledby="grafikmodal" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered doktor-randevu-detay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="olcumModalLabel">Grafiklerim</h5>
+                <button type="button" class="close modal-kapat" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body tasma22">
+                <div class="row" id="grafik-olustur">
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Kapat</button>
+            </div>
+        </div>
+    </div>
+</div>
+@* DailyCheck Detail Modal*@
+
+
+@* DailyCheck Upload First Files *@
+<div class="modal fade premium-modal" id="premium-files" tabindex="-1" role="dialog" aria-labelledby="premium-files" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="premium-files">Dosyalarım</h5>
+                <button type="button" class="close modal-kapat" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <span style="display: none" id="firstFileModalId">0</span>
+                <div class="premium-files-container row" id="fileuploadcontainer2">
+                    <div class="col-lg-12 col-md-12 col-xs-12">
+                        <div id="fileupload" class="dropzone" style="background-repeat: round;">
+                            <div class="dz-default dz-message">Buraya TIklayıp Dosya Yükleyiniz (<span id="filecounter2">0</span>)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn iptal" data-dismiss="modal">Kapat</button>
+                <input type="button" onclick="SaveDailyCheckFirstFiles()" value="Kaydet" class=" btn kaydet" style="display:none" id="hiddensubmitappointment" />
+            </div>
+        </div>
+    </div>
+</div>
+@* DailyCheck Upload First Files *@
+
+@*<link href="~/css/randevutakvim.css" rel="stylesheet" /> DEĞİŞTİR *@
+<link href="~/css/randevutakvim.min.css" rel="stylesheet" />
+
+
+
+@section script{
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+    <script src="~/js/dashboard-custom.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+    <script src="https://unpkg.com/imask"></script>
+
+    <script src="~/js/dropzone.js"></script>
+    <script type="text/javascript">
+        $(".sidebar-content a").each(function () {
+            if (this.href == window.location.href) {
+                $(this).parent().addClass("active");
+            }
+        });
+
+        var checkprofil = true;
+        function checkInputs() {
+
+            checkprofil = true;
+            const profilAd = document.getElementById('Name');
+            const profilSoyad = document.getElementById('SurName');
+            const profilTC = document.getElementById('TC');
+            const profilTelefon = document.getElementById('Phone');
+            const profilEposta = document.getElementById('Email');
+            const profilDogumTarihi = document.getElementById('Birthdate');
+            const Gender = document.getElementById('Gender');
+
+            const Country = document.getElementById('Country');
+            const City = document.getElementById('City');
+            const County = document.getElementById('County');
+            const AddressDetail = document.getElementById('AddressDetail');
+
+            if (profilAd.value === '') {
+                setErrorFor(profilAd, 'Bu Alan Boş Bırakılamaz!');
+            } else {
+                setSuccessFor(profilAd);
+            }
+
+            if (profilSoyad.value === '') {
+                setErrorFor(profilSoyad, 'Bu Alan Boş Bırakılamaz!');
+            } else {
+                setSuccessFor(profilSoyad);
+            }
+            if (profilTC.value === '') {
+                setErrorFor(profilTC, 'Bu Alan Boş Bırakılamaz!');
+            } else if (!TCNOKontrol(profilTC.value)) {
+                console.log("123");
+                setErrorFor(profilTC, 'Lütfen Geçerli Bir Kimlik Numarası Giriniz!');
+            } else {
+                setSuccessFor(profilTC);
+            }
+            if (profilTelefon.value.indexOf("_") > -1) {
+                setErrorFor(profilTelefon, 'Bu Alan Boş Bırakılamaz!');
+            } else {
+                setSuccessFor(profilTelefon);
+            }
+
+            if (profilEposta.value === '') {
+                setErrorFor(profilEposta, 'Bu Alan Boş Bırakılamaz');
+            } else if (!isEmail(profilEposta.value)) {
+                setErrorFor(profilEposta, 'Lütfen Geçerli Bir E-posta Adresi Girin');
+            } else {
+                setSuccessFor(profilEposta);
+            }
+
+
+            var selectedDate = new Date(profilDogumTarihi.value);
+            var now = new Date();
+
+
+            if (profilDogumTarihi.value === '') {
+                setErrorFor(profilDogumTarihi, 'Bu Alan Alanı Boş Bırakılamaz');
+            } else if (selectedDate > now) {
+                setErrorFor(profilDogumTarihi, 'Lütfen Geçerli Bir Tarih Girin');
+
+            } else {
+                setSuccessFor(profilDogumTarihi);
+            }
+
+            if (Gender.value === "" || Gender.value === null) {
+                setErrorFor(Gender, 'Bu Alan Boş Bırakılamaz!');
+            } else {
+                setSuccessFor(Gender);
+            }
+
+
+            if (Country.value === '-1') {
+                setErrorFor(Country, 'Bu Alan Boş Bırakılamaz!');
+            } else {
+                setSuccessFor(Country);
+            }
+            if (City.value === '-1') {
+                setErrorFor(City, 'Bu Alan Boş Bırakılamaz!');
+            } else {
+                setSuccessFor(City);
+            }
+            if (County.value === '-1') {
+                setErrorFor(County, 'Bu Alan Boş Bırakılamaz!');
+            } else {
+                setSuccessFor(County);
+            }
+            if (document.getElementById("AddressDetail").disabled == false) {
+
+                if (AddressDetail.value === '') {
+                    setErrorFor(AddressDetail, 'Bu Alan Boş Bırakılamaz!');
+                } else {
+                    setSuccessFor(AddressDetail);
+                }
+            }
+            //if (document.getElementById("userdepartments").value!=-1) {
+            //    if (sessiontime.value === '') {
+            //        setErrorFor(sessiontime, 'Bu Alan Boş Bırakılamaz!');
+            //    } else if (sessiontime.value < 0) {
+            //        setErrorFor(sessiontime, 'Negatif Değer Girilemez!');
+            //    } else {
+            //        setSuccessFor(sessiontime);
+            //    }
+            //    if (sessionprice.value === '') {
+            //        setErrorFor(sessionprice, 'Bu Alan Boş Bırakılamaz!');
+            //    } else if (sessionprice.value < 0) {
+            //        setErrorFor(sessionprice, 'Negatif Değer Girilemez!');
+            //    } else {
+            //        setSuccessFor(sessionprice);
+            //    }
+            //}
+
+
+
+
+            if (checkprofil == true) {
+                $('#hiddensubmit').trigger('click'); //Gizli Submit Button
+            } else {
+                const smalls = document.querySelectorAll("small");
+                console.log(smalls);
+                const firstsmall = smalls[0];
+                console.log(firstsmall);
+                const firstplus = firstsmall.parentElement;
+                firstplus.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                //var headerOffset = 200;
+                //var elementPosition = firstsmall.getBoundingClientRect().top;
+                //var offsetPosition = elementPosition - headerOffset;
+
+                //window.scrollTo({
+                //    top: offsetPosition,
+                //    behavior: "smooth"
+                //});
+            }
+
+
+        }
+        function kontrol(id) {
+            var deger = document.getElementById(id).value;
+            if (deger == "" || deger == null || deger < 0) {
+                document.getElementById(id).value = "0";
+            }
+        }
+
+        function TCNOKontrol(TCNO) {
+            var tek = 0,
+                cift = 0,
+                sonuc = 0,
+                TCToplam = 0,
+                i = 0,
+                hatali = [11111111110, 22222222220, 33333333330, 44444444440, 55555555550, 66666666660, 7777777770, 88888888880, 99999999990];;
+
+            if (TCNO.length != 11) return false;
+            if (isNaN(TCNO)) return false;
+            if (TCNO[0] == 0) return false;
+
+            tek = parseInt(TCNO[0]) + parseInt(TCNO[2]) + parseInt(TCNO[4]) + parseInt(TCNO[6]) + parseInt(TCNO[8]);
+            cift = parseInt(TCNO[1]) + parseInt(TCNO[3]) + parseInt(TCNO[5]) + parseInt(TCNO[7]);
+
+            tek = tek * 7;
+            sonuc = Math.abs(tek - cift);
+            if (sonuc % 10 != TCNO[9]) return false;
+
+            for (var i = 0; i < 10; i++) {
+                TCToplam += parseInt(TCNO[i]);
+            }
+
+            if (TCToplam % 10 != TCNO[10]) return false;
+
+            if (hatali.toString().indexOf(TCNO) != -1) return false;
+
+            return true;
+        }
+
+
+
+
+        function setErrorFor(input, message) {
+            const formControl = input.parentElement;
+            if (formControl.lastElementChild.id == "small") {
+                formControl.removeChild(formControl.lastElementChild);
+
+            }
+            const small = document.createElement("small");
+            formControl.appendChild(small);
+            formControl.classList.add("error");
+            small.setAttribute("id", "small");
+            small.innerText = message;
+            checkprofil = false;
+            checkpassword = false;
+            checkprice = true;
+        }
+
+        function setSuccessFor(input) {
+            const formControl = input.parentElement;
+            formControl.classList.remove("error");
+            if (formControl.lastElementChild.id == "small") {
+                formControl.removeChild(formControl.lastElementChild);
+            }
+        }
+
+        function isEmail(email) {
+            return /^(([^<>()\[\]\\.,;:\s@@"]+(\.[^<>()\[\]\\.,;:\s@@"]+)*)|(".+"))@@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(email);
+        }
+
+
+
+
+
+
+            var timeId = 0;
+            var times = [];
+            var saatdegerleri = [];
+            $(function () {
+                $('[data-toggle="popover"]').popover();
+                var mesaj="@(TempData["Kaydet"] as string)";
+                if (mesaj!=="") {
+                    console.log(mesaj);
+                    toastr.success(mesaj);
+                }
+                $("#appointmentTable").load("/Doctorla/getUserAppointment");
+                $("#userDailyCheckTable").load("/Doctorla/getUserDailyCheck");
+                $("#packagesTab").load("/Doctorla/getPackages");
+                telNo2();
+
+            })
+
+            function createReminders(id, tel, date, hatirlaticiaralik, saatlist) {
+
+                var hours = saatlist.split(',');
+                var saatler = document.getElementById("saatler");
+                var string = "";
+                var gecerliId = "";
+
+                var deger;
+                var not;
+                console.log(hours);
+                if (hours.length>0) {
+
+                    for (var i = 0; i < hours.length; i++) {
+                        timeId++;
+                        gecerliId = "time" + timeId;
+                        deger = hours[i].substring(0,5);
+                        not = hours[i].substring(6);
+                        console.log(deger);
+                        console.log(not);
+                            times.push([deger+"-"+not, gecerliId]);
+
+                        string+= '<div class="saat-goster"  id="' + gecerliId + '"><div class="saat-goster-saat"><span>' + deger + '</span><i class="far fa-times-circle" title="Saati Sil" onclick="removeTime(' + gecerliId + ')"></i></div><div class="saat-goster-not">'+not+'</div></div>';
+
+
+
+                    }
+                }
+                console.log(times);
+
+
+                var gun1 = hatirlaticiaralik == 1 ? "selected" : "";
+                var gun2 = hatirlaticiaralik == 2 ? "selected" : "";
+                var gun3 = hatirlaticiaralik == 3 ? "selected" : "";
+                var gun4 = hatirlaticiaralik == 4 ? "selected" : "";
+                var gun5 = hatirlaticiaralik == 5 ? "selected" : "";
+                var gun6 = hatirlaticiaralik == 6 ? "selected" : "";
+                var gun7 = hatirlaticiaralik == 7 ? "selected" : "";
+                var gun8 = hatirlaticiaralik == 8 ? "selected" : "";
+                var gun9 = hatirlaticiaralik == 9 ? "selected" : "";
+                var gun10 = hatirlaticiaralik == 10 ? "selected" : "";
+                var gun11 = hatirlaticiaralik == 11 ? "selected" : "";
+                var gun12 = hatirlaticiaralik == 12 ? "selected" : "";
+                var gun13 = hatirlaticiaralik == 13 ? "selected" : "";
+                var gun14 = hatirlaticiaralik == 14 ? "selected" : "";
+                var gun15 = hatirlaticiaralik == 15 ? "selected" : "";
+                Swal.fire({
+                    title: 'Hatırlatıcı Oluştur',
+                    html: '<div class="hatirlatici-form">' +
+                            '<div class="hatirlatici-form-group">' +
+                                '<label for="ikinciltel">İkincil Telefon No</label><div><input type="text" name="ikinciltel" value="'+tel+'" id="ikinciltel" onfocus="telno()" /></div>'+
+                        '</div>' +
+                           '<div class="hatirlatici-form-group">' +
+                                '<label for="hatirlaticibaslangic">Başlangıç Tarihi</label><div><input type="date" value="'+date+'" name="hatirlaticibaslangic" id="hatirlaticibaslangic" /></div>'+
+                            '</div>' +
+                        '<div class="hatirlatici-form-group">' +
+                        '<label for="hatirlaticiaralik">Hatırlatıcı Sıklığı</label><div><select id="hatirlaticiaralik"><option value="1"  '+gun1+'>Her Gün</option>        <option value="2" '+gun2+'>İki Günde Bir</option>        <option value="3" '+gun3+'>Üç Günde Bir</option>        <option value="4" '+gun4+'>Dört Günde Bir</option><option value="5" '+gun5+'>Beş Günde Bir</option><option value="6" '+gun6+'>Altı Günde Bir</option><option value="7" '+gun7+'>Yedi Günde Bir</option></select></div>' +
+                            '</div>' +
+                            '<div class="hatirlatici-form-group saat-olustur-bolum">' +
+                                    '<label for="saat">Saat</label><div class="saat-olustur"><input type="time" name="saat" id="saat" value="09:05"  /></div>' +
+                        '</div>' +
+                        '<div class="hatirlatici-form-group ">' +
+                        '<label for="hatirlatici-not">Hatırlatıcı Notu</label><div class="not-olustur"><textarea onkeyup="notcounter()" maxlength="150" class= "hatirlatici-not" id="hatirlatici-not" ></textarea><div class="counter-ekle"> <div id="the-count"><span id="current" > 0 </span><span id="maximum">/ 150</span></div ><a title="Ekle" onclick="createRemindersTime()" href="#">Ekle</a></div></div>' +
+                        '</div>' +
+                        '<div class="saat-olustur-saatler" id="saatler">' +
+                        string+
+                        '</div>' +
+
+                        '</div>',
+                    showCloseButton: true,
+                    showCancelButton: true,
+                    focusConfirm: false,
+                    confirmButtonText:
+                        'Hatırlatıcıyı Güncelle',
+                    confirmButtonAriaLabel: 'Hatırlatıcıyı Güncelle',
+                    cancelButtonText:
+                        'İptal Et',
+                    cancelButtonColor:'#d33',
+                    cancelButtonAriaLabel: 'İptal Et'
+                }).then((result) => {
+                    if (result.value) {
+                        var ikinciltelefon = document.getElementById("ikinciltel").value;
+                        var hatirlaticibaslangic = document.getElementById("hatirlaticibaslangic").value;
+                        var hatirlaticiaralik = document.getElementById("hatirlaticiaralik").value;
+                        var alertDayHours = "";
+                        var now = new Date();
+                        var selectedDate = new Date(hatirlaticibaslangic);
+                        console.log(now);
+                        console.log(selectedDate);
+                        if (ikinciltelefon == "" || ikinciltelefon === null || hatirlaticibaslangic == "" || hatirlaticibaslangic === null || hatirlaticiaralik == "" || hatirlaticiaralik === null) {
+                            times.length = 0;
+                            toastr.error('Lütfen Eksik Alan Bırakmayınız!', 'Hata!');
+                            document.getElementById("hatirlatici-link").click();
+                        } else if (selectedDate<now) {
+                            times.length = 0;
+                            toastr.error('Lütfen Gelecekten Bir Tarih Seçiniz!', 'Hata!');
+                            document.getElementById("hatirlatici-link").click();
+                        } else {
+                            for (var i = 0; i < times.length; i++) {
+                                alertDayHours += times[i][0] + ",";
+                            }
+                            alertDayHours = alertDayHours.substring(0, alertDayHours.length - 1);
+
+
+                            $.ajax({
+                                url: '/Doctorla/UpdateDailyCheck',
+                                data: { Id: id, AlertDay: hatirlaticibaslangic, ExtraPhone: ikinciltelefon, AlertDayCounter: hatirlaticiaralik, AlertDayHours: alertDayHours },
+                                type: 'post',
+                                dataType: 'json',
+                                success: function (data) {
+                                    times.length = 0;
+
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'Hatırlatıcınız Başarıyla Eklendi',
+                                        showConfirmButton: false,
+                                        timer: 1500
+                                    })
+                                    location.reload();
+
+                                },
+                                error: function (data) {
+                                    $.ajax({
+                                        url: '/Doctorla/ErrorLogs',
+                                        data: { page:"Saglikcim  - Profilim - createReminders" },
+                                        type: 'post',
+                                        dataType: 'json',
+                                        success: function (data) {
+
+                                        },
+                                        error: function (data) {
+
+                                        }
+                                    });
+                                    toastr.error('Bir Hata İle Karşılaştık', 'Hata!');
+                                }
+                            });
+                        }
+                    }
+                })
+            }
+            function notcounter(){
+                    var characterCount = $("#hatirlatici-not").val().length,
+                        current = $('#current'),
+                        maximum = $('#maximum'),
+                        theCount = $('#the-count');
+
+                    current.text(characterCount+" ");
+
+                    if (characterCount < 30) {
+                        current.css('color', '#666');
+                        maximum.css('color', '#666');
+
+                    }
+                    if (characterCount > 30 && characterCount < 50) {
+                        maximum.css('color', '#6d5555');
+                        current.css('color', '#6d5555');
+                    }
+                    if (characterCount > 50 && characterCount < 80) {
+                        maximum.css('color', '#793535');
+
+                        current.css('color', '#793535');
+                    }
+                    if (characterCount > 80 && characterCount < 110) {
+                        maximum.css('color', '#841c1c');
+
+                        current.css('color', '#841c1c');
+                    }
+                    if (characterCount > 110 && characterCount < 140) {
+                        maximum.css('color', '#8f0001');
+
+                        current.css('color', '#8f0001');
+                    }
+
+                    if (characterCount >= 140) {
+                        maximum.css('color', '#8f0001');
+                        current.css('color', '#8f0001');
+                        theCount.css('font-weight', 'bold');
+                    } else {
+                        theCount.css('font-weight', 'normal');
+                    }
+
+
+            }
+
+            function createRemindersTime() {
+
+                var saat = document.getElementById("saat").value;
+                var not = document.getElementById("hatirlatici-not").value;
+                var check=true;
+                if (saat) {
+                    for (var i = 0; i < times.length; i++) {
+                        var deger = times[i][0].substring(0, 5);
+                        if (deger == saat || (not == "" || not == null)) {
+                            check = false;
+                        }
+                    }
+                    if (check == true) {
+                        timeId++;
+
+
+                        var saatler = document.getElementById("saatler");
+                        var gecerliId = "time" + timeId++;
+                        saatler.innerHTML += '<div class="saat-goster"  id="' + gecerliId + '"><div class="saat-goster-saat"><span>' + saat + '</span><i class="far fa-times-circle" title="Saati Sil" onclick="removeTime(' + gecerliId + ')"></i></div><div class="saat-goster-not">' + not+'</div></div>';
+                        times.push([saat+"-"+not, gecerliId]);
+                        document.getElementById("hatirlatici-not").value = "";
+                    }
+
+                }
+                console.log(times);
+
+
+            }
+            $(function () {
+                $('[data-toggle="tooltip"]').tooltip()
+            })
+            function telno() {
+                var phoneMask = IMask(
+                    document.getElementById('ikinciltel'), {
+                    mask: '+9\\0 (000) 000-00-00',
+                    lazy: false,
+                    placeholderChar: '_'
+                });
+        }
+        function telNo2() {
+
+            var phoneMask = IMask(
+                document.getElementById('Phone'), {
+                mask: '+9\\0 (000) 000-00-00',
+                lazy: false,
+                placeholderChar: '_'
+            });
+
+
+        }
+
+            function removeTime(Id) {
+
+                for (var i = 0; i < times.length; i++) {
+                    if (times[i][1] == Id.id) {
+                        times.splice(i, 1);
+                    }
+                }
+                console.log(times);
+                Id.remove();
+
+            }
+
+            function grafikler(Id) {
+                $.ajax({
+                    url: '/Doctorla/GetDailyCheckDetail',
+                    data: { Id: Id },
+                    type: 'POST',
+                    dataType: 'html',
+                    success: function (data) {
+                        $("#olcumModal").html(data);
+                        $('#grafikmodal').on('show.bs.modal', function (e) {
+                            var items = document.getElementById("olcumler-tablo");
+                            document.getElementById("grafik-olustur").innerHTML = '';
+                            console.log(items);
+
+
+                            for (var a = 1; a < items.rows[0].cells.length - 4; a++) {
+                                var icon = items.rows[0].cells[a].dataset.icon;
+                                document.getElementById("grafik-olustur").innerHTML += '<div class="col-xs-12 col-sm-6 col-md-4 graph"><div class="graphtitle"><i class="' + icon+'"></i><h1>' + items.rows[0].cells[a].innerHTML+' Grafiği</h1></div><canvas id = "myChart' + a + '" style = "height:100%; width:100%;" ></canvas ></div>';
+
+                            }
+                            var tarihler = new Array();
+                            var ortalamaDeger = new Array();
+                            for (var i = 1; i < items.rows.length; i++) {
+                                tarihler.push(items.rows[i].cells[0].innerHTML);
+;                            }
+
+                            for (var a = 1; a < items.rows[0].cells.length - 4; a++) {
+                                var degerler = new Array();
+
+                                for (var i = 1; i < items.rows.length; i++) {
+                                    degerler.push(items.rows[i].cells[a].innerHTML);
+                                }
+
+
+                                var ctx = document.getElementById('myChart' + a).getContext('2d');
+
+                                // GERÇEK DEĞERLER
+                                var dataFirst = {
+                                    label: items.rows[0].cells[a].innerHTML + ' Değeri',
+                                    data: degerler,
+                                    fill: false,
+
+                                    backgroundColor: 'rgb(25, 99, 255)',
+                                    borderColor: 'rgb(25, 99, 255)'
+                                };
+
+                                ortalamaDeger=[]
+                                // ORTALAMA DEĞERLER
+                                var minValue = items.rows[0].cells[a].dataset.minvalue;
+
+                                minValue = minValue.replace(",", ".");
+                                for (var i = 1; i < items.rows.length; i++) {
+                                    ortalamaDeger.push(minValue);
+                                }
+
+
+                                var dataSecond = {
+                                    label: "En Düşük " + items.rows[0].cells[a].innerHTML + ' Değeri (' + minValue+')',
+                                    data: ortalamaDeger,
+                                    fill: false,
+
+                                    backgroundColor: 'rgb(255, 99, 132)',
+                                    borderColor: 'rgb(255, 99, 132)'
+                                };
+
+
+
+
+                                // GRAFİĞİ DEĞERLERİNİ BELİRLEME
+                                var speedData = {
+                                    labels: tarihler,
+                                    datasets: [dataFirst, dataSecond]
+                                };
+                                // GRAFİK AYARLARI
+                                var chartOptions = {
+                                    legend: {
+
+                                    }
+                                };
+
+                                // GRAFİĞİ ÇİZ
+                                var lineChart = new Chart(ctx, {
+                                    type: 'line',
+                                    data: speedData,
+                                    options: chartOptions
+                                });
+                                //var chart = new Chart(ctx, {
+                                //    // The type of chart we want to create
+                                //    type: 'line',
+
+                                //    // The data for our dataset
+                                //    data: {
+                                //        labels: tarihler,
+                                //        datasets: [{
+                                //            label: items.rows[0].cells[a].innerHTML+' Grafiği',
+                                //            backgroundColor: 'rgb(255, 99, 132)',
+                                //            borderColor: 'rgb(255, 99, 132)',
+                                //            data: degerler
+                                //        }]
+                                //    },
+
+                                //    // Configuration options go here
+                                //    options: {}
+                                //});
+
+                            }
+
+
+                        });
+                        $('#grafikmodal').modal('show');
+                        toastr.success('Veriler Başarılı Bir Şekilde Getirildi', 'Başarılı!');
+                    },
+                    error: function (data) {
+                        $.ajax({
+                            url: '/Doctorla/ErrorLogs',
+                            data: { page: "Saglikcim  - Profilim - grafikler" },
+                            type: 'post',
+                            dataType: 'json',
+                            success: function (data) {
+
+                            },
+                            error: function (data) {
+
+                            }
+                        });
+                        toastr.error('Veriler Yüklenirken Bir Sorunla Karşılaşıldı. Lütfen Bu Durumu Bize Bildiriniz..', 'Hata!');
+                    }
+                });
+            }
+
+        $("#appointmentmodal").on('hide.bs.modal', function () {
+        });
+            // Paket İşlemleri
+
+
+            var itemId;
+            function getDailyCheckToModal(Id) {
+                $.ajax({
+                    url: '/Doctorla/GetDailyCheckDetail',
+                    data: { Id: Id },
+                    type: 'POST',
+                    dataType: 'html',
+                    success: function (data) {
+                        $("#olcumModal").html(data);
+                        toastr.success('Veriler Başarılı Bir Şekilde Getirildi', 'Başarılı!');
+                        $('#olcumModal').modal('show');
+                    },
+                    error: function (data) {
+                        $.ajax({
+                            url: '/Doctorla/ErrorLogs',
+                            data: { page: "Saglikcim  - Profilim - getDailyCheckToModal" },
+                            type: 'post',
+                            dataType: 'json',
+                            success: function (data) {
+
+                            },
+                            error: function (data) {
+
+                            }
+                        });
+                        toastr.error('Veriler Yüklenirken Bir Sorunla Karşılaşıldı. Lütfen Bu Durumu Bize Bildiriniz..', 'Hata!');
+                    }
+                });
+            }
+            var itemId;
+            function UpdateDailyCheckDetail() {
+                var string = new Array();
+                var values = '[';
+                for (var i = 0; i < document.getElementById("veriCount").innerHTML-1; i++) {
+                    var value = document.getElementById("values-" + i);
+                    if (value.value == 'veriyok')
+                        value.value = '';
+                    string.push(value.value);
+                    values += '{"DailyCheckDetailId":"' + value.dataset.id + '","Value":"' + value.value + '"},';
+                    console.log(values);
+                }
+                values = values.substring(0, values.length - 1) + ']';
+
+                $.ajax({
+                    url: '/Saglikcim/UpdateDailyCheckDetail',
+                    data: { Key: itemId, Values: values },
+                    type: 'post',
+                    dataType: 'json',
+                    success: function (data) {
+                        if (data.status == 1) {
+                            var items = document.getElementById("dailycheckdetail-" + itemId).getElementsByTagName("td");
+                            for (var i = 0; i < string.length; i++) {
+                                items[i + 1].innerHTML = string[i];
+                            }
+                            toastr.success(data.message, data.title);
+                            document.getElementById("olcumler-form").reset();
+                            document.getElementById("dailyEkle").style.display = "block";
+                            document.getElementById("dailyIptal").style.display = "none";
+                            document.getElementById("dailyGuncelle").style.display = "none";
+                        }
+                        else if (data.status == -1) {
+                            toastr.error(data.message, data.title);
+                        }
+                    },
+                    error: function (data) {
+                        $.ajax({
+                            url: '/Saglikcim/ErrorLogs',
+                            data: { page: "Saglikcim  - Profilim - UpdateDailyCheckDetail" },
+                            type: 'post',
+                            dataType: 'json',
+                            success: function (data) {
+
+                            },
+                            error: function (data) {
+
+                            }
+                        });
+                        toastr.error('Bir Hata İle Karşılaştık', 'Hata!');
+                    }
+                });
+            }
+            function cancelDailyCheckDetail() {
+                document.getElementById("olcumler-form").reset();
+
+                document.getElementById("dailyEkle").style.display = "block";
+                document.getElementById("dailyIptal").style.display = "none";
+                document.getElementById("dailyGuncelle").style.display = "none";
+
+
+            }
+
+            function updateDailyCheckValues(Id) {
+                document.getElementById("dailyEkle").style.display = "none";
+                document.getElementById("dailyGuncelle").style.display = "block";
+                document.getElementById("dailyIptal").style.display = "block";
+                itemId = Id;
+                var items = document.getElementById("dailycheckdetail-" + Id).getElementsByTagName("td");
+                console.log(items);
+                for (var i = 1; i < (items.length) - 2; i++) {
+                    var values = document.getElementById("values-" + (i - 1));
+                    values.value = items[i].innerHTML;
+                }
+                toastr.success("Veriler Başarıyla Ölçümlerime Aktarıldı", "İşlem Başarılı");
+            }
+            function createDailyCheckDetail(Id) {
+                var values = '[';
+                var valuesstring = '';
+                for (var i = 0; i < document.getElementById("veriCount").innerHTML - 1; i++) {
+                    var value = document.getElementById("values-" + i);
+                    if (value.value == 'veriyok')
+                        value.value = '';
+                    valuesstring += '<td>' + value.value + '</td>';
+                    values += '{"DailyCheckDetailId":"' + value.dataset.id + '","Value":"' + value.value + '"},';
+                }
+                values = values.substring(0, values.length - 1) + ']';
+                $.ajax({
+                    url: '/Saglikcim/CreateDailyCheckDetail',
+                    data: { Id: Id, Values: values,files:files3 }, // Files 3 ile verileri alıyoruz
+                    type: 'post',
+                    dataType: 'json',
+                    success: function (data) {
+                        if (data.status == 1) {
+                            var string = '<tr  id="dailycheckdetail-' + data.id + '"><td>' + data.date + '</td>';
+                            string += valuesstring;
+                            string += '<td>' + data.files + '</td>';
+                            string += '<td class="islemler"><a href="#"  onclick="updateDailyCheckValues(' + data.id + ')"  style="color: #35d0ba;"><i class="fa fa-edit"></i></a></td></tr>';
+                            $("#dailycheckdatas").append(string);
+                            document.getElementById("olcumler-form").reset();
+                            files3 = ""; document.querySelectorAll("#fileuploadcontainer3 .yuklenen-dosya").forEach(function (item) { item.innerHTML = "" }); // Yükleme Alanı Sıfırlama
+                            toastr.success(data.message, data.title);
+                        }
+                        else if (data.status == -1) {
+                            toastr.error(data.message, data.title);
+                        }
+                    },
+                    error: function (data) {
+                        $.ajax({
+                            url: '/Saglikcim/ErrorLogs',
+                            data: { page: "Saglikcim  - Profilim - createDailyCheckDetail" },
+                            type: 'post',
+                            dataType: 'json',
+                            success: function (data) {
+
+                            },
+                            error: function (data) {
+
+                            }
+                        });
+                        toastr.error('Bir Hata İle Karşılaştık', 'Hata!');
+                    }
+                });
+            }
+
+            function NurseWaitingAlert() {
+                Swal.fire({
+                    title: 'Sağlık Danışmanı Bekleniyor',
+                    text: 'Sağlık Danışmanınız En Kısa Sürede Sizinle İletişime Geçerek Size Özel Menü Hazırlayacaktır. Eğer Raporunuz Mevcut İse Dosyalarım Kısmından Yükleyerek Daha İyi Bir Hizmet Alabilirsiniz.',
+                    confirmButtonText: 'Tamam',
+                    confirmButtonColor: '#f8bb86',
+                    icon: 'warning',
+                    showConfirmButton: true,
+                })
+            }
+
+        document.getElementById("TC").addEventListener("keypress", event => {
+            console.log(document.getElementById("TC").value.length);
+
+            var theEvent = event || window.event;
+
+            if (theEvent.type === 'paste') {
+                key = event.clipboardData.getData('text/plain');
+            } else {
+                var key = theEvent.keyCode || theEvent.which;
+                key = String.fromCharCode(key);
+            }
+            var regex = /[0-9]|\./;
+            if (!regex.test(key)) {
+                theEvent.returnValue = false;
+                if (theEvent.preventDefault) theEvent.preventDefault();
+            }
+
+
+        });
+
+            function karaktersiniri() {
+                var smskodu = document.getElementById("smscode").value.length;
+                document.getElementById("smscode").maxLength = "4";
+                if (smskodu >= 4) {
+                    document.getElementById("smskodubuton").disabled = false;
+                    document.getElementById("smskodubuton").classList.remove("tiklanamaz");
+                } else {
+                    document.getElementById("smskodubuton").disabled = true;
+                    document.getElementById("smskodubuton").classList.add("tiklanamaz");
+
+
+                }
+            }
+            function sadecesayi(evt) {
+                var charCode = (evt.which) ? evt.which : event.keyCode
+                if (charCode > 31 && (charCode < 48 || charCode > 57))
+                    return false;
+
+                return true;
+
+            }
+
+            function appointmentDeleteTimeError() {
+                Swal.fire({
+                    title: 'İşlem Başarısız',
+                    text: 'Randevu Başlama Saatine 1 Saat Kaldıktan Sonra Randevuyu İptal Edemezsiniz!',
+                    confirmButtonText: 'Tamam',
+                    confirmButtonColor: '#f8bb86',
+                    icon: 'warning',
+                    showConfirmButton: true,
+                })
+            }
+
+
+            function userDeleteAppointment(_sessionkey) {
+                   Swal.fire({
+                        title: '<strong>Lütfen Alınmış Olan Randevunun İptal Sebebini Giriniz. <span style="color:red"> (İptal Ettiğiniz Randevular Hesabınıza Kredi Olarak Aktarılacaktır. Para İadesi Yapılmamaktadır.)</span></strong>',
+                        html: '<input type="textarea" min="10" cols="20" rows="20" id="deletereason" name="deletereason" class="form-control" placeholder="En Az 10 Harf Giriniz" required />',
+                        showCancelButton: true,
+                        confirmButtonText: 'Anladım, Randevuyu İptal Etmek İstiyorum',
+                        cancelButtonText: 'İptal',
+                        cancelButtonColor: 'green',
+                        confirmButtonColor: 'red',
+                        showLoaderOnConfirm: true,
+                    }).then((result) => {
+                        if (result.value ) {
+                            var deletereasontext = document.getElementById("deletereason").value;
+                            if (deletereasontext.length >= 10) {
+                                $.ajax({
+                                    url: '/Saglikcim/deleteAppointment',
+                                    data: { sessionkey: _sessionkey, deleteReason: deletereasontext },
+                                    type: 'post',
+                                    dataType: 'json',
+                                    success: function (data) {
+                                        if (data.status == 1) {
+
+                                            Swal.fire({
+                                                title: data.title,
+                                                text: data.message,
+                                                confirmButtonText: 'Tamam',
+                                                confirmButtonColor: 'green',
+                                                icon: 'success',
+                                                showConfirmButton: true,
+                                            })
+                                            setTimeout(function () {location.reload();},5000)
+                                        }
+                                        else {
+                                            Swal.fire({
+                                                title: data.title,
+                                                text: data.message,
+                                                confirmButtonText: 'Tamam',
+                                                confirmButtonColor: 'red',
+                                                icon: 'error',
+                                                showConfirmButton: true,
+                                            })
+                                            setTimeout(function () {location.reload();},5000)
+                                        }
+                                    },
+                                    error: function (data) {
+                                        $.ajax({
+                                            url: '/Saglikcim/ErrorLogs',
+                                            data: { page: "Saglikcim  - Profilim - userDeleteAppointment" },
+                                            type: 'post',
+                                            dataType: 'json',
+                                            success: function (data) {
+
+                                            },
+                                            error: function (data) {
+
+                                            }
+                                        });
+                                        toastr.error('Silme İşlemi Sırasında. Lütfen Bu Durumu Bize Bildiriniz..', 'Hata!');
+                                    }
+                                });
+                            }
+                            else { userDeleteAppointment(_sessionkey); }
+                        }
+                    })
+         }
+
+            function ratesOfAppointment(_sessionkey) {
+                $.ajax({
+                    url: '/Saglikcim/ratesOfAppointment',
+                    data: {sessionkey:_sessionkey},
+                    type: 'get',
+                    dataType: 'json',
+                    success: function (data) {
+                        var inputs = "";
+                        inputs += "<div class='oylama-kapsa'>";
+                        inputs += "<div class='oylama-notlar col-xs-12 col-md-5'>";
+                        if(data.rate==-1)
+                            inputs += '<div class="oylama"><input type="radio" class="radio" value="-1" id="rate1" name="rate" checked/><label for="rate1" style="color:red">Doktor Gelmedi</label></div>';
+                        else
+                            inputs += '<div class="oylama"><input type="radio" class="radio" value="-1" id="rate1" name="rate" /><label for="rate1" style="color:red">Doktor Gelmedi</label></div>';
+                         if(data.rate==1)
+                             inputs += '<div class="oylama"><input type="radio" class="radio" value="1" id="rate2" name="rate" checked/><label for="rate2" >Çok Kötü</label></div>';
+                        else
+                             inputs += '<div class="oylama"><input type="radio" class="radio" value="1" id="rate2" name="rate" /><label for="rate2" >Çok Kötü</label></div>';
+                         if(data.rate==2)
+                             inputs += '<div class="oylama"><input type="radio" class="radio" value="2" id="rate3" name="rate" checked/><label for="rate3" >Kötü</label></div>';
+                        else
+                             inputs += '<div class="oylama"><input type="radio" class="radio" value="2" id="rate3" name="rate" /><label for="rate3" >Kötü</label></div>';
+                         if(data.rate==3)
+                             inputs += '<div class="oylama"><input type="radio" class="radio" value="3" id="rate4" name="rate" checked/><label for="rate4" >Daha İyi Olabilir</label></div>';
+                        else
+                             inputs += '<div class="oylama"><input type="radio" class="radio" value="3" id="rate4" name="rate" /><label for="rate4" >Daha İyi Olabilir</label></div>';
+                         if(data.rate==4)
+                             inputs += '<div class="oylama"><input type="radio" class="radio" value="4" id="rate5" name="rate" checked/><label for="rate5" >Orta</label></div>';
+                        else
+                             inputs += '<div class="oylama"><input type="radio" class="radio" value="4" id="rate5" name="rate" /><label for="rate5" >Orta</label></div>';
+                         if(data.rate==5)
+                             inputs += '<div class="oylama"><input type="radio" class="radio" value="5" id="rate6" name="rate" checked/><label for="rate6">İyi</label></div>';
+                        else
+                             inputs += '<div class="oylama"><input type="radio" class="radio" value="5" id="rate6" name="rate" /><label for="rate6">İyi</label></div>';
+                         if(data.rate==6)
+                             inputs += '<div class="oylama"><input type="radio" class="radio" value="6" id="rate7" name="rate" checked/><label for="rate7" >Çok İyi</label></div>';
+                        else
+                             inputs += '<div class="oylama"><input type="radio" class="radio" value="6" id="rate7" name="rate" /><label for="rate7" >Çok İyi</label></div>';
+                        inputs += "</div>";
+                        inputs += "<div class='col-xs-12 col-md-7'>";
+
+                            if(data.note)
+                            inputs += '<textarea min="10"  id="note" name="note" placeholder="Randevu Notunuz" value="' + data.note + '" class="form-control" /></textarea>';
+                        else
+                            inputs += '<textarea min="10"  id="note" name="note" placeholder="Randevu Notunuz" class="form-control" /></textarea>';
+                        inputs += "</div>";
+                        inputs += "</div>";
+
+                    Swal.fire({
+                        title: '<strong>Lütfen Randevu Hakkındaki Görüşlerinizi Yazın</strong>',
+                        html:inputs,
+                        showCancelButton: true,
+                        confirmButtonText: 'Kaydet',
+                        cancelButtonText: 'İptal',
+                        cancelButtonColor: 'primary',
+                        confirmButtonColor: 'green',
+                        showLoaderOnConfirm: true,
+                    }).then((result) => {
+                        if (result.value ) {
+                            var note = document.getElementById("note").value;
+                            var rate;
+                            if (document.getElementById("rate1").checked)
+                                rate = -1;
+                            else if (document.getElementById("rate2").checked)
+                                rate = 1;
+                            else if (document.getElementById("rate3").checked)
+                                rate = 2;
+                            else if (document.getElementById("rate4").checked)
+                                rate = 3;
+                            else if (document.getElementById("rate5").checked)
+                                rate = 4;
+                            else if (document.getElementById("rate6").checked)
+                                rate = 5;
+                            else if (document.getElementById("rate7").checked)
+                                rate = 6;
+                                $.ajax({
+                                    url: '/Saglikcim/UpdateratesOfAppointment',
+                                    data: { sessionkey: data.sessionkey, Rate: rate,Note:note },
+                                    type: 'post',
+                                    dataType: 'json',
+                                    success: function (data) {
+                                        if (data.status == 1) {
+                                            Swal.fire({
+                                                title: data.title,
+                                                text: data.message,
+                                                confirmButtonText: 'Tamam',
+                                                confirmButtonColor: 'green',
+                                                icon: 'success',
+                                                showConfirmButton: true,
+                                            })
+                                        }
+                                        else {
+                                            Swal.fire({
+                                                title: data.title,
+                                                text: data.message,
+                                                confirmButtonText: 'Tamam',
+                                                confirmButtonColor: 'red',
+                                                icon: 'error',
+                                                showConfirmButton: true,
+                                            })
+                                        }
+                                    },
+                                    error: function (data) {
+                                        $.ajax({
+                                            url: '/Saglikcim/ErrorLogs',
+                                            data: { page: "Saglikcim  - Profilim - UpdateratesOfAppointment" },
+                                            type: 'post',
+                                            dataType: 'json',
+                                            success: function (data) {
+
+                                            },
+                                            error: function (data) {
+
+                                            }
+                                        });
+                                        toastr.error('Silme İşlemi Sırasında. Lütfen Bu Durumu Bize Bildiriniz..', 'Hata!');
+                                    }
+                                });
+                        }
+                    })
+                    },
+                    error: function (data) {
+                        $.ajax({
+                            url: '/Saglikcim/ErrorLogs',
+                            data: { page: "Saglikcim  - Profilim - ratesOfAppointment" },
+                            type: 'post',
+                            dataType: 'json',
+                            success: function (data) {
+
+                            },
+                            error: function (data) {
+
+                            }
+                        });
+                    }
+                });
+
+         }
+
+
+        function getAppointmentDetailToModal(sessionkey) {
+            $.ajax({
+                url: '/Saglikcim/GetAppointmentDetail',
+                data: { sessionkey: sessionkey },
+                type: 'GET',
+                dataType: 'html',
+                success: function (data) {
+                    $("#appointmentmodal").html(data);
+                    $('#appointmentmodal').modal('show');
+                },
+                error: function (data) {
+                    $.ajax({
+                        url: '/Saglikcim/ErrorLogs',
+                        data: { page: "Saglikcim  - Profilim - getAppointmentDetailToModal" },
+                        type: 'post',
+                        dataType: 'json',
+                        success: function (data) {
+
+                        },
+                        error: function (data) {
+
+                        }
+                    });
+                    Swal.fire({
+                            title: 'Hata',
+                            text:  'Veriler Yüklenirken Bir Sorunla Karşılaşıldı. Lütfen Bu Durumu Bize Bildiriniz..',
+                            icon:  'error',
+                            showConfirmButton: false,
+                    })
+                }
+            });
+        }
+
+
+        function deletefile(index) {
+            document.querySelectorAll("#filescontainer p")[index].innerHTML=""
+            files.pop(index); counter--;
+            document.getElementById("dZUpload").style.backgroundImage = '';
+            document.getElementById("dZUpload").style.color = 'black';
+        }
+        Dropzone.autoDiscover = false;
+        var counter = 0;
+        var files = new Array();
+        $(function () {
+            //-----------------  UPLOAD FILES
+
+            var base64 = '';
+            var filelimit = 1;
+            //var acceptedtype = "image/*,application/pdf,.doc,.docx";
+            var acceptedtype = "image/png,image/jpg,image/jpeg,"; //İzin Verilen Dosya Türleri
+            Dropzone.autoDiscover = false;
+            $("#kaydetbtn").click(function (e) { //Görünüz Buton
+                e.preventDefault();
+                files.forEach(function (file) {
+                    $("#profileform").append("<input type='hidden' name='photofile' value='" + file + "'/>");//Container
+                });
+                checkInputs();
+
+                //$('#hiddensubmit').trigger('click'); //Gizli Submit Button
+            });
+
+            $("#dZUpload").dropzone({
+                maxFiles: filelimit,
+                maxFilesize: 10024,
+                acceptedFiles: acceptedtype,
+                uploadMultiple: true,
+                parallelUploads: true,
+                paramName: "Userphoto", //Önemsiz
+                autoProcessQueue: false,
+                url: '/', //Önemsiz
+                addedfile: function (file) {
+                    var reader = new FileReader();
+                    reader.onload = function (event) {
+                        if (counter < filelimit) {
+                            base64 = event.target.result;
+                            files.push(base64);
+                            $("#filescontainer").append("<p class='label label-primary '><span class='fa fa-times' style='cursor:pointer' onclick='deletefile(" + counter + ")'></span> " + file.name + "</p> ");
+                            counter++;
+                            document.getElementById("dZUpload").style.backgroundImage = 'url(' + base64 + ')';
+                            document.getElementById("dZUpload").style.color = 'white';
+                        } else {
+                            Swal.fire({
+                                title: 'Dosya Ekleme Hatası',
+                                text: 'Daha Fazla Dosya Ekleyemezsiniz',
+                                icon: 'error',
+                                showConfirmButton: false,
+                            })
+                        }
+
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+
+            //-----------------  UPLOAD FILES
+
+        });
+
+
+
+
+        $(document).ready(function () {
+            setTimeout(function () {
+               GetCitys();
+            }, 1000)
+        });
+        var cityid=@Model.Address.FirstOrDefault().CityId;
+        var countyid=@Model.Address.FirstOrDefault().CountyId;
+        var lasttabid = 1;
+            function tab(tabid) {
+                localStorage.setItem('activeTab', tabid);
+            document.getElementById("tabid" + lasttabid).style.display = "none";
+            document.getElementById("tabli" + lasttabid).classList.remove("active");
+            document.getElementById("tabid" + tabid).style.display = "";
+            document.getElementById("tabli" + tabid).classList.add("active");
+                lasttabid = tabid;
+                console.log(tabid);
+                if (tabid == 2) {
+                    document.getElementById("kaydetbtn").style.display = "block";
+                } else {
+                    document.getElementById("kaydetbtn").style.display = "none";
+
+                }
+        }
+
+
+        function GetCitys() {
+            var countryid = $("#Country").val();
+            if (countryid!=-1) {
+                $.ajax({
+                url: "/Saglikcim/GetCity",
+                type: "get",
+                dataType: "json",
+                data: { CountryId: countryid },
+                success: function (data) {
+                    $("#City").html('');
+                    data.forEach(function (item) {
+
+                        if(item.id==cityid)
+                            $("#City").append('<option value="' + item.id + '" selected>' + item.name + '</option>');
+                        else
+                            $("#City").append('<option value="' + item.id + '" >' + item.name + '</option>');
+
+
+                    });
+                     GetCounty();
+                },
+                    error: function (data) {
+                        $.ajax({
+                            url: '/Saglikcim/ErrorLogs',
+                            data: { page: "Saglikcim  - Profilim - GetCitys" },
+                            type: 'post',
+                            dataType: 'json',
+                            success: function (data) {
+
+                            },
+                            error: function (data) {
+
+                            }
+                        });
+                    }
+            });
+            } else if (countryid == "-1") {
+                console.log("sdv");
+                document.getElementById("City").innerHTML = '<option value=" -1" selected>Önce Ülke Seçiniz</option>';
+                document.getElementById("County").innerHTML = '<option value=" -1" selected>Önce Şehir Seçiniz</option>';
+                document.getElementById("AddressDetail").disabled = true;
+                document.getElementById("AddressDetail").value = "";
+            }
+
+        }
+        function GetCounty() {
+            var cityid = $("#City").val();
+            if (cityid) {
+                $.ajax({
+                url: "/Saglikcim/GetCounty",
+                type: "get",
+                dataType: "json",
+                data: { CityId: cityid },
+                success: function (data) {
+                    $("#County").html('');
+                    data.forEach(function (item) {
+                        if (item.id == countyid)
+                            $("#County").append('<option value="' + item.id + '" selected>' + item.name + '</option>');
+                        else
+                            $("#County").append('<option value="' + item.id + '">' + item.name + '</option>');
+
+                    });
+                    document.getElementById("AddressDetail").disabled = false;
+
+                    },
+                        error: function (data) {
+                            $.ajax({
+                                url: '/Saglikcim/ErrorLogs',
+                                data: { page: "Saglikcim  - Profilim - GetCounty" },
+                                type: 'post',
+                                dataType: 'json',
+                                success: function (data) {
+
+                                },
+                                error: function (data) {
+
+                                }
+                            });
+                        }
+            });
+            }
+
+        }
+
+
+        function deletefile2(index) {
+            document.querySelectorAll("#fileuploadcontainer2 .yuklenen-dosya")[index].innerHTML=""
+            var a = files2.split(":::");
+            files2 = "";
+            for (var i = 0; i < a.length; i++) {
+                if(i!=index)
+                files2 += a[i];
+            }
+            counter2--;
+            document.getElementById("filecounter2").innerText = counter2;
+        }
+
+        Dropzone.autoDiscover = false;
+        var counter2 = @filecounter;
+        var files2 = '';
+        $(function () {
+            //-----------------  UPLOAD First FILES
+
+
+
+
+            var base642 = '';
+            var filelimit2 = 10;
+            //var acceptedtype = "image/*,application/pdf,.doc,.docx";
+            var acceptedtype2 = "image/png,image/jpg,image/jpeg,application/pdf,.doc,.docx"; //İzin Verilen Dosya Türleri
+            Dropzone.autoDiscover = false;
+            $("#fileupload").dropzone({
+                maxFiles: filelimit2,
+                maxFilesize: 10024,
+                acceptedFiles: acceptedtype2,
+                uploadMultiple: true,
+                parallelUploads: true,
+                paramName: "Userphoto", //Önemsiz
+                autoProcessQueue: false,
+                url: '/', //Önemsiz
+                addedfile: function (file) {
+                    var reader = new FileReader();
+                    reader.onload = function (event) {
+                        if (counter2 < filelimit2) {
+                            base642 = event.target.result;
+                            files2+=base642+":::";
+                            $("#fileuploadcontainer2").append("<div class='col-xs-3 yuklenen-dosya'><a ><i class='flaticon-file'></i></a><span class='fa fa-times' style='cursor:pointer' onclick='deletefile2(" + counter2 + ")'></span><span class='filename'>" + file.name + "</span></div> ");
+                            counter2++;
+                            document.getElementById("filecounter2").innerText = counter2;
+                        } else {
+                            Swal.fire({
+                                title: 'Dosya Ekleme Hatası',
+                                text: 'Daha Fazla Dosya Ekleyemezsiniz',
+                                icon: 'error',
+                                showConfirmButton: false,
+                            })
+                        }
+
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        });
+
+
+
+
+
+    </script>
+}

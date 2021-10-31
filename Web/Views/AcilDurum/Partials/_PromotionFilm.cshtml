@@ -1,0 +1,43 @@
+<a name="korunmaYollari"</a>
+
+<section class="call-to-action">
+    <div class="container">
+        <div class="col-md-6">
+            <div class="action-content">
+                <h2>Koronadan korunma yolları</h2>
+                <p>İçinde bulunduğumuz bu zorlu dönemden en az zararla çıkabilmemiz gerekiyor. Devlet yetkililerinin alması gereken önlemlerin yanında alacağımız kişisel önlemlerde bi hayli önemli. Kişisel çapta alacağımız önlemler sadece bizleri virüsten korumakla kalmayacak toplumdaki diğer bireylerinde sağlık süreçlerine önemli etkilerde bulunacaktır.</p>
+                <p>Bu önlemler gündelik hayatta zaten uygulamamız gereken bir kaç basit adımdan oluşuyor.</p>
+                <p>Unutmayın ki toplumu bireyler oluşturur toplum sağlığı için bireysel önlemler hayatın normalleşmesine çok önemli bir katkı sağlayacak.</p>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="video-outer">
+                <div class="video-content" onclick="butonkaybet();">
+                    <video controls id="korona-korunma-video">
+                        <source src="~/images/covid_korunma.mp4" type="video/mp4">
+                        Tarayıcınız Bu Video Tarafından Desteklenmiyor
+                    </video>
+                    <button type="button" class="play-btn" id="ply-btn" onclick="videobaslat('korona-korunma-video');"><i class="fa fa-play"></i></button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<script type="text/javascript">
+
+
+    function videobaslat(videoid) {
+        var vid = document.getElementById("korona-korunma-video");
+
+        vid.play();
+        document.getElementById("ply-btn").style.display = "none";
+
+    }
+    function butonkaybet() {
+
+        document.getElementById("ply-btn").style.display = "none";
+
+    }
+
+</script>

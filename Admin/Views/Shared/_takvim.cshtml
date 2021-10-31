@@ -1,0 +1,273 @@
+﻿@using Data.Domain
+@model List<Data.Domain.Appointment>
+@{
+    DateTime selectedDate = DateTime.Parse(ViewBag.selecteddate.ToString());
+    DateTime start = DateTime.Parse(ViewBag.startdate.ToString());
+    DateTime end = DateTime.Parse(ViewBag.enddate.ToString());
+    DateTime today = DateTime.Now;
+    List<Appointment> appointments = ViewBag.Appointments as List<Appointment>;
+}
+
+
+<section class="timetable" style="padding-bottom:2rem;">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="section-title text-center">
+                    <h2>Randevu <span>Çizelgesi  </span></h2>
+                    <p>Sarı Renkli Randevular, Dolu Randevuları Gösterir</p>
+                </div>
+            </div>
+        </div>
+        <div class="timetable-content">
+            <div class="row">
+                <div class="col-xs-12 tarih-buton">
+                    <div class="row">
+                <div class="col-md-7"></div>
+                        <div class="col-sm-12 col-md-5 takvim-iki">
+                                    <button type="button" onclick="refreshAppointments('@today.ToShortDateString()')" class="btn btn-outline-secondary">Bugün</button>
+                                    <button type="button" onclick="refreshAppointments('@selectedDate.AddDays(-7).ToShortDateString()')" class="btn btn-default">
+                                        <i class="fa fa-chevron-left"></i>
+                                    </button>
+                                    <span style="display:none" id="selecteddate">@selectedDate.ToShortDateString()</span>
+                                    <span>
+                                        @start.ToShortDateString() - @end.ToShortDateString()
+                                    </span>
+                                    <button type="button" onclick="refreshAppointments('@selectedDate.AddDays(7).ToShortDateString()')" class="btn btn-default">
+                                        <i class="fa fa-chevron-right"></i>
+                                    </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-12 table-responsive">
+                    <table class="table tt-table table-bordered " id="takvim-tablo">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th class="@((int)today.Date.DayOfWeek==1?"randevutoday":"")">Pazartesi</th>
+                                <th class="@((int)today.Date.DayOfWeek==2?"randevutoday":"")" style="width:200px;">Salı</th>
+                                <th class="@((int)today.Date.DayOfWeek==3?"randevutoday":"")">Çarşamba</th>
+                                <th class="@((int)today.Date.DayOfWeek==4?"randevutoday":"")">Perşembe</th>
+                                <th class="@((int)today.Date.DayOfWeek==5?"randevutoday":"")">Cuma</th>
+                                <th class="@((int)today.Date.DayOfWeek==6?"randevutoday":"")">Cumartesi</th>
+                                <th class="@((int)today.Date.DayOfWeek==7?"randevutoday":"")">Pazar</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            @for (int i = 0; i < 24; i++)
+                            {
+                                <tr>
+                                    <td>@i: 00 - @(i + 1): 00</td>
+                                    @for (int j = 1; j < 8; j++)
+                                    {
+                                        if (j == 7)
+                                            j = 0;
+                                        bool checkdata = true;
+
+                                        <td>
+                                            <table class="tablo-saatler">
+                                                @foreach (var item in appointments.Where(x =>  (int)x.AppointmentDate.DayOfWeek == j && x.AppointmentDate.Hour >= i && x.AppointmentDate.Hour < (i + 1)).ToList())
+                                                {
+                                                    checkdata = false;
+                                                    string appointmentstatus = "";
+                                                <tr>
+                                                    @if (item.IsDeleted && (item.Status == -1 || item.Status==-100))
+                                                    {
+                                                        appointmentstatus = "iptal";
+                                                    }
+                                                    else if (item.AppointmentFinishDate < DateTime.Now)
+                                                    {
+                                                        appointmentstatus = "gecmis";
+                                                    }
+                                                    else if (item.AppointmentDate < DateTime.Now && item.UserId == 1)
+                                                    {
+                                                        appointmentstatus = "gecmis";
+                                                    }
+                                                    else if (item.UserId != 1)
+                                                    {
+                                                        appointmentstatus = "randevudolu";
+                                                    }
+                                                    else if (item.IsPreview)
+                                                    {
+                                                        appointmentstatus = "yaklasti";
+                                                    }
+                                                    @* else if (item.UserId != 1 && item.AppointmentDate > DateTime.Now && item.AppointmentDate < DateTime.Now.AddMinutes(10))
+                                                        {
+                                                        appointmentstatus = "yaklasti";
+                                                        }*@
+                                                    <td><a href="javascript:;;" class="@appointmentstatus" id="@item.SessionKey" data-toggle="popover" data-trigger="focus" data-container="body" data-placement="top" type="button" data-html="true">@item.AppointmentDate.ToString("HH:mm") - @item.AppointmentDate.AddMinutes(item.SessionTime).ToString("HH:mm") <br />Ücret: @item.SessionPrice TL<br /> @item.Department.Name <br />@item.User.Name @item.User.SurName  <br />Dr - @item.DoctorName</a></td>
+                                                </tr>
+                                                    <div id="popover-content-@item.SessionKey" class="hide ">
+                                                        <div class="container-fluid acilir-pencere" style="width:100%;">
+                                                            <div class="row">
+                                                                <div class="col-xs-12" style="text-align:center;">
+                                                                    <h6 style="margin-bottom:0.4rem;"> @item.DoctorName</h6>
+                                                                </div>
+                                                            </div>
+                                                            @if (item.UserId != 1) //Randevu Dolu
+                                                            {
+
+                                                                <div class="row">
+                                                                    <div class="col-xs-12">
+                                                                        <div class="row">
+                                                                            <div class="col-xs-6">
+                                                                                <span class="baslik">Ad</span>
+                                                                            </div>
+                                                                            <div class="col-xs-6">
+                                                                                <span class="bilgi" id="popupname">@item.User.Name</span>
+                                                                            </div>
+                                                                            <div class="col-xs-6">
+                                                                                <span class="baslik">Soyad</span>
+                                                                            </div>
+                                                                            <div class="col-xs-6">
+                                                                                <span class="bilgi" id="popupsurname">@item.User.SurName</span>
+                                                                            </div>
+                                                                            <div class="col-xs-6">
+                                                                                <span class="baslik">Bölüm</span>
+                                                                            </div>
+                                                                            <div class="col-xs-6">
+                                                                                <span class="bilgi" id="popupdepartment">@item.Department.Name</span>
+                                                                            </div>
+                                                                            <div class="col-xs-6">
+                                                                                <span class="baslik">Randevu Tarih:</span>
+                                                                            </div>
+                                                                            <div class="col-xs-6">
+                                                                                <span class="bilgi" id="popupdate">@item.AppointmentDate.ToString("dd.MM.yyyy HH:mm")</span>
+                                                                            </div>
+                                                                            <div class="col-xs-6">
+                                                                                <span class="baslik">Randevu Durumu</span>
+                                                                            </div>
+                                                                            <div class="col-xs-6">
+                                                                                <span class="bilgi" id="popupdate">@(item.Status==-1?"Randevuyu İptal Ettiniz":item.Status==-100?"Yetkili Tarafından Randevu Silindi":item.AppointmentFinishDate<DateTime.Now?"Randevu Bitti":"Randevu İşlemde")</span>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row">
+                                                                    <div class="col-sm-12 acilir-pencere-buton">
+                                                                        <div class="row">
+                                                                            <div class="col-xs-12 ">
+                                                                                <a id="popupDetailbtn" onclick="getUserDetailToModal('@item.SessionKey')" data-toggle="modal" data-target="#userdetailmodalas" href="#" class="btn ">Detayları Görüntüle</a>
+                                                                            </div>
+                                                                            @if (item.AppointmentFinishDate > DateTime.Now && !item.IsDeleted && item.Status == 0)
+                                                                            {
+                                                                                <div class="col-xs-12">
+                                                                                    @if (DateTime.Now.AddMinutes(10) > item.AppointmentDate )
+                                                                                    {
+                                                                                        <a id="popupSessionbtn" href="#" target="_blank" class="btn gorusme">Randevu Başlatilabilir</a>
+                                                                                    }
+                                                                                    else
+                                                                                    {
+                                                                                        <a id="popupSessionbtn" class="btn gorusme">Randevu Saati Bekleniyor.. </a>
+                                                                                    }
+                                                                                </div>
+                                                                            }
+                                                                            @if (item.AppointmentDate > DateTime.Now && item.Status==1 )
+                                                                            {
+                                                                                <div class="col-xs-12">
+                                                                                    <a id="popopDeletebtn" onclick="deleteAppointment('@item.SessionKey','')" class="btn silme">Randevuyu İptal Et</a>
+                                                                                </div>
+                                                                            }
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            }
+                                                            else //Randevu Boş
+                                                            {
+                                                                <div class="row">
+                                                                    <div class="col-xs-12">
+                                                                        <div class="row">
+                                                                            <div class="col-xs-12" style="text-align:center">
+                                                                                <span class="bilgi" id="popupname">@(appointmentstatus == "gecmis"?"Randevunun Süresi Bitti":"Henüz Randevu Alınmadı")</span>
+                                                                            </div>
+                                                                            <div class="col-xs-6">
+                                                                                <span class="baslik">Bölüm</span>
+                                                                            </div>
+                                                                            <div class="col-xs-6">
+                                                                                <span class="bilgi" id="popupdepartment">@item.Department.Name</span>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                @if (appointmentstatus != "gecmis")
+                                                                {
+                                                                    <div class="row">
+                                                                        <div class="col-sm-12 acilir-pencere-buton">
+                                                                            <div class="row">
+                                                                                <div class="col-xs-12">
+                                                                                    <a id="popopDeletebtn" onclick="deleteAppointment('@item.SessionKey','')" class="btn silme">Randevuyu Sil</a>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    }
+                                                                }
+
+                                                            </div>
+                                                    </div>
+                                                }@if (j == 0) { j = 8; }
+                                            </table>
+                                        </td>
+
+                                    }
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+</section>
+
+
+@section script {}
+
+<script type="text/javascript">
+
+    $(function () {
+        document.getElementById("TodayEarn").innerHTML=@ViewBag.TodayEarn;
+        document.getElementById("TodaySuccessAppointment").innerHTML=@ViewBag.TodaySuccessAppointment;
+        document.getElementById("TodayWaitingAppointment").innerHTML=@ViewBag.TodayWaitingAppointment;
+        document.getElementById("TodayDeletedAppointment").innerHTML=@ViewBag.TodayDeletedAppointment;
+    })
+
+    function randevuvideo() {
+        $('#video').modal('show')
+    }
+   
+    function refreshAppointments(date) {
+        document.querySelectorAll(".popover ").forEach(function (item) { item.remove() });
+        $.ajax({
+            url: '/AdminPanel/Anasayfa',
+            data: { weekdate: date },
+            type: 'GET',
+            dataType: 'html',
+            success: function (data) {
+                $("#randevutakvim").html(data);
+            },
+            error: function (data) {
+            }
+        });
+    }
+
+       $( document ).ready(function() {
+       
+
+                $("[data-toggle=popover]").each(function(i, obj) {
+
+                $(this).popover({
+                  html: true,
+                  content: function() {
+                    var id = $(this).attr('id')
+                    return $('#popover-content-' + id).html();
+                  }
+                });
+
+                });
+
+
+        });
+
+
+</script>

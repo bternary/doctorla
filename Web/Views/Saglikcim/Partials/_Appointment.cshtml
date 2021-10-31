@@ -1,0 +1,72 @@
+<section class="appointment pad-bottom-0">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="section-title text-center">
+                    @*<h3>We are specialists</h3>*@
+                    <h2><span>Bize</span> Ulaşın</h2>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-5 col-sm-12">
+                    <div class="appointment-image">
+                        <img src="~/images/home/kayıt2.png" style="max-width: 150%;width: 142%;margin-left: -25%" alt="image">
+                    </div>
+                </div>
+                <div class="col-md-7 col-sm-12">
+                    <div class="appointment-form">
+                        <form action="/Doctorla/Contact" data-ajax="true" data-ajax-failure="OnFailure" data-ajax-method="POST" data-ajax-success="Contact" id="form5" method="post">
+                            <div class="row">
+                                <div class="form-group col-xs-6">
+                                    <label>Ad - Soyad:</label>
+                                    <input type="text" placeholder="Adınızı Giriniz" name="Name">
+                                </div>
+                                <div class="form-group col-xs-6">
+                                    <label>E-Posta Adresi:</label>
+                                    <input type="text" placeholder="abc@xyz.com" name="Mail">
+                                </div>
+                                <div class="form-group col-xs-6">
+                                    <label>Telefon</label>
+                                    <input type="tel" placeholder="XXXX XXX XX XX" name="Phone">
+                                </div>
+                                <div class="form-group col-xs-6">
+                                    <label>Konu</label>
+                                    <select name="subject">
+                                        <option>Seçiniz</option>
+                                        <option>Öneri</option>
+                                        <option>İstek</option>
+                                        <option>Bilgi</option>
+                                        <option>Şikayet</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-xs-12">
+                                    <label>Mesajınız</label>
+                                    <textarea name="Message" placeholder="Lütfen mesajınızı giriniz"></textarea>
+                                </div>
+                                <div class="col-xs-12">
+                                    @{ 
+                                           Random rnd = new Random();
+                                           int sayi1 = rnd.Next(1, 10);
+                                           int sayi2 = rnd.Next(1, 10);
+                                           int toplam =sayi1+sayi2;
+                                    }
+                                    <input type="text" value="@toplam" name="validationcheck" style="display:none" />
+                                    <div class="col-xs-8">
+                                        <input type="text" placeholder="@sayi1  + @sayi2  = ? (Lütfen Kontrol İşlemini Girin)" id="validation" name="validation" />
+                                    </div>
+                                    <div class="col-xs-4">
+                                        <div class="form-btn">
+                                            <input type="submit" class="btn btn-primary mar-bottom-20" value="Gönder">
+                                        </div>
+                                    </div>
+                                   
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+

@@ -1,0 +1,138 @@
+﻿@model PagedList.Core.PagedList<Data.Domain.User>
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *,PagedList.Core.Mvc
+@{
+    ViewData["Title"] = "Randevu Islemleri";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewBag.Kullanici = "active";
+}
+
+<div class="row panelSearch">
+    <form action="/AdminPanel/KullaniciIslemleri" data-ajax-update="#userList" style="height:100%;" data-ajax="true" data-ajax-failure="error" data-ajax-method="GET" id="userforms" method="get">
+        <input type="text" name="id" value="@ViewBag.Id" style="display:none" />
+
+            <div class="col-xs-12 col-sm-9 panelSearchInputs">
+                <input type="text" name="name" placeholder="Ad ve Soyad Giriniz" />
+
+            </div>
+            <div class="col-xs-12 col-sm-3 panelSearchButtons">
+
+
+                <input class="btn" type="submit" value="Filtrele" />
+
+                <input class="btn" type="button" value="Temizle" onclick="$('#userforms')[0].reset();" />
+            </div>
+
+    
+    </form>
+</div>
+
+<div id="userList">
+    @Html.Partial("~/views/Shared/_UserList.cshtml", Model)
+</div>
+
+
+
+
+<script type="text/javascript">
+
+    function error() {
+        Swal.fire({
+            title: 'Hata',
+            text: 'İşlem Sırasında Bir Hata Oluştu',
+            icon: 'error',
+            timer: 4000,
+            showConfirmButton: false,
+        })
+    }
+
+    function StatusChange(data) {
+        if (data.status == 1) {
+            toastr.success('Kullanıcı Hesap Değişimi Başarılı', 'Başarılı!');
+            if (data.useractivitystatus == 1) {
+                document.getElementById("activity-" + data.userid).style.backgroundColor = "#36c6d3";
+                document.getElementById("status-" + data.userid).innerHTML = "Açık";
+            }
+            else if (data.useractivitystatus == 0) {
+                document.getElementById("activity-" + data.userid).style.backgroundColor = "#ed6b75";
+                document.getElementById("status-" + data.userid).innerHTML = "Kapalı";
+            }
+        } else {
+            error();
+        }
+    }
+
+    function changePassword(id) {
+        Swal.fire({
+            title: 'Yeni Şifre Girin',
+            html: '<input type="text" id="newpass" name="newpass" class="form-control" placeholder="En Az 5 Karakter Girin"  />',
+            showCancelButton: true,
+            confirmButtonText: 'Şifreyi Değiş',
+            cancelButtonText: 'İptal',
+            cancelButtonColor: 'red',
+            confirmButtonColor: 'green',
+            showLoaderOnConfirm: true,
+        }).then((result) => {
+            if (result.value) {
+                var newpass = document.getElementById("newpass").value;
+                if (newpass.length >= 5) {
+                    $.ajax({
+                        url: '/AdminPanel/ChangeUserPassword',
+                        data: { id: id, newpassword: newpass },
+                        type: 'post',
+                        dataType: 'json',
+                        success: function (data) {
+                            if (data.status == 1) {
+                                toastr.success('Şifre Başarılı Bir Şekilde Değiştirildi', 'Başarılı!');
+                                document.getElementById("pass-" + id).innerHTML = newpass;
+                            }
+                            else
+                                toastr.error('Şifre Değişme Başarısız', 'Hata!');
+                        },
+                        error: function (data) {
+                            toastr.error('Veriler Yüklenirken Bir Sorunla Karşılaşıldı. Lütfen Bu Durumu Bize Bildiriniz..', 'Hata!');
+                        }
+                    });
+                }
+
+            }
+        })
+    }
+
+
+    function changeBalance(id, balance) {
+        Swal.fire({
+            title: 'Yeni Kredi Girin',
+            html: '<input type="number" id="newbalance" name="newbalance" class="form-control" placeholder="Kredi Giriniz" value="' + balance + '"  />',
+            showCancelButton: true,
+            confirmButtonText: 'Kullanıcı Kredisini Değiş',
+            cancelButtonText: 'İptal',
+            cancelButtonColor: 'red',
+            confirmButtonColor: 'green',
+            showLoaderOnConfirm: true,
+        }).then((result) => {
+            if (result.value) {
+                var balance = document.getElementById("newbalance").value;
+                $.ajax({
+                    url: '/AdminPanel/changeBalance',
+                    data: { id: id, newbalance: balance },
+                    type: 'post',
+                    dataType: 'json',
+                    success: function (data) {
+                        if (data.status == 1) {
+                            toastr.success('Kredi Tutarı Başarılı Bir Şekilde Değiştirildi', 'Başarılı!');
+                            document.getElementById("balance-" + id).innerHTML = balance;
+                        }
+                        else
+                            toastr.error('Kredi Değişme Başarısız', 'Hata!');
+                    },
+                    error: function (data) {
+                        toastr.error('Veriler Yüklenirken Bir Sorunla Karşılaşıldı. Lütfen Bu Durumu Bize Bildiriniz..', 'Hata!');
+                    }
+                });
+
+            }
+        })
+    }
+
+</script>

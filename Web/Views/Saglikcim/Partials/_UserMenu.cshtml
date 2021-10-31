@@ -1,0 +1,31 @@
+﻿<div class="col-md-2">
+    <div class="detail-sidebar">
+        <div class="sidebar-box">
+            <div class="sidebar-title ">
+                @if (ViewBag.IsActive == false)
+                {
+                    <div class="alert alert-danger" role="alert">Hesabınız onaylı değil!</div>
+                    <button onclick="HesapOnay(@ViewBag.Numara)" type="button" class="btn btn-success">Hesabınızı Onaylayın</button>
+                }
+                <h3>@ViewBag.Name @ViewBag.SurName </h3> <br />
+                <h3>Kredi:@ViewBag.AccountBalance TL</h3>
+            </div>
+            <div class="sidebar-content">
+                <ul>
+                    <li><a href="/Doctorla/Profilim" class="btn ">Randevularım</a></li>
+                    <li><a href="/Doctorla/RandevuTaleplerim" class="btn">Randevu Talepleri </a></li>
+                    <li><a href="/Doctorla/EditProfile" class="btn">Profilim</a></li>
+                    <li><a href="/Doctorla/Password" class="btn">Şifre Güncelle</a></li>
+                    @if (ViewBag.DailyCheckCount > 0)
+                    {
+                        <li><a href="/Doctorla/getPackages" class="btn takip-button">Takip Paketlerim</a></li>
+                    }
+                    else
+                    {
+                        <li><a class="btn premium-button" href="TakipModeli/#takipPaketleri">Premium Ol</a></li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,43 @@
+﻿@model List<Data.Domain.RelUserDepartment>
+@{
+    ViewData["Title"] = "Doktorlarımız";
+}
+
+<section class="specialist team" style="padding-top:2rem;">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="section-title">
+                    <h2><span>Uzman Hekimlerimiz - @TempData["bolumAdi"]</span> </h2>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            @foreach (var item in Model)
+            {
+                if (item.User.IsActive)
+                {
+                    <div class="col-md-3 col-sm-4 col-xs-12 mar-bottom-30">
+                        <a href="/Doctorla/DoktorBilgileri/@TempData["Bölüm Adı"]/@item.UserId/@((item.User.Name+" "+item.User.SurName).Replace(" ","_"))">
+                            <div class="special-main doktor-kapsa yuksel">
+                                <div class="special-item">
+                                    <div class="special-image doktor-gorsel">
+                                        <img src="@item.User.PhotoUrl?t=@DateTime.Now" alt="image">
+                                    </div>
+                                    <div class="special-content doctor-icerik">
+                                        <h4>@item.User.Name  @item.User.SurName</h4>
+                                        <p>@item.User.DoctorDetail.Title</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                }
+
+
+            }
+
+        </div>
+    </div>
+</section>
+

@@ -1,0 +1,538 @@
+﻿@model Data.Domain.DoctorDetail
+
+@{
+    ViewData["Title"] = Model.User.Name + " " + Model.User.SurName + " Doktor Bilgileri";
+    int counter = 1;
+}
+
+<style>
+    .table > tr, td {
+        text-align: center
+    }
+</style>
+
+<section class="doctor-detail">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 col-sm-12 doktor-detay-gorsel">
+                <img src="@Model.User.PhotoUrl?t=@DateTime.Now" alt="Profil Fotoğrafı" class="img-fluid">
+            </div>
+            <div class="col-md-6 col-sm-12">
+                <div class="dt-outer">
+                    <h2>@Model.User.Name  @Model.User.SurName</h2>
+                    <ul>
+                        <li><strong>Genel:</strong> @Model.Title</li>
+                        <li><strong>İlgi Alanlar:</strong></li>
+                        @if (Model.DoctorMedicalInterests.Count == 0)
+                        {
+                            <li>Doktora Ait Henüz İlgi Alanı Eklenmedi</li>
+                        }
+                        else
+                        {
+                            counter = 1;
+                            foreach (var item in Model.DoctorMedicalInterests)
+                            {
+                                if (counter < 6)
+                                {
+                                    <li>@item.Name</li>
+                                    counter++;
+
+                                }
+                            }
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="doctor-content">
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="content-outer">
+                        <div class="row">
+                            <div class="intro content-item">
+                                <div class="content-title">
+                                    <h2>Doktor Bilgileri</h2>
+                                    <span></span>
+                                </div>
+                                <p>
+                                    @Model.Introduction
+                                </p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="qualification content-item">
+                                <div class="content-title">
+                                    <h3>Okullar</h3>
+                                    <span></span>
+                                </div>
+                                <div class="qf-table">
+                                    <table class="table table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <td>S.N</td>
+                                                <td>Branş</td>
+                                                <td>Üniversite</td>
+                                                <td>Yıl</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @if (Model.DoctorEducations.Count == 0)
+                                            {
+                                                <tr>
+                                                    <td>x</td>
+                                                    <td>Kayıt Mevcut Değil</td>
+                                                    <td>Kayıt Mevcut Değil</td>
+                                                    <td>Kayıt Mevcut Değil</td>
+                                                </tr>
+                                            }
+                                            else
+                                            {
+                                                foreach (var item in Model.DoctorEducations)
+                                                {
+                                                    <tr>
+                                                        <td>@counter</td>
+                                                        <td>@item.Branch</td>
+                                                        <td>@item.Name</td>
+                                                        <td>@item.BeginDate.Year</td>
+                                                    </tr>
+                                                    counter++;
+                                                }
+                                            }
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="row">
+                            <div class="qualification content-item">
+                                <div class="content-title">
+                                    <h3>Mesleki Deneyimler</h3>
+                                    <span></span>
+                                </div>
+                                <div class="qf-table">
+                                    <table class="table table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <td>S.N</td>
+                                                <td>Hizmet Yeri</td>
+                                                <td>Hizmet Süresi</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @if (Model.DoctorExperiences.Count == 0)
+                                            {
+                                                <tr>
+                                                    <td>x</td>
+                                                    <td>Kayıt Mevcut Değil</td>
+                                                    <td>Kayıt Mevcut Değil</td>
+                                                </tr>
+                                            }
+                                            else
+                                            {
+                                                counter = 1;
+                                                foreach (var item in Model.DoctorExperiences)
+                                                {
+                                                    <tr>
+                                                        <td>@counter</td>
+                                                        <td>@item.Name</td>
+                                                        <td>@item.BeginDate.Year - @(item.EndDate == null ? "Devam Ediyor" : item.EndDate.Value.Year.ToString())</td>
+                                                    </tr>
+                                                    counter++;
+                                                }
+                                            }
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 col-xs-12 col-lg-12">
+                                <div class="qualification content-item">
+                                    <div class="content-title">
+                                        <h3>
+                                            Tıbbi İlgi Alanları
+                                        </h3>
+                                        <span></span>
+                                    </div>
+                                    <div class="qf-table">
+                                        <table class="table table-bordered">
+                                            <thead>
+                                                <tr>
+                                                    <td>S.N</td>
+                                                    <td>Hizmet Yeri</td>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @if (Model.DoctorMedicalInterests.Count == 0)
+                                                {
+                                                    <tr>
+                                                        <td>x</td>
+                                                        <td>Kayıt Mevcut Değil</td>
+                                                    </tr>
+                                                }
+                                                else
+                                                {
+                                                    counter = 1;
+                                                    foreach (var item in Model.DoctorMedicalInterests)
+                                                    {
+                                                        <tr>
+                                                            <td>@counter</td>
+                                                            <td>@item.Name</td>
+                                                        </tr>
+                                                        counter++;
+                                                    }
+                                                }
+
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                            </div>
+
+
+                        </div>
+
+
+
+
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="detail-sidebar">
+                        <div class="sidebar-box">
+                            <div class="content-title">
+                                <h3>Randevu Saatleri</h3>
+                                <span></span>
+                            </div>
+                            @*<link href="~/css/panel.css" rel="stylesheet" /> DEĞİŞTİR *@
+                            <link href="~/css/panel.min.css" rel="stylesheet" />
+                            <div class="RandevuTalepButtonA">
+                                <a href="javascript:void(0)" onclick="bildirimayarla(this.id,@Model.User.Id,'@TempData["bolumId"]','@Model.User.Name',@ViewBag.SessionTime,@ViewBag.Price);">Randevu Talep Et</a>
+                            </div>
+                            <div class="RandevuTalepButton">
+                                <a href="javascript:void(0)" onclick="tanismaRandevusuTalebi(this.id,@Model.User.Id,'@TempData["bolumId"]','@Model.User.Name');">Tanışma Randevusu Talep Et</a>
+                            </div>
+                            <div class="container-fluid">
+                                <div class="row">
+                                    <div class="col-xs-12 panel">
+                                        <div class="row">
+                                            <div class="col-xs-12 text-center">
+                                                <h5 id="appointdoctor2"></h5>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-xs-12" style="text-align:center;">
+                                                <button onclick="getAppointmentonDoctor(0)" style="float:left;" id="geri-tarih2">
+                                                    <i class="fa fa-chevron-left"></i>
+                                                </button>
+                                                <span class="panel-bilgi" id="appointdate2"></span>
+                                                <button onclick="getAppointmentonDoctor(1)" style="float:right;" id="ileri-tarih2">
+                                                    <i class="fa fa-chevron-right"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-xs-12 panel-renkler">
+                                                <div class="alinmamis-randevu"><span></span> Müsait Randevu</div>
+                                                <div class="alinmis-randevu"><span></span> Alınmış Randevu</div>
+                                                <div class="tanisma-randevusu"><span></span> Tanışma Randevusu</div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-xs-12 table-responsive">
+                                                <table class="panel-tablo" id="appointtimes2">
+                                                    <tr>
+                                                    </tr>
+
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+@section script{
+    <script type="text/javascript">
+    $(function() {
+        getAppointmentonDoctor();
+
+    });
+        $(function () {
+            $("[rel='tooltip']").tooltip();
+        });
+        function getAppointmentonDoctor(datechange) {
+            if (datechange==null) {
+                document.getElementById("appointdate2").innerText = '@DateTime.Now.ToShortDateString()';
+                datechange = -1;
+            }
+            var date2 = document.getElementById("appointdate2").innerText;
+            //if (date) {
+            //    var datepart = date.split('.');
+            //    if (datechange == 0)
+            //        date = new Date(datepart[1] + ' ' + (parseInt(datepart[0]) - 1)+' ' + datepart[2]).toDateString();
+            //    else
+            //        date = new Date(datepart[1] + ' ' + (parseInt(datepart[0]) + 1)+' ' + datepart[2]).toDateString();
+            //}
+              $.ajax({
+                  url: '/Doctorla/getAppointments',
+                  type: 'GET',
+                  data: { departmentId:@TempData["bolumId"], doctorid:@TempData["userId"], date: date2, IsNextDate: datechange},
+                  dataType: 'json',
+                  success: function (data) {
+                      if (data.rightarrow == false)
+                          document.getElementById("ileri-tarih2").classList.add("gorunmez");
+                      else
+                          document.getElementById("ileri-tarih2").classList.remove("gorunmez");
+                       if (data.leftarrow == false)
+                          document.getElementById("geri-tarih2").classList.add("gorunmez");
+                      else
+                          document.getElementById("geri-tarih2").classList.remove("gorunmez");
+
+
+                          document.getElementById("appointdoctor2").innerText = data.doctorname + ' | ' + data.department;
+                          document.getElementById("appointdate2").innerText = data.date;
+                          if (data.appointments.length == 0) {
+                              $("#appointtimes2").html('<a class="list-group-item list-group-item-action ">Randevu Açılacaktır</a>'); }
+                          else {
+                                $("#appointtimes2").html('');
+                                var counter = 0,record=0;
+                              data.appointments.forEach(function (item) {
+                                    if (counter == 0)
+                                      $("#appointtimes2").append('<tr>');
+                                   if (item.userId == 1 && item.isPreview == false) {
+                                      $("#appointtimes2").append("<td><a style='cursor:pointer' id='datas-" + record + "' data-id=" + item.id + " onclick='randevuislemi(" + record + ")'>" + item.date.split('T')[1].split(':')[0] + ":" + item.date.split('T')[1].split(':')[1] + ' | ' + item.sessiontime + ' Dk' + ' | ' + item.sessionprice + ' TL' + "</a></td>")
+                                   } else if ( item.userId == 1 && item.isPreview == true) {
+                                      $("#appointtimes2").append("<td><a style='background-color:#fb7813;cursor:pointer' style='cursor:pointer' id='datas-" + record + "' data-id=" + item.id + " onclick='randevual(" + record + ")'>" + item.date.split('T')[1].split(':')[0] + ":" + item.date.split('T')[1].split(':')[1] + ' | ' + item.sessiontime + ' Dk' + ' | ' + item.sessionprice + ' TL' + "</a></td>")
+                                  }
+                                   else if (item.userId != 1) {
+                                      $("#appointtimes2").append("<td style='    cursor: not-allowed !important;' data-toggle='tooltip' data-placement='top' title='Bu Randevu Alınmıştır' ><a  class='tiklanamaz'   id='datas-" + record + "' data-id=" + item.id + "  >" + item.date.split('T')[1].split(':')[0] + ":" + item.date.split('T')[1].split(':')[1] + ' | ' + item.sessiontime + ' Dk' + ' | ' + item.sessionprice + ' TL' + "</a></td>")
+                                  }
+
+                                    if (counter == 2) {
+                                        $("#appointtimes2").append('</tr>'); counter = -1;
+                                    }
+                                    counter++;
+                                    record++;
+                               });
+                          }
+
+
+                },
+                error: function (data) {
+                  Swal.fire({
+                    title: 'İşlem Hatası Oluştu',
+                    text: 'Randevular Getirilirken Bir Hata Oluştu. Tekrarı Durumunda Lütfen Bu Hatayı Bize Bildiriniz',
+                    icon: 'error',
+                    timer: 2000,
+                    showConfirmButton: false,
+                });
+                }
+              });
+
+            $("#takvim-tab-link").click();
+            document.getElementById('takvim-tab-link').classList.remove("yasakla");
+
+        }
+
+        function randevuislemi(id) {
+            randevual(id);
+            $("#hizlirandevubtn").trigger("click");
+        }
+        function doctorpageAppointment() {
+            Swal.fire({
+                    title: 'Randevu Alma İşlemi',
+                    text: 'Lütfen Randevu Alma İşlemlerinizi Sayfanın En Altında Bulunan "Hızlı Randevu Al" Yazısına Tıklayarak Yapınız. Burada Sadece Randevu Saatleri Görüntülenebilir. Anlayışınız İçin Teşekkürler..',
+                    icon: 'warning',
+                    confirmButtonText:'Kapat',
+                    showConfirmButton: true,
+                });
+        }
+
+    </script>
+
+}
+
+
+@*<section class="blog-detail-content">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="detail-content">
+                        <div class="section-title">
+                            <h2>Doktor Bilgileri</h2>
+                            <div class="post-detail">
+                                <p><i class="fa fa-clock-o"></i> 12 Jan,2019</p>
+                                <p><i class="fa fa-user"></i> Jonathan Sandall</p>
+                            </div>
+                        </div>
+                        <div class="detail-image mar-bottom-20">
+                            <img src="~/images/blog/bd1.jpg" alt="Image">
+                        </div>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscied do eiusmod tempor incidid labore et dolore magna aliqua. Quis ipsum suspen disse ultrices gravida. here are many variations of passages of them Lorem Ipsum available, but the majority have suffered alteration in some form. Lorem ipsum dolor sit amet, <strong>consectetur adipiscied do eiusmod tempor incididunt</strong> ut labore et dolore magna aliqua.</p>
+                        <p>Praesent orci urna per varius felis magna nullam molestie libero, facilisis a tllamcorper sapien utmpus leo, arcu imperdiet nisi taciti varius ultricies est congue posuere justo non felis etiam euismod vestibulum majority have suffered alteration in some form vivamus.</p>
+                        <h3>Modern Equipment</h3>
+                        <p>Praesent orci urna per varius felis magna nullam molestie libero, facilisis a tllamcorper sapien utmpus leo, arcu imperdiet nisi taciti varius ultricies est congue posuere justo non felis etiam euismod vestibulum majority have suffered alteration in some form vivamus.</p>
+                        <blockquote>Praesent orci urna per varius felis magna nullam molestie libero, facilisis a tllamcorper sapien utmpus leo, arcu imperdiet nisi taciti varius ultricies est congue posuere justo non felis etiam euismod vestibulum majority have suffered alteration in some form vivamus.</blockquote>
+                        <h3>The Rise Of Smarketing And Why You Need It</h3>
+                        <p>Praesent orci urna per varius felis magna nullam molestie libero, facilisis a tllamcorper sapien utmpus leo, arcu imperdiet nisi taciti varius ultricies est congue posuere justo non felis etiam euismod vestibulum majority have suffered alteration in some form vivamus.</p>
+                        <div class="article-footer">
+                            <div class="article-tags pull-left">
+                                <span><i class="fa fa-bookmark"></i></span>
+
+                                <a href="#">Medicine</a>,
+                                <a href="#">health</a>,
+                                <a href="#">care</a>,
+                                <a href="#">surgury</a>,
+                                <a href="#">dental</a>
+                            </div>
+
+                            <div class="article-share pull-right">
+                                <ul class="social">
+                                    <li><span>Share:</span></li>
+                                    <li><a href="#" target="_blank"><i class="fa fa-facebook"></i></a></li>
+                                    <li><a href="#" target="_blank"><i class="fa fa-twitter"></i></a></li>
+                                    <li><a href="#" target="_blank"><i class="fa fa-linkedin"></i></a></li>
+                                    <li><a href="#" target="_blank"><i class="fa fa-instagram"></i></a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="detail-author detail-box mar-top-30">
+                        <div class="author-image">
+                            <img src="~/images/face.png" alt="Image">
+                        </div>
+                        <div class="author-desc">
+                            <h3 class="mar-bottom-5"><a href="#">Jonathan Summer</a></h3>
+                            <p class="mar-bottom-10 greenblue">Vice President Of COC</p>
+                            <ul>
+                                <li><a href="#"><i class="fa fa-facebook" aria-hidden="true"></i></a></li>
+                                <li><a href="#"><i class="fa fa-twitter" aria-hidden="true"></i></a></li>
+                                <li><a href="#"><i class="fa fa-instagram" aria-hidden="true"></i></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="comments mar-top-30">
+                        <div class="sidebar-title">
+                            <h3>Yorumlar</h3>
+                        </div>
+                        <ul>
+                            <li>
+                                <div class="comment-item">
+                                    <div class="comment-image">
+                                        <img src="~/images/face.jpg" alt="Image">
+                                    </div>
+                                    <div class="comment-content">
+                                        <h4>Jack Richard</h4>
+                                        <p class="date greenblue"><i class="icon-clock"></i> 12 May 2018</p>
+                                        <p>Et veniam possimus voluptatum voluptatem excepturi qui. Unde eum ut architecto veritatis quia deserunt incidunt consequatur. In fugiat voluptatem porro distinctio deleniti quod labore.</p>
+                                        <a href="#" class="btn mar-top-15">Reply</a>
+                                    </div>
+                                </div>
+                                <ul class="reply">
+                                    <li>
+                                        <div class="comment-item">
+                                            <div class="comment-image">
+                                                <img src="~/images/face.jpg" alt="Image">
+                                            </div>
+                                            <div class="comment-content">
+                                                <h4>Somel Walt </h4>
+                                                <p class="date greenblue"><i class="icon-clock"></i> 12 May 2018</p>
+                                                <p>Et veniam possimus voluptatum voluptatem excepturi qui. Unde eum ut architecto veritatis quia deserunt incidunt consequatur. In fugiat voluptatem porro distinctio deleniti quod labore.</p>
+                                                <a href="#" class="btn mar-top-15">Reply</a>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li>
+                                <div class="comment-item">
+                                    <div class="comment-image">
+                                        <img src="~/images/face.jpg" alt="Image">
+                                    </div>
+                                    <div class="comment-content">
+                                        <h4>Jack Richard</h4>
+                                        <p class="date greenblue"><i class="icon-clock"></i> 12 May 2018</p>
+                                        <p>Et veniam possimus voluptatum voluptatem excepturi qui. Unde eum ut architecto veritatis quia deserunt incidunt consequatur. In fugiat voluptatem porro distinctio deleniti quod labore.</p>
+                                        <a href="#" class="btn mar-top-15">Reply</a>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                        <div class="comment-form mar-top-30">
+                            <h3>Yorum Ekle</h3>
+                            <form>
+                                <div class="row">
+                                    <div class="textarea col-sm-12">
+                                        <label for="Name">Yorumunuz:</label>
+                                        <textarea></textarea>
+                                    </div>
+                                    <div class="form-group col-sm-6">
+                                        <label for="Name">Adınız:</label>
+                                        <input type="email" class="form-control" id="Name">
+                                    </div>
+                                    <div class="form-group col-sm-6">
+                                        <label for="email">E-Posta Adresi:</label>
+                                        <input type="email" class="form-control" id="email">
+                                    </div>
+                                    <div class="form-group col-sm-12">
+                                        <label for="website">Websitesi:</label>
+                                        <input type="email" class="form-control" id="website">
+                                    </div>
+                                    <div class="col-sm-12">
+                                        <div class="comment-btn">
+                                            <a href="#" class="btn">Yorumu Gönder</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="sidebar">
+                        <div class="sidebar-box">
+                            <div class="sidebar-title">
+                                <h3>Birimler</h3>
+                            </div>
+                            <div class="sidebar-content">
+                                <ul>
+                                    <li class="active"><a href="#">Cardiology</a></li>
+                                    <li><a href="#">Neurologist</a></li>
+                                    <li><a href="#">Consultant</a></li>
+                                    <li><a href="#">Surgeon</a></li>
+                                    <li><a href="#">Lifestyle</a></li>
+                                    <li><a href="#">Health Care</a></li>
+                                    <li><a href="#">Ayurveda</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="sidebar-ad">
+                            <div class="ad-content">
+                                <p>We are available 24/7</p>
+                                <h3>Medical and Health consultant at your service</h3>
+                                <a class="btn">Contact Us</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+*@
+
+
+

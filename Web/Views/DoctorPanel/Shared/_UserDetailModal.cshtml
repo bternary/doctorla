@@ -1,0 +1,183 @@
+﻿@model Data.DataViews.DoctorAppointmentDetail
+
+@{ 
+    int filecounter = 1;
+}
+
+<div class="modal-dialog modal-dialog-centered doktor-randevu-detay" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLongTitle">@Model.User.Name.ToUpper() @Model.User.SurName.ToUpper()  - @Model.Appointment.Department.Name - @Model.Appointment.AppointmentDate.ToString("dd.MM.yyyy HH:mm") - @Model.Appointment.AppointmentFinishDate.ToString("HH:mm") </h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body h-100 tasma" id="chatbody" >
+            <div class="row detay-kapsa">
+                <div class="col-md-12" style="height:100%; padding-left:0;">
+
+                    <div class="col-md-12 sag ">
+                        <div class="row ">
+                            <div class="col-xs-6 hasta-not tasma" style="margin-top:0px;padding-top:0px">
+                                <div class="hasta-onceki-randevular tasma">
+                                    <h5>Hasta Hakkında Notlar</h5>
+                                    <div class="bilgi-kapsa">
+                                        <div class="col-xs-4">
+                                            <label>Boy: @Model.User.UserDetail.Height Cm</label>
+                                        </div>
+                                        <div class="col-xs-4">
+                                            <label>Kilo: @Model.User.UserDetail.Weight Kg</label>
+                                        </div>
+                                        <div class="col-xs-4">
+                                            <label>Doğum Yılı: @Model.User.Birthdate.Year</label>
+                                        </div>
+                                        <div class="col-xs-4">
+                                            <label>Meslek : @Model.User.UserDetail.UserJob</label>
+                                        </div>
+                                        <div class="col-xs-4">
+                                            <label>Cinsiyet : @(Model.User.Gender == "F" ? "Kadın" : "Erkek")</label>
+                                        </div>
+                                        <div class="col-xs-4">
+                                            <label>Kan Grubu: @Model.User.UserDetail.Bloodtype</label>
+                                        </div>
+                                        <div class="col-xs-12">
+                                            <strong>Genel Not :</strong>  @Model.User.UserDetail.Note
+                                        </div>
+                                        <div class="col-xs-12">
+                                            <strong>Kronik Hastalık :</strong> @Model.User.UserDetail.ChronicDiseases
+                                        </div>
+                                        <div class="col-xs-12">
+                                            <strong>Aile Hakkında :</strong> @Model.User.UserDetail.FamilyDiseases
+                                        </div>
+                                        <div class="col-xs-12">
+                                            <strong>Düzenli İlaçlar :</strong> @Model.User.UserDetail.RegularlyMedicines
+                                        </div>
+                                        <div class="col-xs-12">
+                                            <strong>Ameliyat Geçmişi :</strong> @Model.User.UserDetail.SurgicalHistory
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xs-6 hasta-dosyalar tasma" style="margin-top:0px;padding-top:0px">
+                                <div class="hasta-onceki-randevular tasma">
+                                    <h5>Yüklenilen Dosyalar</h5>
+                                    <div class="bilgi-kapsa">
+                                        @foreach (var item in Model.Appointment.AppointmentFiles)
+                                        {
+                                            <div class="col-xs-3 yuklenen-dosya">
+                                                <a href="~/AppointmentFiles/@item.FileName" target="_blank">
+                                                    <i class="flaticon-file"></i><span>Dosya-@filecounter</span>
+                                                </a>
+                                            </div>
+                                            filecounter++;
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                      
+                            <div class="col-xs-6 hasta-dosyalar tasma">
+                                <div class="hasta-onceki-randevular tasma">
+                                    <h5>Hastanın Özel Notu</h5>
+                                    <div class="bilgi-kapsa">
+                                        <label>@Model.Appointment.AppointmentNote</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xs-6 hasta-dosyalar tasma">
+                                <form action="/DoctorPanel/UpdateAppointmentNote" style="height:100%;" data-ajax="true" data-ajax-failure="NoteUpdate" data-ajax-method="POST" data-ajax-success="NoteUpdate" id="doctorappointmentforms" method="post">
+                                    <div class="hasta-onceki-randevular tasma">
+                                        <h5>Doktorun Özel Notu</h5>
+                                        <div class="bilgi-kapsa">
+                                            <textarea name="doctornote" placeholder="Randevu İçin Özel Notunuz.." style="height:100%;width:100%; resize:none;">@Model.Appointment.AppointmentDoctorNote</textarea>
+                                        </div>
+                                        @if (Model.Permission)
+                                        {
+                                            <input type="text" value="@Model.Appointment.SessionKey" style="display:none" name="sessionkey" />
+                                        }
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12 sol" style="margin-top:1rem; max-height:400px;">
+                        <div class="hasta-onceki-randevular  ">
+                            <h5>Geçmiş Randevular</h5>
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead style="background-color:#09836E; color:#fff;">
+                                        <tr>
+                                            <th>Hasta Adı</th>
+                                            <th>Randevu Tarihi</th>
+                                            <th>Doktor Adı</th>
+                                            <th>Bölüm</th>
+                                            <th>Detaylar</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @if (Model.User.Appointment.Count == 0)
+                                        {
+                                            <tr>
+                                                <td>Geçmiş Randevu Yok</td>
+                                                <td>Geçmiş Randevu Yok</td>
+                                                <td>Geçmiş Randevu Yok</td>
+                                                <td>Geçmiş Randevu Yok</td>
+                                            </tr>
+
+                                        }
+                                        @foreach (var item in Model.User.Appointment)
+                                        {
+                                            <tr>
+                                                <td>@Model.User.Name @Model.User.SurName</td>
+                                                <td>@item.AppointmentDate</td>
+                                                <td>@item.DoctorName</td>
+                                                <td>@item.Department.Name</td>
+                                                <td class="islemler-yazi">
+                                                    <a id="popupDetailbtn" onclick="getUserDetailToModal('@item.SessionKey')" data-toggle="modal" data-target="#userdetailmodalas" href="javascript:void(0)" class="blue">Detaylar</a>
+                                                </td>
+                                            </tr>
+                                        }
+
+                                    </tbody>
+
+                                </table>
+                            </div>                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer ">
+            
+            <input type="submit" class="btn btn-success kaydet notguncelle" value="Notu Güncelle" form="doctorappointmentforms" />
+
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Kapat</button>
+        </div>
+    </div>
+</div>
+
+<link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
+
+<script type="text/javascript">
+    function NoteUpdate(data) {
+         if (data.status == 1) {
+                            Swal.fire({
+                                title: data.title,
+                                text:data.message,
+                                icon: 'success',
+                                timer: 2000,
+                                showConfirmButton: false,
+                            })
+                            if (deleteindex != -1)
+                                deletefile(deleteindex);
+                        } else {
+                        Swal.fire({
+                                title: data.title,
+                                text:data.message,
+                                icon: 'error',
+                                timer: 2000,
+                                showConfirmButton: false,
+                            })
+                        }
+    }
+</script>

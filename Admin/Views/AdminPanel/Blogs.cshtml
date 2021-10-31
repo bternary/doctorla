@@ -1,0 +1,282 @@
+﻿@using Data.Domain
+@model PagedList.Core.IPagedList<Data.Domain.Blog>
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *,PagedList.Core.Mvc
+
+@{
+
+    ViewData["Title"] = "Blog Yazıları";
+    ViewBag.Blog = "active";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+<style>
+    .islemler-yazi a {
+        font-size: 1.2rem;
+    }
+
+    .islemler-yazi {
+        padding: 5px !important;
+    }
+
+    .post-tags.post-categorys a {
+        background: #cc0f0f;
+        /*margin: 0;*/
+    }
+
+    .post-tags a {
+        background: #00a3c8;
+        padding: 3px 5px;
+        color: #fff;
+        margin-left: 1rem;
+    }
+
+    .breadcrumb {
+        padding: 15px 0;
+        margin: 0;
+    }
+        .breadcrumb ul {
+            display: flex;
+        }
+    .post-tags.post-categorys {
+        border: none;
+    }
+    .breadcrumb ul > li + li:before {
+        color: #1db9a0;
+        content: '/';
+    }
+    .post-icerik, .breadcrumb > ul, .post-tags, .post-categorys, .post-baslik, .post-thumbnail, .post-icerik {
+        padding: 0 10px 0 10px;
+    }
+    .post-tags {
+        display: flex;
+        align-items: center;
+        flex-wrap: nowrap;
+        padding-top: 1rem;
+        border-top: 1px solid rgba(31,23,23,.24);
+    }
+    .post-baslik {
+        margin-top: 1rem;
+    }
+    p {
+        font-size: 15px;
+        font-weight: 300;
+        line-height: 24px;
+        margin-bottom: 0;
+        color: #666;
+        font-family: 'Poppins',sans-serif;
+    }
+    .post-thumbnail, .post-gorsel {
+        text-align: center;
+    }
+    .post-icerik {
+        width: 100%;
+        object-fit: cover;
+    }
+        .post-icerik p {
+            margin-top: 1rem;
+        }
+    .breadcrumb ul > li:first-child a {
+        margin-left: .5rem;
+    }
+    .breadcrumb ul > li a {
+        margin: 0 1rem;
+    }
+    .breadcrumb a {
+        color: #1db9a0;
+    }
+    .breadcrumb li, .breadcrumb li.active {
+        margin-bottom: 0;
+        color: #fff;
+    }
+</style>
+
+<div class="container" style="width:100%">
+    <div class="row justify-content-end">
+        <div class="col-xs-12 islem-Button" style="text-align:right">
+            <a href="/AdminPanel/NewBlogPost" class="green">Post Ekle</a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div id="tabid1">
+                <div class="dashboard-content" style="        padding: 0px 0px 0px 0px;
+        margin-left: 0px
+">
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12 col-xs-12">
+                            <div class="dashboard-list-box">
+                                <h4 class="gray">Postlar</h4>
+                                <div class="table-box">
+                                    <table class="basic-table booking-table" id="paketler-liste">
+                                        <thead>
+                                            <tr>
+                                                <th>Başlık</th>
+                                                <th>Kısa Açıklama</th>
+                                                <th>Seo Url</th>
+                                                <th class="uzun-yazi">Kategori</th>
+                                                <th class="uzun-yazi">Etiketler</th>
+                                                <th>Yayın Tarihi</th>
+                                                <th>Aktiflik</th>
+                                                <th>İşlemler</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var item in Model)
+                                            {
+
+                                                <tr>
+                                                    <td>@item.Title</td>
+                                                    <td>@item.ShortDescription</td>
+                                                    <td>@item.SeoUrl</td>
+                                                    <td class="uzun-yazi">@item.Category</td>
+                                                    <td class="uzun-yazi">@item.Tags</td>
+                                                    <td>@item.IDate</td>
+                                                    <td class="IsActive">
+                                                        <a class="@(item.IsActive == false?"kapat":"ac")" id="isactive-@item.Id" data-ajax="true" data-ajax-method="GET" data-ajax-success="updateStatus" href="/AdminPanel/UpdatePostActivity?PackageId=@item.Id">@(item.IsActive == false?" Pasif":"Aktif")</a>
+                                                    </td>
+                                                    <td class="islemler-yazi">
+                                                        <a href="/AdminPanel/NewBlogPost?postId=@item.Id" class="blue">Düzenle</a>
+                                                        <a href="javascript:void(0)" onclick="deletePost(@item.Id)" class="red">Sil</a>
+                                                        <a href="javascript:void(0)" onclick="preview(@item.Id)" class="green">Önizleme</a>
+                                                    </td>
+                                                </tr>
+                                            }
+
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12 sayfalama">
+                            <div class="sayfalama-bilgi">Toplam <span>@Model.TotalItemCount</span> Kayıt Bulunuyor. Şu anda <span>@Model.FirstItemOnPage</span> - <span>@Model.LastItemOnPage</span> Arasındaki Kayıtlar Gösteriliyor. </div>
+
+                            <pager list="@Model" asp-controller="AdminPanel" options="@PagedList.Core.Mvc.PagedListRenderOptions.Bootstrap4PageNumbersOnly" asp-action="Blogs" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade fullModal" id="previewModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Post Önizleme</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body previewPost">
+
+            </div>
+            <div class="modal-footer islem-Button">
+                <button type="button" class="blue" data-dismiss="modal">Kapat</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function updateStatus(data) {
+        if (data.activeStatus) {
+            document.getElementById("isactive-" + data.id).innerHTML = "Aktif";
+
+            document.getElementById("isactive-" + data.id).classList.remove('kapat');
+            document.getElementById("isactive-" + data.id).classList.add('ac');
+        } else {
+            document.getElementById("isactive-" + data.id).innerHTML = "Pasif";
+
+            document.getElementById("isactive-" + data.id).classList.remove('ac');
+            document.getElementById("isactive-" + data.id).classList.add('kapat');
+        }
+
+        OnSuccess(data);
+    }
+
+
+    function deletePost(packageid) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Emin Misiniz?',
+            text: 'Bu Postu Silmek İstediğinize Emin Misiniz?',
+            showCloseButton: true,
+            showCancelButton: true,
+            focusConfirm: false,
+            customClass: 'swal-delete',
+
+            confirmButtonText:
+                'Postu Sil',
+            confirmButtonAriaLabel: 'delete',
+            cancelButtonText:
+                'İptal Et',
+            confirmButtonColor:
+                '#d33',
+            cancelButtonAriaLabel: 'cancel'
+        }).then((result) => {
+            if (result.value) {
+                $.ajax({
+                    url: '/AdminPanel/deletePost',
+                    data: { packageId: packageid },
+                    type: 'post',
+                    dataType: 'json',
+                    success: function (data) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Post Başarıyla Silindi',
+                            showConfirmButton: false,
+                            timer: 1500
+                        })
+                        location.reload();
+
+                    },
+                    error: function (data) {
+                        toastr.error('Bir Hata İle Karşılaştık', 'Hata!');
+                    }
+                });
+
+            }
+        })
+    }
+
+    function updatePost(packageid) {
+
+
+
+        $.ajax({
+            url: '/AdminPanel/NewBlogPost',
+            data: { packageId: packageid, type: "update" },
+            type: 'post',
+            dataType: 'json',
+            success: function (data) {
+
+            },
+            error: function (data) {
+                toastr.error('Bir Hata İle Karşılaştık', 'Hata!');
+            }
+        });
+
+    }
+
+    function preview(packageid) {
+        $.ajax({
+            url: '/AdminPanel/previewPost',
+            data: { packageId: packageid },
+            type: 'post',
+            dataType: 'html',
+            success: function (data) {
+                var modalPost = document.querySelector(".previewPost");
+                modalPost.innerHTML = "";
+                modalPost.innerHTML = data;
+                $('#previewModal').modal('show');
+            },
+            error: function (data) {
+                toastr.error('Bir Hata İle Karşılaştık', 'Hata!');
+            }
+        });
+    }
+</script>

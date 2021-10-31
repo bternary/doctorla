@@ -1,0 +1,157 @@
+﻿@model PagedList.Core.PagedList<Data.Domain.Appointment>
+
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *,PagedList.Core.Mvc
+
+<div class="container" style="width:100%">
+    <div class="row">
+        <div class="col-md-12">
+            <div id="tabid1">
+                <div class="dashboard-content" style="padding: 0px 0px 0px 0px;margin-left: 0px">
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12 col-xs-12">
+                            <div class="dashboard-list-box">
+                                <h4 class="gray">Randevularım   - Kayıt Adet: @Model.Count</h4>
+                                <div class="table-box">
+                                    <table class="basic-table booking-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Randevu Kodu</th>
+                                                <th>Ad Soyad</th>
+                                                <th>Bölüm</th>
+                                                <th>Doktor Adı</th>
+                                                <th>Randevu Tarihi</th>
+                                                <th>Görüşme Durumu</th>
+                                                <th>Randevu İşlemleri</th>
+                                                <th>Bilgi</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @if (Model.Count == 0)
+                                            {
+                                                <tr>
+                                                    <td>-</td>
+                                                    <td>-</td>
+                                                    <td>-</td>
+                                                    <td>-</td>
+                                                    <td>-</td>
+                                                    <td>-</td>
+                                                    <td>-</td>
+                                                    <td>-</td>
+                                                </tr>
+                                            }
+                                            @foreach (var item in Model)
+                                            {
+                                                <tr>
+                                                    <td>@item.SessionCode</td>
+                                                    <td>@item.User.Name @item.User.SurName</td>
+                                                    <td>@item.Department.Name</td>
+                                                    <td>@item.DoctorName</td>
+                                                    <td class="t-id">@item.AppointmentDate</td>
+                                                    @if (item.Status == -1 && item.UserId != 1)
+                                                    {
+                                                        <td><span class="unpaid t-box  "><a style="color:white;cursor:pointer;"> Doktor İptali</a></span></td>
+                                                    }
+                                                    else if (item.Status == -2 && item.UserId != 1)
+                                                    {
+                                                        <td><span class="unpaid t-box  "><a style="color:white;cursor:pointer;"> Kullanici İptali</a></span></td>
+                                                    }
+                                                    else if (item.Status == -100 && item.UserId != 1)
+                                                    {
+                                                        <td><span class="unpaid t-box  "><a style="color:white;cursor:pointer;"> Admin İptali</a></span></td>
+                                                    }
+                                                    else if (item.Status == -3 && item.UserId != 1)
+                                                    {
+                                                        <td><span class="unpaid t-box  "><a style="color:white;cursor:pointer;"> Doktor Gelmedi</a></span></td>
+                                                    }
+                                                    else if (item.AppointmentFinishDate < DateTime.Now && item.UserId != 1)
+                                                    {
+                                                        <td><span class="unpaid t-box  "><a style="color:white;cursor:pointer;">  Görüşme Başarılı Bitti</a></span></td>
+                                                    }
+                                                    else if (item.AppointmentFinishDate < DateTime.Now && item.UserId == 1)
+                                                    {
+                                                        <td><span class="unpaid t-box  "><a style="color:white;cursor:pointer;">  Hasta Katılmadan Bitti</a></span></td>
+                                                    }
+                                                    else if (item.UserId == 1)
+                                                    {
+                                                        <td><span class="paid t-box  " style="background:#1DB9A0"><a style="color:white;cursor:pointer;"> Randevu Boş</a></span></td>
+                                                    }
+                                                    else if (item.AppointmentFinishDate > DateTime.Now && !item.IsDeleted && item.Status == 0)
+                                                    {
+                                                        <div class="col-xs-12">
+                                                            @if (DateTime.Now.AddMinutes(10) > item.AppointmentDate)
+                                                            {
+                                                                <td><span class="paid t-box  " style="background:#4287f5"><a style="color:white;cursor:pointer;"> Görüşmeyi Başlat</a></span></td>
+                                                            }
+                                                            else
+                                                            {
+                                                                <td><span class="paid t-box  "><a style="color:white;cursor:pointer;"> Randevu Bekleniyor..</a></span></td>
+                                                            }
+                                                        </div>
+
+                                                    }
+                                                    else
+                                                    {
+                                                        <td></td>
+                                                    }
+
+                                                <td class="islemler-yazi buyuk-islemler-yazi">
+                                                    <a class="blue" href="#" onclick="getAppointmentProcess('@item.SessionKey')">İşlemler</a>
+                                                    <a class="green" href="#" onclick="changeAppointmentStatus('@item.SessionKey',@item.Status)">Durum Güncelle</a>
+
+
+                                                    @if (item.UserId != 1)
+                                                    {
+
+                                                        <a id="popupDetailbtn" onclick="getUserDetailToModal('@item.SessionKey')" data-toggle="modal" data-target="#userdetailmodalas" href="#" class="yellow">Detaylar</a>
+                                                    }
+                                                    @if (item.AppointmentDate > DateTime.Now && item.Status == 0)
+                                                    {
+                                                        <a id="popopDeletebtn" onclick="deleteAppointment('@item.SessionKey','')" class="red">Sil</a>
+                                                    }
+                                                </td>
+                                                    @if (item.Status == -100)
+                                                    {
+                                                        <td>@item.DoctorDeleteReason</td>
+
+                                                    }
+                                                    else
+                                                    {
+                                                        <td></td>
+                                                    }
+
+
+
+                                                </tr>
+                                            }
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            @*<div class="pagination-container">
+                                    <nav class="pagination">
+                                        <ul>
+                                            <li><a href="#" class="current-page">1</a></li>
+                                            <li><a href="#">2</a></li>
+                                            <li><a href="#"><i class="sl sl-icon-arrow-right"></i></a></li>
+                                        </ul>
+                                    </nav>
+                                </div>
+                            *@
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12 sayfalama">
+                            <div class="sayfalama-bilgi">Toplam <span>@Model.TotalItemCount</span> Kayıt Bulunuyor. Şu anda <span>@Model.FirstItemOnPage</span> - <span>@Model.LastItemOnPage</span> Arasındaki Kayıtlar Gösteriliyor. </div>
+
+                            <pager list="@Model" asp-route-username="@ViewBag.UserName" asp-route-doctorname="@ViewBag.DoctorName" asp-route-sessioncode="@ViewBag.SessionCode" asp-controller="AdminPanel" options="@PagedList.Core.Mvc.PagedListRenderOptions.Bootstrap4PageNumbersOnly" asp-action="RandevuIslemleri" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+

@@ -1,0 +1,58 @@
+﻿@model PackageDetailModel
+@{
+    var offer = Model.Package.Offers.Where(p => p.IsDefault).OrderBy(p => p.Id).FirstOrDefault();
+    var oldAmount = offer.OldAmount.ToString("##0.00").Replace(',', '.').Split('.');
+    var newAmount = offer.NewAmount.ToString("##0.00").Replace(',', '.').Split('.');
+    var itemClass = Model.Package.IsPremium ? "premium" : "normal";
+}
+
+<div class="paket-satin-al @itemClass">
+    <div>
+        <span>Paket Adı:</span> <strong>@Model.Package.PackegeName</strong>
+    </div>
+    @if (Model.Package.IsDoctorSpec)
+    {
+        <div>
+            <span>Doktor Adı:</span>
+            <strong>@Model.Doctor.FullName()</strong>
+        </div>
+    }
+    else if (Model.Package.IsDoctor)
+    {
+        <div>
+            <span>Bölüm Adı:</span>
+            <select id="select-depatment" onchange="getDoctors(this.value)"></select>
+        </div>
+        <div>
+            <span>Doktor Adı:</span>
+            <select id="select-doctor"></select>
+        </div>
+    }
+    <div>
+        <span>Paket Süresi:</span>
+        <select id="paket-suresi" onchange="setNewPrices()">
+            @foreach (var item in Model.Package.Offers)
+            {
+                <option data-isfree="@item.IsFree" data-freetext="ÜCRETSİZ" data-oldamount="@item.OldAmount.ToString("##0.00").Replace(',', '.')" data-newamount="@item.NewAmount.ToString("##0.00").Replace(',', '.')" data-days="@offer.ValidityDates" value="@item.Id">@item.ValidityDates gün</option>
+            }
+        </select>
+    </div>
+    <div>
+        <span>Paket Fiyatı</span>
+        <strong id="paket-fiyati" class="premium-fiyat">
+            <div class="gecmis-fiyat" id="oldPrice">
+                @oldAmount[0]<span>.@oldAmount[1] ₺/@offer.ValidityDates gün</span>
+            </div>
+            @if (!offer.IsFree)
+            {
+                <div class="guncel-fiyat" id="newPrice">
+                    @newAmount[0]<span>.@newAmount[1] ₺/@offer.ValidityDates gün</span>
+                </div>
+            }
+            else
+            {
+                <div class="guncel-fiyat" id="newPrice">ÜCRETSİZ</div>
+            }
+        </strong>
+    </div>
+</div>

@@ -1,0 +1,32 @@
+﻿@{
+    ViewData["Title"] = "Anasayfa";
+    //ViewBag.isHome = 1;
+}
+<!-- Slider Starts -->
+@Html.Partial("Partials/_Slider.cshtml") 
+<!-- Slider Ends -->
+<!-- About Us Starts -->
+@Html.Partial("Partials/_AboutUs.cshtml") 
+<!-- About Us Ends -->
+<!-- Services Starts -->
+@Html.Partial("Partials/_Departments.cshtml") 
+<!-- Service Ends -->
+<!-- Call to Action Starts -->
+@Html.Partial("Partials/_PromotionFilm.cshtml") 
+<!-- Call to Action Ends -->
+<!-- Appointment Starts -->
+@Html.Partial("Partials/_Appointment.cshtml") 
+<!-- Appointment Ends -->
+<!-- News Starts -->
+@* @Html.Partial("_BlogSection.cshtml") *@
+<!-- News Ends -->
+<!-- Newsletter Starts -->
+@Html.Partial("Partials/_Newsletter.cshtml") 
+<!-- Newsletter Ends -->
+@section script {
+    <script src="~/js/custom-lightbox.js"></script>
+    <script>
+
+
+    </script>
+}

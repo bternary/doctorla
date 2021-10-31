@@ -1,0 +1,132 @@
+﻿@model Data.Domain.User
+@{
+    Layout = null;
+
+}
+
+<!DOCTYPE>
+
+<html lang="tr">
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Giris</title>
+    <link href="~/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+    <!--Default CSS-->
+    <link href="~/css/default.css" rel="stylesheet" type="text/css">
+    <!--Custom CSS-->
+    <link href="~/css/style.css" rel="stylesheet" type="text/css">
+    <!--Plugin CSS-->
+    <link href="~/css/plugin.css" rel="stylesheet" type="text/css">
+    <!--Flaticons CSS-->
+    <link href="~/fonts/flaticon.css" rel="stylesheet" type="text/css">
+    <!--Font Awesome-->
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
+    <style>
+
+
+
+
+        /* Alignment styles */
+
+        body, html {
+            height: 100%;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-image: url("../images/girisarka.jpg");
+            /* Full height */ height: 100%;
+            /* Center and scale the image nicely */
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+
+        #video .modal {
+            display: flex;
+            justify-content: center;
+        }
+
+        #video .modal-dialog {
+            width: 50%;
+            height: 50%;
+            margin-top: 10%;
+        }
+
+            #video .modal-dialog video {
+                width: 100%;
+                height: 100%;
+            }
+    </style>
+</head>
+<body class="" onload="telNo()">
+    <section class="login" style="padding:0;">
+        <div class="anasayfa-buton">
+            <a href="https://www.doctorla.co" class="btn btn1" title="Anasayfa"><i class="fas fa-home"></i> Doctorla</a>
+            <a href="https://www.doctorla.co" class="btn btn2" title="Anasayfa"><i class="fas fa-home"></i></a>
+        </div>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="d-xs-none d-sm-block  col-sm-5 girisfoto" style="height:100% !important; position:relative;">
+                    <img src="~/images/giris.png" alt="giris" />
+                </div>
+                <div class="col-sm-7 col-md-5 " style=" display:flex; justify-content:center; height:100%;">
+                    <div class="girisekran" id="girisekran">
+                        <form method="post">
+                            <div class="row">
+
+                                <div class="col-xs-12">
+                                    <div class="form-title">
+                                        <h2>Giriş</h2>
+                                        <p>Hesabınızı Oluşturmadıysanız Hemen Kaydolun</p>
+                                    </div>
+                                </div>
+                                <div class="form-group col-xs-12">
+                                    <label>E-Posta Adresi</label>
+                                    @Html.TextBoxFor(m => m.Email, new { @type = "email", @placeholder = "Lütfen Kayıtlı E-Posta Adresinizi Giriniz", @class = "form-control" })
+                                </div>
+                                <div class="form-group col-xs-12">
+                                    <label>Şifreniz</label>
+                                    @Html.TextBoxFor(m => m.Password, new { @type = "password", @placeholder = "Şifrenizi Giriniz", @class = "form-control" })
+                                </div>
+                                <div class="  col-12 col-sm-6 col-xs-6 comment-btn">
+                                    <button type="submit" class="btn"><i class="fa fa-arrow-circle-right"></i> Giriş Yap</button>
+                                </div>
+                                <div class=" col-12 col-sm-6 col-xs-6 comment-btn ">
+                                    <a href="#" onclick="kayitekran()" class="btn"><i class="fa fa-plus-circle"></i> Kayıt Ol</a>
+                                </div>
+                                <div class="col-xs-12">
+                                    <div class="login-accounts">
+                                        <div class="col-12">
+                                            <a href="#" class="forgotpw">Şifremi Unuttum</a>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+
+    <!-- *Scripts* -->
+    <script src="~/js/jquery-3.3.1.min.js"></script>
+    <script src="~/js/jquery.unobtrusive-ajax.min.js"></script>
+    <script src="~/js/bootstrap.min.js"></script>
+    <script src="~/js/plugin.js"></script>
+    <script src="~/js/main.js"></script>
+    <script src="~/js/custom-nav.js"></script>
+    <script src="https://unpkg.com/imask"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+
+
+
+</body>
+</html>

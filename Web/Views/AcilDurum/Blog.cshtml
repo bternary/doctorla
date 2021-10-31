@@ -1,0 +1,53 @@
+﻿@model List<Data.Domain.Blog>
+
+@{
+    ViewData["Title"] = "Blog";
+
+
+}
+<section class="blog">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-10 col-md-offset-1 col-sm-12">
+                <div class="blog-content">
+                    @foreach (var item in Model)
+                    {
+                        <div class="blog-item">
+
+                            <div class="blog-image">
+                                <a href="/Blog/Post/@item.SeoUrl">
+                                    <img src="@item.CoverPhoto" alt="@item.Title">
+                                </a>
+                            </div>
+                            <div class="news-content pad-top-20">
+                                <div class="news-title">
+                                    <div class="news-date mar-bottom-10">
+                                        <p class="white"><span>@item.IDate.ToString("dd")</span>@item.IDate.ToString("MMM")</p>
+                                    </div>
+                                    <h3><a href="/Blog/Post/@item.SeoUrl">@item.Title</a></h3>
+                                </div>
+                                <div class="news-author mar-bottom-10">
+                                    @{
+                                        var categorys = item.Category.Split(",");
+                                    }
+
+                                    @foreach (var category in categorys)
+                                    {
+                                        <a href="/Blog/category/@category" class="link">@category</a>
+                                    }
+
+                                </div>
+                                <p>
+                                    @Html.Raw(item.ShortDescription)
+                                </p>
+                                <a href="/Blog/Post/@item.SeoUrl" class="mar-top-10 text-btn">Devamını Oku <i class="fa fa-angle-right"></i></a>
+                            </div>
+                        </div>
+                    }
+
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+

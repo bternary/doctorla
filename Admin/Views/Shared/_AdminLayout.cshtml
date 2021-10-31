@@ -1,0 +1,163 @@
+﻿
+@{
+    Layout = null;
+}
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *,PagedList.Core.Mvc
+<!DOCTYPE html>
+
+<html lang="tr">
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Swasthye is a Medical and Health HTML template">
+
+    <title>Doctorla Doktor Yetkili Paneli</title>
+    <!-- Favicon -->
+    <link rel="shortcut icon" type="image/x-icon" href="images/favicon.png">
+    <!-- Bootstrap core CSS -->
+    <link href="~/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+
+    <!--Default CSS-->
+    <link href="~/css/default.css" rel="stylesheet" type="text/css">
+
+    <!--Plugin CSS-->
+    <link href="~/css/plugin.css" rel="stylesheet" type="text/css">
+    <!--Dashboard CSS-->
+    <link href="~/css/dashboard.css" rel="stylesheet" type="text/css">
+    <link href="~/css/icons.css" rel="stylesheet" type="text/css">
+
+    <!--Font Awesome-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
+
+    <link href="~/css/toastr.min.css" rel="stylesheet" type="text/css">
+    <link href="~/css/randevutakvim.css" rel="stylesheet" />
+    <link href="~/css/style.css" rel="stylesheet" />
+    <link href="~/fonts/flaticon.css" rel="stylesheet" />
+    <!-- *Scripts* -->
+    <script src="~/js/jquery-3.3.1.min.js"></script>
+    <script src="~/js/bootstrap.min.js"></script>
+    <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+    <script src="~/js/chart.js"></script>
+    <script src="~/js/dashboard-custom.js"></script>
+    <script src="~/js/jpanelmenu.min.js"></script>
+    <script src="~/js/toastr.min.js"></script>
+    <script src="~/js/jquery.unobtrusive-ajax.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.15.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.15.1/firebase-messaging.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.15.1/firebase-analytics.js"></script>
+    <script src="~/firebase.js"></script>
+    @RenderSection("css", required: false)
+    <style>
+        .dashboard-nav ul li.active ul {
+            max-height: 1000px !important;
+        }
+    </style>
+</head>
+<body>
+    <div id="container-wrapper">
+        <!-- Dashboard -->
+        <div id="dashboard">
+
+            @Html.Partial("~/Views/Shared/_DashboardMenu.cshtml")
+
+            <div class="dashboard-content">
+                @RenderBody()
+            </div>
+
+            <div class="copyrights">
+                <p>2020 <i class="fa fa-copyright" aria-hidden="true"></i> Doctorla</p>
+            </div>
+
+        </div>
+        <!-- Dashboard / End -->
+    </div>
+    <!-- end Container Wrapper -->
+
+
+
+    <div id="back-to-top">
+        <a href="#"></a>
+    </div>
+
+    <script type="text/javascript">
+        function OnSuccess(data) {
+            console.log(data);
+            if (data.responseJSON.status == 1) {
+                toastr.success(data.responseJSON.message, data.responseJSON.title);
+            } else {
+                toastr.error(data.responseJSON.message, data.responseJSON.title);
+            }
+        }
+        function OnFailure(data) {
+            toastr.error("Bu İşlem Sırasında Bir Hata Oluştu. Tekrarı Durumunda Lütfen Bu Hatayı Bize Bildiriniz", "Hata Oluştu");
+        }
+
+        function searchuser() {
+            var name = document.getElementById("searchuser").value;
+            if (name)
+                window.location.href = "/AdminPanel/GecmisRandevular?name=" + name;
+            else
+                toastr.error('Lütfen Hastanızın Adını ve Soyadını Giriniz', 'İsim Kısmı Boş');
+        }
+        function changepass() {
+            var newpass;
+
+
+            Swal.fire({
+                title: '<strong>Yeni Şifre Giriniz</strong>',
+                html: '<input type="text" id="newpass" name="newpass" class="form-control" placeholder="En Az 5 Harf Giriniz"  />',
+                showCancelButton: true,
+                confirmButtonText: 'Şifreyi Değiştir',
+                cancelButtonText: 'İptal',
+                cancelButtonColor: 'red',
+                confirmButtonColor: 'green',
+                showLoaderOnConfirm: true,
+            }).then((result) => {
+                if (result.value) {
+                    var newpass = document.getElementById("newpass").value;
+                    $.ajax({
+                        url: '/AdminPanel/ChangePassword',
+                        data: { newpass: newpass },
+                        type: 'post',
+                        dataType: 'json',
+                        success: function (data) {
+                            if (data.status == 1) {
+                                Swal.fire({
+                                    title: data.title,
+                                    text: data.message,
+                                    confirmButtonText: 'Tamam',
+                                    confirmButtonColor: 'green',
+                                    icon: 'success',
+                                    showConfirmButton: true,
+                                })
+                            }
+                            else {
+                                Swal.fire({
+                                    title: data.title,
+                                    text: data.message,
+                                    confirmButtonText: 'Tamam',
+                                    confirmButtonColor: 'red',
+                                    icon: 'error',
+                                    showConfirmButton: false,
+                                })
+                                setTimeout(function () { $('#passchangebtn').trigger('click'); }, 2000)
+
+                            }
+                        },
+                        error: function (data) {
+                            toastr.error('Silme Güncelleme. Lütfen Bu Durumu Bize Bildiriniz..', 'Hata!');
+                        }
+                    });
+                }
+            })
+        }
+    </script>
+
+    @RenderSection("scripts", required: false)
+
+</body>
+</html>

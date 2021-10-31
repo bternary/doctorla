@@ -1,0 +1,25 @@
+﻿@model Data.Domain.Donations
+@{
+    ViewData["Title"] = "Ödeme Başarılı";
+}
+<section class="odeme-basarili">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4">
+                <img src="~/AppointmentFiles/destekbelgesi_@(Model.Id).jpeg" alt="Dayanışma Belgesi" class="img-fluid" />
+            </div>
+            <div class="col-md-8 odeme-basarili-icerik">
+                <div class="odeme-basarili-icon">
+                    <i class="far fa-check-circle"></i>
+                </div>
+                <div class="odeme-basarili-metin">
+                    <h2>SAYIN @Model.Name DESTEĞİNİZ İÇİN TEŞEKKÜR EDERİZ</h2>
+                    <p>
+                        Doctorla olarak yapmış olduğunuz destek için çok teşekkür ederiz. Bu yaptığınız yardım için size özel olarak bir dayanışma belgesi hazırladık. İlgili belgeyi
+                        <a href="~/AppointmentFiles/destekbelgesi_@(Model.Id).jpeg" download>buraya tıklayarak</a> indirebilirsiniz.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

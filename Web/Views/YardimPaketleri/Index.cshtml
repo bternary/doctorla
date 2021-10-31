@@ -1,0 +1,219 @@
+@{
+    ViewData["Title"] = "Dayanışma Hareketi";
+}
+@section css{
+    <link href="~/css/toastr.min.css" rel="stylesheet" type="text/css">
+
+}
+
+<section class="sponsor">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12" style="text-align:center;">
+                <h1><span>DESTEK OLMAK</span> İSTER MİSİNİZ?</h1>
+            </div>
+        </div>
+        <div class=" ortala">
+
+            <div class="">
+                <div class="card sponsorCard">
+                    <div class="card-header text-align-center"><h4>ÖĞRENCİ BURSU</h4></div>
+                    <div class="sponsorLogo">
+                        <img src="~/images/AB-WEB-LOGO.png" class="card-img-top " alt="A&B Strategic Management Consulting">
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group paketIcerigi" style="margin-bottom:0px;">
+                            <li class="list-group-item"><i class="far fa-check-circle"></i> Yurt Desteği</li>
+                            <li class="list-group-item"><i class="far fa-check-circle"></i> Okul İhtiyaçları</li>
+                            <li class="list-group-item"><i class="far fa-check-circle"></i> Giyim Giderleri</li>
+                            <li class="list-group-item"><i class="far fa-check-circle"></i> Aylık 200 TL Destek</li>
+                            <li class="list-group-item"><i class="far fa-check-circle"></i> Ulaşım Masrafları</li>
+                        </ul>
+                        <div class="destekOlButon">
+                            <a id="destekbtn-1" href="javascript:destekolalert(1,'AB Academy ( Kız Öğrencilerine Burs)')" class="btn btn-primary">DESTEK OL</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="">
+                <div class="card sponsorCard">
+                    <div class="card-header text-align-center"><h4>MİNİK DOSTLAR PAKETİ</h4></div>
+                    <div class="sponsorLogo">
+                        <img src="~/images/pet.png" class="card-img-top" alt="felix" style="width:110px;">
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group paketIcerigi" style="margin-bottom:0px;">
+                            <li class="list-group-item"><i class="far fa-check-circle"></i> Aşı</li>
+                            <li class="list-group-item"><i class="far fa-check-circle"></i> Bakım</li>
+                            <li class="list-group-item"><i class="far fa-check-circle"></i> Mama</li>
+                            <li class="list-group-item"><i class="far fa-check-circle"></i> Kulübe/Barınak</li>
+                        </ul>
+                        <div class="destekOlButon">
+                            <a id="destekbtn-2" href="javascript:destekolalert(2,'Minik Dostlar Pakedi')" class="btn btn-primary">DESTEK OL</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<section class="belge">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 dayanismaBelgesi">
+                <img src="~/images/dayanismahareketi.jpg" alt="Dayanışma Belgesi" class="img-fluid" />
+            </div>
+            <div class="col-md-6 dayanismaBelgesiIcerik">
+                <h2>DAYANIŞMA BELGESİ</h2>
+                <p>Online Sağlıkcım’dan hizmet alırken yapacağınız bağışların belirli bir kısmı, geçim zorluğu yaşayan ailelerden sokak hayvanlarına kadar ihtiyacı olan kişilere ulaşıyor. Bu kapsamda toplumsal değerlere katkı sağlarken, kişiye özel olarak hazırladığımız dayanışma belgesinin sahibi oluyorsunuz.</p>
+                <p>Unutmayın ki, toplumu bireyler oluşturur ve toplum sağlığı için bireylerin iyi olması kritik öneme sahiptir.</p>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+<script src="https://unpkg.com/imask"></script>
+@section script{
+    <script src="~/js/toastr.min.js"></script>
+}
+
+<script type="text/javascript">
+    function tabActive(tabid) {
+        $(".tab-menu").css("display", "none")
+        $("#tabid" + tabid).css("display", "block")
+    }
+
+    function videobaslat(videoid) {
+        var vid = document.getElementById("korona-korunma-video");
+
+        vid.play();
+        document.getElementById("ply-btn").style.display = "none";
+
+    }
+    function butonkaybet() {
+
+        document.getElementById("ply-btn").style.display = "none";
+
+    }
+    function validateEmail(email) {
+  const re = /^(([^<>()[\]\\.,;:\s@@\"]+(\.[^<>()[\]\\.,;:\s@@\"]+)*)|(\".+\"))@@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  return re.test(email);
+}
+    var name = "", phone = "", email = "", price = "", donationcompanyname;
+    function destekolalert(btnid, DonationCompany) {
+        Swal.fire({
+            html: '<form class="destekolalert "> ' +
+                '<div class="destekolalert-baslik form-group" style="text-align:center; font-size:1.2rem;"><strong>' + DonationCompany + '</strong></div>' +
+                '<div class="destekolalert-adsoyad form-group"><label class="form-control-label" for="adsoyad">Ad-Soyad</label><input type="text" id="adsoyad" class="form-control is-invalid" value="' + name + '" name="adsoyad" placeholder="Ad-Soyad" required />  </div>' +
+                '<div class="destekolalert-eposta form-group"><label class="form-control-label" for="eposta">E-Posta Adresi</label><input type="email" id="eposta" class="form-control" value="' + email + '" name="eposta" placeholder="E-Posta Adresi" required /> </div>' +
+                '<div class="destekolalert-telefonno form-group"><label class="form-control-label" for="telefonno">Telefon Numarası</label><input type="tel" class="form-control" value="' + phone + '" id="telefonno" name="telefonno" placeholder="Telefon Numarası"   required /></div>' +
+                '<div class="destekolalert-price form-group"><label class="form-control-label" for="price">Tutar Giriniz (₺)</label><input type="number" onkeydown="javascript: return event.keyCode === 8 || event.keyCode === 46 ? true : !isNaN(Number(event.key))" class="form-control" value="' + price + '" id="price" name="price" placeholder="Bağış Tutarı"  required /></div>' +
+                '</form>',
+            onOpen: telNo,
+            customClass: {
+                confirmButton: 'destekolalert-destekbuton',
+            },
+            showLoaderOnConfirm: true,
+
+            preConfirm: () => {
+                name = document.getElementById("adsoyad").value.toString();
+                phone = document.getElementById("telefonno").value.toString();
+                email = document.getElementById("eposta").value.toString();
+                price = document.getElementById("price").value.toString();
+
+                donationcompanyname = DonationCompany;
+                if (name == "" || phone.indexOf('_') > -1  || email == "" || price == "") {
+                    Swal.showValidationMessage(
+                        'Lütfen Boş Yer Bırakmayınız'
+                    )
+                } else if (!validateEmail(email)) {
+                    Swal.showValidationMessage(
+                        'Lütfen Geçerli Bir Mail Adresi Girin'
+                    )
+                }
+            },
+            showConfirmButton: true,
+            confirmButtonText: 'Destek Ol',
+        }).then((result) => {
+            if (result.value) {
+                name = document.getElementById("adsoyad").value.toString();
+                phone = document.getElementById("telefonno").value.toString();
+                email = document.getElementById("eposta").value.toString();
+                price = document.getElementById("price").value.toString();
+
+                donationcompanyname = DonationCompany;
+                if (name == "" || phone == "" || email == "" || price == "") {
+                    toastr.error('Lütfen Boş Yer Bırakmayınız..', 'Dikkat');
+                    document.getElementById('destekbtn-' + btnid).click();
+                }
+            
+                else {
+                    $.ajax({
+                        url: '/Saglikcim/Donation',
+                        data: { name: name, phone: phone, email: email, DonationCompany: donationcompanyname, Price: price },
+                        type: 'POST',
+                        dataType: 'json',
+                        success: function (data) {
+                            if (data.status == 1) {
+                                Swal.fire({
+                                    html: '<iframe src="' + data.token + '" id="paytriframe" frameborder="0" scrolling="yes" style="width: 100%;height:580px"></iframe>',
+                                    showCancelButton: false,
+                                    timer: 999999,
+                                    showConfirmButton: false,
+                                });
+                            } else {
+                                Swal.fire({
+                                    title: 'Hata ile Karşılaşıldı',
+                                    text: 'Ödeme Sayfasına Yönlendirilemiyorsunuz',
+                                    icon: 'error',
+                                    timer: 2000,
+                                    showConfirmButton: false,
+                                })
+                            }
+
+                        },
+                        error: function (data) {
+                            $.ajax({
+                                url: '/Saglikcim/ErrorLogs',
+                                data: { page: "YardımPaketleri  - Index - destekolalert" },
+                                type: 'post',
+                                dataType: 'json',
+                                success: function (data) {
+
+                                },
+                                error: function (data) {
+
+                                }
+                            });
+                            Swal.fire({
+                                title: 'Hata ile Karşılaşıldı',
+                                text: 'Sistemsel bir hata ile karşılaşıldı.Lütfen sayfayı Yenileyiniz ve bu durumu bize bildiriniz',
+                                icon: 'error',
+                                timer: 2000,
+                                showConfirmButton: false,
+                            })
+                        }
+                    });
+                }
+            }
+        })
+
+    }
+ 
+
+    function telNo() {
+        var phoneMask = IMask(
+            document.getElementById('telefonno'), {
+            mask: '+9\\0 (000) 000-00-00',
+            lazy: false,
+            placeholderChar: '_'
+        });
+    }
+
+</script>
+

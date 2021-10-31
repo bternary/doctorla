@@ -1,0 +1,69 @@
+<style>
+    #x_023_animated_layers, #x_023_animated_layers > .carousel-inner, #x_023_animated_layers > .carousel-inner > .item {
+        height: 480px !important;
+    }
+
+    .x_023_animated_layers_txt {
+        top: 16.3%;
+    }
+
+    .x_023_animated_layers_img > img {
+        width: 90%;
+    }
+</style>
+
+<section class="covidpages slider">
+    <!-- Paradise Slider -->
+    <div id="x_023_animated_layers" class="carousel slide x_023_animated_layers_indicators x_023_animated_layers_control_button thumb_scroll_x  ps_easeOutInCubic" data-ride="carousel" data-pause="hover" data-interval="8000" data-duration="2000">
+        <!-- Indicators -->
+        <ol class="carousel-indicators">
+            <!-- 1st Indicator -->
+            <li data-target="#x_023_animated_layers" data-slide-to="0" class="active"></li>
+            <!-- 2nd Indicator -->
+            <!-- 3rd Indicator -->
+            @* <li data-target="#x_023_animated_layers" data-slide-to="2"></li> *@
+        </ol>
+        <!-- Wrapper For Slides -->
+        <div class="carousel-inner" role="listbox">
+            <!-- 1st Slide -->
+           
+            <!-- 2nd Slide -->
+            <div class="item active">
+                <div class="x_023_animated_layers_content x_023_animated_layers_content_right">
+                    <div class="x_023_animated_layers_txt">
+                        <!-- Text -->
+                        <h2 data-animation="animated fadeInLeft">COVID-19 DAİR HER ŞEY</h2>
+                        <p data-animation="animated fadeInLeft">Korona hakkında en güncel bilgiler, diyet programları, aktiviteler ve doktorlarımızın sizler için yazdığı yazılara bloğumuzdan ulaşabilirsiniz. </p>
+                        @* <p data-animation="animated fadeInLeft">Visit us Now or Make an Appointment! </p> *@
+                        <a href="/Blog" data-animation="animated fadeInRight" class="btn mar-top-15">BLOG SAYFASI </a>
+                    </div> <!-- /Text -->
+                    <div class="x_023_animated_layers_img" data-animation="animated fadeInDown">
+                        <!-- Image -->
+                        <img src="~/images/acil_durum/blog5.png" alt="COVID-19 DAİR HER ŞEY">
+                    </div> <!-- /Image -->
+                </div> <!-- /Content -->
+            </div> <!-- /2nd Slide -->
+        </div> <!-- End of Wrapper For Slides -->
+        <!-- Left Control -->
+        <a class="left carousel-control" href="#x_023_animated_layers" role="button" data-slide="prev">
+            <span class="fa fa-angle-left"></span>
+        </a>
+        <!-- Right Control -->
+        <a class="right carousel-control" href="#x_023_animated_layers" role="button" data-slide="next">
+            <span class="fa fa-angle-right"></span>
+        </a>
+    </div> <!-- End Paradise Slider -->
+    <div class="overlay"></div>
+</section>
+
+<script src="//code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+@*<script>
+    $(document).ready(function () {
+        $("#x_023_animated_layers").swiperight(function () {
+            $("#x_023_animated_layers").carousel('prev');
+        });
+        $("#x_023_animated_layers").swipeleft(function () {
+            $("#x_023_animated_layers").carousel('next');
+        });
+    });
+</script>*@ 

@@ -1,0 +1,221 @@
+﻿@model List<Data.Domain.DailyCheckDetail>
+@using Data.Domain
+@{
+    List<DailyCheckPackagesValues> packagesValues= ViewBag.PackageValues as List<DailyCheckPackagesValues>;   
+}
+<div class="modal-dialog" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Ölçüm Ekle</h5>
+            <button type="button" class="close modal-kapat" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="hatirlatici-form">
+                <div class="hatirlatici-form-group">
+                    <label for="degerler">Değer Seçiniz</label>
+                    <div>
+                        <select class="js-example-basic-multiple" name="states[]" id="degerler" multiple="multiple">
+                            @foreach (var item in packagesValues)
+                            {
+                                if (Model.FirstOrDefault(x => x.ValuesTitleId == item.Id) != null)
+                                {
+                                    <option value="@item.Id" selected>@item.Name</option>
+                                }
+                                else
+                                {
+                                    <option value="@item.Id">@item.Name</option>
+                                }
+                            }
+                        </select>
+                    </div>                    
+                </div>
+            </div>
+        </div> 
+
+        @*<div class="modal-body" style="display: block;">
+            <label> Maneul ölçüm ekleyin: </label>
+            <div class="form-group row">
+                <label for="inputValueName" class="col-sm-2 col-form-label">Ölçüm Adı: </label>
+                <div class="col-sm-10">
+                    <input type="email" class="form-control" id="inputValueName" placeholder="Ölçüm adını giriniz" required>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="inputValueMin" class="col-sm-2 col-form-label">Min. Değer: </label>
+                <div class="col-sm-4">
+                    <input type="email" class="form-control" id="inputValueMin" placeholder="Minimum ölçüm değerini giriniz" required>
+                </div>
+                <label for="inputValueMaks" class="col-sm-2 col-form-label">Maks. Değer: </label>
+                <div class="col-sm-4">
+                    <input type="email" class="form-control" id="inputValueMaks" placeholder="Maksimum ölçüm değerini giriniz" required>
+                </div>
+            </div>
+            <div class="form-group row">                
+                <div class="col-md-6">
+                    <button type="button" class="btn kaydet" onclick="DoktorOlcumEkle()"> Kaydet</button>
+                </div>
+                <div class="col-md-6">
+                    <button type="button" class="btn iptal" data-dismiss="modalManuelOlcum"> İptal</button>
+                </div>
+            </div>
+        </div>*@
+
+        <div class="modal-footer">
+            <button type="button" class="btn iptal" data-dismiss="modal">Kapat</button>
+            <button type="button" class="btn kaydet" onclick="updateUserDailycheckDetails()">Kaydet</button>
+        </div>
+    </div>
+</div>>
+<script>
+
+    // deneme
+    @*function DoktorOlcumEkle() {
+            Swal.fire({
+                title: '<strong>Ölçüm Ekle</strong>',
+                html: '<div class="hatirlatici-form">' +
+                    '<div class="hatirlatici-form-group" >' +
+                    '<label for="olcumadi">Ölçüm Adı</label><div><input type="text" name="olcumadi" value="" id="olcumadi" placeholder="Ölçüm Adı" /></div>' +
+                    '</div>' +
+                    '<div class="hatirlatici-form-group">' +
+                    '<label for="minValue">En Düşük Değer</label><div><input type="number" min="0" step="0.01" name="minValue" value="0" id="minValue" placeholder="En Düşük Değer" onblur="kontrol(this.id)" /></div>' +
+                    '</div> ' +
+                    '<div class="hatirlatici-form-group">' +
+                    '<label for="maxValue">En Yüksek Değer</label><div><input type="number" min="0" step="0.01" name="maxValue" value="0" id="maxValue" placeholder="En Yüksek Değer" onblur="kontrol(this.id)"/></div>' +
+                    '</div> ' +
+
+                    '</div>',
+                showCloseButton: true,
+                customClass: 'swal-update',
+                showCancelButton: true,
+                focusConfirm: false,
+                confirmButtonText:
+                    'Yeni Ölçüm Ekle',
+                confirmButtonAriaLabel: 'add',
+                cancelButtonColor: '#d33',
+                cancelButtonText:
+                    'İptal Et',
+                cancelButtonAriaLabel: 'cancel'
+            }).then((result) => {
+                if (result.value) {                    
+                    var name = document.getElementById("olcumadi").value;
+                    minValue = document.getElementById("minValue").value;
+                    maxValue = document.getElementById("maxValue").value;
+                    doctorId = @Model.FirstOrDefault().DailyCheck.NurseId;
+                    //var mail = document.getElementById("emailInput").value;
+                    //var uyariBasarili = document.getElementById("sifreSifirlamaBasarili");
+                    //var uyariBasarisiz = document.getElementById("sifreSifirlamaBasarisiz");
+                    $.ajax({
+                        url: '/DoctorPanel/DoktorOlcumEkle',
+                        data: { NameOlcum: name, minValue: minvalue, maxValue: maxvalue, doctorId: doctorid },
+                        type: 'post',
+                        dataType: 'json',
+                        success: function (data) {
+                            console.log(data);
+                            if (data.status == 1) {
+                                toastr.success(data.message, data.title);
+                            }
+                            else if (data.status == -1) {
+                                toastr.error(data.message, data.title);
+                            }
+                        },
+                        error: function (data) {
+                            toastr.error("Bir Hata oluştu","Lütfen Bize Bildiriniz");
+                        }
+                    });
+
+                    }
+                }
+            });
+        }*@
+
+    var silinmisler = new Array();
+    var eklenen = new Array();
+    var silinmis='';
+    $(document).ready(function () {
+        $("#degerler").select2();
+        $("#degerler").data('originalvalues', []);
+        $("#degerler").on('change', function (e) {
+            var that = this;
+            removed = []
+
+            $($(this).data('originalvalues')).each(function (k, v) { //nerde alıyon
+                if (!$(that).val()) {
+                    removed[removed.length] = v;
+                    return false;
+                }
+                if ($(that).val().indexOf(v) == -1) {
+                    removed[removed.length] = v;
+                }
+            });
+
+
+            if ($(this).val()) {
+                $(this).data('originalvalues', $(this).val());
+            } else {
+                $(this).data('originalvalues', []);
+            }
+
+            if (removed.length > 0 && silinmisler.indexOf(removed.toString())==-1) {
+                silinmisler.push(removed.toString());
+                // SİLİNMİŞ DİZİSİ
+            }
+        });
+       var items = $('#degerler').select2('data');
+        items.forEach(function (item) {
+            selected.push(item.id.toString());
+        })
+
+    });
+
+    var selected = new Array();
+    function updateUserDailycheckDetails() {
+        var items = $('#degerler').select2('data');
+        eklenen = new Array();
+        var news = new Array();
+         items.forEach(function (item) {
+            news.push(item.id);
+        })
+        selected.forEach(function (item) {
+            if (news.indexOf(item) == -1) {
+              console.log("4:"+item);
+                silinmisler.push(item);
+            }
+        })
+
+        items.forEach(function (item) {
+            if (silinmisler.indexOf(item.id) != -1)
+                silinmisler.pop(silinmisler.indexOf(item.id));
+            eklenen.push(item.id);
+        })
+         $.ajax({
+            url: '/DoctorPanel/updateUserDailycheckDetails',
+            data: { Id: updatedailycheckdetailId,deleted:silinmisler,added:eklenen },
+            type: 'POST',
+            dataType: 'json',
+             success: function (data) {
+                 console.log(data);
+                toastr.success('Veriler Başarılı Bir Şekilde Getirildi', 'Başarılı!');
+            },
+             error: function (data) {
+                 $.ajax({
+                     url: '/DoctorPanel/ErrorLogs',
+                     data: { page: "DoctorPanel  - _OlcumBelirle - updateUserDailycheckDetails" },
+                     type: 'post',
+                     dataType: 'json',
+                     success: function (data) {
+
+                     },
+                     error: function (data) {
+
+                     }
+                 });
+                toastr.error('Veriler Yüklenirken Bir Sorunla Karşılaşıldı. Lütfen Bu Durumu Bize Bildiriniz..', 'Hata!');
+            }
+        });
+        console.log(eklenen);
+        console.log(silinmisler);
+    }
+
+</script>

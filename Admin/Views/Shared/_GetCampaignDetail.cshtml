@@ -1,0 +1,62 @@
+﻿@model Data.Domain.Campaign
+<@{
+    var booltype = new List<SelectListItem>(){
+                       new SelectListItem { Value = " False", Text="False" },
+                    new SelectListItem { Value="True" , Text="True" }
+                    };
+}
+<div class="hatirlatici-form">
+    <div class="hatirlatici-form-group">
+        <label for="name">Kampanya adı</label>
+        <div>
+            <input type="text" name="Name" value="@Model.Name" id="Name" placeholder="Kampanya Adı" />
+        </div>
+    </div>
+    <div class="hatirlatici-form-group">
+        <label for="Code">Kampanya Kodu</label>
+        <div>
+            <input type="text" name="Code" value="@Model.Code" id="Code" placeholder="Kampanya Kodu" />
+        </div>
+    </div>
+    <div class="hatirlatici-form-group">
+        <label for="CreditAmount">Kampanya Tutarı</label>
+        <div>
+            <input type="number" name="CreditAmount" value="@Model.Value.ToString().Replace(",",".")" id="CreditAmount" />
+        </div>
+    </div>
+    <div class="hatirlatici-form-group">
+        <label for="StartDate">Kampanya Başlangıç</label>
+        <div>
+            <input data-val="true" data-val-range="Kampanya Başlangıç Tarihi Giriniz!"
+                   data-val-range-max="01/01/2999 00:00:00"
+                   data-val-range-min="01/01/1800 00:00:00"
+                   data-val-required="Kampanya Başlangıç Tarihi Giriniz!"
+                   id="StartDate" name="StartDate" type="date" value="@Model.StartDate.ToString("yyyy-MM-dd")">
+        </div>
+    </div>
+    <div class="hatirlatici-form-group">
+        <label for="EndDate">Kampanya Bitiş</label>
+        <div>
+            <input data-val="true" data-val-range="Kampanya Bitiş Tarihi Giriniz!"
+                   data-val-range-max="01/01/2999 00:00:00"
+                   data-val-range-min="01/01/1800 00:00:00"
+                   data-val-required="Kampanya Bitiş Tarihi Giriniz!"
+                   id="EndDate" name="EndDate" type="date" value="@Model.EndDate.ToString("yyyy-MM-dd")">
+        </div>
+    </div>
+    <div class="hatirlatici-form-group">
+        <label for="IsActive">Aktif</label>
+        <div>
+            <select asp-for="CampaignType" asp-items="Html.GetEnumSelectList<Domain.Enums.CampaignType>()">
+                <option selected="selected" value="">Kampanya Tipi Seçiniz</option>
+            </select>
+        </div>
+    </div>
+    <div class="hatirlatici-form-group">
+        <label for="IsActive">Aktif</label>
+        <div>
+            <select asp-for="IsActive" asp-items="booltype">
+            </select>
+        </div>
+    </div>
+</div>

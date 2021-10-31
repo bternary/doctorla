@@ -1,0 +1,267 @@
+﻿@model PagedList.Core.PagedList<Data.Domain.Appointment>
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *,PagedList.Core.Mvc
+@{
+    ViewData["Title"] = "GecmisRandevular";
+    Layout = "~/Views/DoctorPanel/Shared/_DoctorLayout.cshtml";
+    ViewBag.GecmisRandevular = "active";
+}
+
+
+    <div class="container" style="width:100%">
+        <div class="row">
+            <div class="col-md-12">
+                <div id="tabid1">
+                    <div class="dashboard-content" style="padding: 0px 0px 0px 0px;margin-left: 0px">
+                        <div class="row">
+                            <div class="col-lg-12 col-md-12 col-xs-12">
+                                <div class="dashboard-list-box">
+                                    <h4 class="gray">Randevularım</h4>
+                                    <div class="table-box">
+                                        <table class="basic-table booking-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Ad Soyad</th>
+                                                    <th>Bölüm</th>
+                                                    <th>Randevu Tarih</th>
+                                                    <th>Durum</th>
+                                                    <th>İşlemler</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach (var item in Model)
+                                                {
+                                                <tr>
+                                                    <td>@item.User.Name @item.User.SurName</td>
+                                                    <td>@item.Department.Name</td>
+                                                    <td class="t-id">@item.AppointmentDate</td>
+                                                    @if (item.AppointmentFinishDate < DateTime.Now)
+                                                    {
+                                                        <td><span class="unpaid t-box "><a style="color:white;cursor:pointer;">Görüşme Bitti</a></span></td>
+                                                    }
+                                                    else if (item.UserId == 1)
+                                                    {
+                                                        <td><span class="paid t-box " style="background:#1DB9A0"><a style="color:white;cursor:pointer;"> Randevu Boş</a></span></td>
+                                                    }
+                                                    else if (item.Status == -1 && item.UserId != 1)
+                                                    {
+                                                        <td><span class="paid t-box " style="background:gray"><a style="color:white;cursor:pointer;"> Randevuyu İptal Ettiniz</a></span></td>
+                                                    }
+                                                    else if (item.AppointmentFinishDate > DateTime.Now && !item.IsDeleted && item.Status == 0)
+                                                    {
+                                                <div class="col-xs-12">
+                                                    @if (DateTime.Now.AddMinutes(10) > item.AppointmentDate)
+                                                    {
+                                                        <td><span class="paid t-box " style="background:#4287f5"><a id="popupSessionbtn" href="/Doctorla/LiveChat/@item.SessionKey" target="_blank">Görüşmeyi Başlat</a></span></td>
+                                                    }
+                                                    else
+                                                    {
+                                                        <td><span class="paid t-box"><a style="color:white;cursor:pointer;"> Randevu Bekleniyor..</a></span></td>
+                                                    }
+                                                </div>
+
+                                                    }
+                                                    else
+                                                    {
+                                                        <td></td>
+                                                    }
+
+
+
+                                                    <td class="islemler-yazi">
+                                                        @if (item.UserId != 1)
+                                                        {
+
+                                                            <a id="popupDetailbtn" onclick="getUserDetailToModal('@item.SessionKey')" data-toggle="modal" data-target="#userdetailmodalas" href="#" class="blue">Detaylar</a>
+                                                        }
+                                                        @if (item.AppointmentDate > DateTime.Now && item.Status == 0)
+                                                        {
+                                                            <a id="popopDeletebtn" onclick="deleteAppointment('@item.SessionKey','')" class="red" title="Randevuyu Sil/İptal Et">Sil/İptal Et</a>
+                                                        }
+                                                    </td>
+
+
+
+                                                </tr>
+                                                }
+
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                @*<div class="pagination-container">
+                                    <nav class="pagination">
+                                        <ul>
+                                            <li><a href="#" class="current-page">1</a></li>
+                                            <li><a href="#">2</a></li>
+                                            <li><a href="#"><i class="sl sl-icon-arrow-right"></i></a></li>
+                                        </ul>
+                                    </nav>
+                                </div>*@
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 sayfalama">
+                <div class="sayfalama-bilgi">Toplam <span>@Model.TotalItemCount</span> Kayıt Bulunuyor. Şu anda <span>@Model.FirstItemOnPage</span> - <span>@Model.LastItemOnPage</span> Arasındaki Kayıtlar Gösteriliyor. </div>
+
+                <pager list="@Model" asp-controller="DoctorPanel" options="@PagedList.Core.Mvc.PagedListRenderOptions.Bootstrap4PageNumbersOnly" asp-action="GecmisRandevular" />
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal fade goruntulu-konusma" id="userdetailmodal" tabindex="1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <span class="close" style="color: red;" onclick="leaveMeeting();">&times;</span>
+    </div>
+
+
+<script type="text/javascript">
+    function getUserDetailToModal(sessionkey) {
+        $.ajax({
+            url: '/DoctorPanel/GetUserDetail',
+            data: { sessionkey: sessionkey },
+            type: 'GET',
+            dataType: 'html',
+            success: function (data) {
+                $("#userdetailmodal").html(data);
+                toastr.success('Veriler Başarılı Bir Şekilde Getirildi', 'Başarılı!');
+                $('#userdetailmodal').modal('show');
+            },
+            error: function (data) {
+                $.ajax({
+                    url: '/DoctorPanel/ErrorLogs',
+                    data: { page: "DoctorPanel  - GecmisPaketler - getUserDetailToModal" },
+                    type: 'post',
+                    dataType: 'json',
+                    success: function (data) {
+
+                    },
+                    error: function (data) {
+
+                    }
+                });    
+                toastr.error('Veriler Yüklenirken Bir Sorunla Karşılaşıldı. Lütfen Bu Durumu Bize Bildiriniz..', 'Hata!');
+            }
+        });
+    }
+
+    function deleteAppointment(_sessionkey, _deleteReason) {
+        $.ajax({
+            url: '/DoctorPanel/deleteAppointment',
+            data: { sessionkey: _sessionkey, deleteReason: _deleteReason },
+            type: 'post',
+            dataType: 'json',
+            success: function (data) {
+                if (data.status == 1) {
+                    Swal.fire({
+                        title: data.title,
+                        text: data.message,
+                        icon: 'success',
+                        timer: 4000,
+                        showConfirmButton: false,
+                    })
+                }
+                else if (data.status == -1) {
+                    Swal.fire({
+                        title: data.title,
+                        text: data.message,
+                        icon: 'error',
+                        timer: 4000,
+                        showConfirmButton: false,
+                    })
+                    
+                    setTimeout(function (){ location.reload()},600);
+                }
+                else {
+                    Swal.fire({
+                        title: '<strong>Lütfen Alınmış Olan Randevunun İptal Sebebini Giriniz. <span style="color:red"> (Sözleşmeniz Gereği 1 Ay İçerisinde 3 Alınmış Randevuyu İptal Edebilirsiniz.)</span></strong>',
+                        html: '<input type="textarea" min="10" cols="20" rows="20" id="deletereason" name="deletereason" class="form-control" placeholder="En Az 10 Harf Giriniz" required />',
+                        showCancelButton: true,
+                        confirmButtonText: 'Anladım, Randevuyu İptal Etmek İstiyorum',
+                        cancelButtonText: 'İptal',
+                        cancelButtonColor: 'green',
+                        confirmButtonColor: 'red',
+                        showLoaderOnConfirm: true,
+                    }).then((result) => {
+                        if (result.value) {
+                            var deletereasontext = document.getElementById("deletereason").value;
+                            if (deletereasontext.length >= 10)
+                                deleteAppointment(data.session, deletereasontext);
+                            else
+                                deleteAppointment(data.session, '');
+
+                        }
+                    })
+
+                }
+            },
+            error: function (data) {
+                $.ajax({
+                    url: '/DoctorPanel/ErrorLogs',
+                    data: { page: "DoctorPanel  - GecmisRandevular - deleteAppointment" },
+                    type: 'post',
+                    dataType: 'json',
+                    success: function (data) {
+
+                    },
+                    error: function (data) {
+
+                    }
+                });    
+                toastr.error('Silme İşlemi Sırasında. Lütfen Bu Durumu Bize Bildiriniz..', 'Hata!');
+            }
+        });
+    }
+
+    function startMeeting(id, sessionKey) {
+        $('#userdetailmodal').modal('show');
+        var container = document.querySelector('#userdetailmodal');
+        var domain = "meet.jit.si";
+        var options = {
+            "roomName": "Doctorla-" + id + "-" + sessionKey,
+            "parentNode": container,
+            "width": '100%',
+            "height": '100%'
+        };
+        var api = new JitsiMeetExternalAPI(domain, options);
+    }
+
+    function leaveMeeting() {
+        Swal.fire({
+            title: 'Toplantıdan çıkmak istediğinize emin misiniz?',
+            html: '',
+            showCancelButton: true,
+            confirmButtonText: 'Evet',
+            cancelButtonText: 'Hayır',
+            cancelButtonColor: 'green',
+            confirmButtonColor: 'red',
+            showLoaderOnConfirm: true,
+        }).then((result) => {
+            if (result.value) {
+                window.location.reload();
+            }
+        })
+    }
+</script>
+
+<script src='https://meet.jit.si/external_api.js'></script>
+
+<style>
+    .close {
+        color: red;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+    }
+
+    .close:hover,
+    .close:focus {
+        color: red;
+        text-decoration: none;
+        cursor: pointer;
+    }
+</style>

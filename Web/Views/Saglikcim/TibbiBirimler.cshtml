@@ -1,0 +1,40 @@
+﻿@model List<Data.Domain.Department>
+@{
+    ViewData["Title"] = "Tibbi Birimler";
+}
+
+
+
+<section class="specialist team" style="padding-top:2rem;">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="section-title">
+                    <h2><span>Tıbbi Bölümlerimiz </span> </h2>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            @foreach (var item in Model)
+            {
+            <div class="col-md-3 col-sm- col-xs-6 mar-bottom-30">
+                <a href="/Doctorla/Doktorlarimiz/@item.Name.Replace(" ","")">
+                    <div class="special-main yuksel" style="">
+                        <div class="special-item">
+                            <div class="special-image tibbi-gorsel">
+                                <i class="@item.Image"></i>
+                            </div>
+                            <div class="special-content tibbi-baslik">
+                                <h4>@item.Name</h4>
+
+                            </div>
+                        </div>
+                    </div>
+                </a>
+                </div>
+            }
+
+        </div>
+    </div>
+</section>
+

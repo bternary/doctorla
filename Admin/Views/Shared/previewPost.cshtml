@@ -1,0 +1,56 @@
+﻿@using Data.Domain
+@model Blog
+<section class="post">
+    <div class="container">
+        <div class="row">
+            <div class="breadcrumb">
+                <ul>
+                    <li><a href="/Blog">Blog</a></li>
+                    <li class="active"><a href="/blog/Post/@Model.SeoUrl">@Model.Title</a></li>
+                </ul>
+            </div>
+            <div class="col-12 post-tags post-categorys">
+                @{
+                    var categorys = Model.Category.Split(",");
+                }
+
+                @foreach (var category in categorys)
+                {
+                    <a href="/Blog/category/@category" class="tag">@category</a>
+                }
+            </div>
+            <div class="col-12 post-baslik">
+                <p>
+                    Son güncelleme tarihi: @Model.IDate.ToString("dd MMM yyyy")
+                </p>
+                <h2>@Model.Title</h2>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 post-thumbnail">
+                @if (!string.IsNullOrEmpty(Model.ThumbnailPhoto))
+                {
+                    <img src="@Model.ThumbnailPhoto" alt="@Model.Title" />
+                }
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 post-icerik">
+                @Html.Raw(Model.Description)
+            </div>
+        </div>
+        <div class="row ">
+            <div class="col-12 post-tags">
+                <span>Etiketler:</span>
+                @{
+                    var tags = Model.Tags.Split(",");
+                }
+
+                @foreach (var tag in tags)
+                {
+                    <a href="/Blog/tag/@tag" class="tag">#@tag</a>
+                }
+            </div>
+        </div>
+    </div>
+</section>

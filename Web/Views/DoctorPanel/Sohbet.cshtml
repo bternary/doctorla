@@ -1,0 +1,550 @@
+﻿
+@model Data.Domain.DailyCheck
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *,PagedList.Core.Mvc
+@{
+    ViewData["Title"] = "Sohbet";
+    Layout = "~/Views/DoctorPanel/Shared/_DoctorLayout.cshtml";
+    bool statusMe = false;
+    bool statusYou = false;
+    int filecounter = 0;
+
+
+}
+<link href="~/css/dropzone.min.css" rel="stylesheet" />
+<style>
+    * {
+        box-sizing: border-box;
+    }
+
+
+    .status {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: 7px;
+    }
+
+    .green {
+        background-color: #2BB9A0;
+    }
+
+    .orange {
+        background-color: #ff725d;
+    }
+
+    .blue {
+        background-color: #1A809B;
+        margin-right: 0;
+        margin-left: 7px;
+    }
+
+    main header {
+        display: flex;
+        align-items: flex-start;
+        position: relative;
+        z-index: 1;
+    }
+
+        main header img:first-child {
+            border-radius: 50%;
+            width: 70px;
+        }
+
+        main header img:last-child {
+            width: 24px;
+            margin-top: 8px;
+        }
+
+        main header div {
+            display: flex;
+            flex-direction: column;
+        }
+
+        main header h2 {
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+
+        main header h3 {
+            font-size: 14px;
+            font-weight: normal;
+            color: #7e818a;
+        }
+
+    #chat {
+        padding-left: 0;
+        list-style-type: none;
+        overflow-y: auto;
+        height: auto;
+        max-height: 600px;
+        border-top: 2px solid #fff;
+        border-bottom: 2px solid #fff;
+    }
+
+        #chat li {
+            padding: 2px 30px;
+            margin-bottom: 0px;
+        }
+
+        #chat h2, #chat h3 {
+            display: inline-block;
+            font-size: 13px;
+            font-weight: normal;
+        }
+
+        #chat h3 {
+            color: #bbb;
+        }
+
+        #chat .entete h2 {
+            margin: 0;
+        }
+
+        #chat .message {
+            padding: 10px 10px 5px;
+            color: #fff;
+            line-height: 20px;
+            max-width: 90%;
+            display: inline-block;
+            text-align: left;
+            border-radius: 5px;
+            font-size: 15px;
+        }
+
+            #chat .message img {
+                max-height: 200px;
+            }
+
+            #chat .message .messageDate {
+                display: block;
+                font-size: 10px;
+                color: #e5d5d5;
+                text-align: right;
+            }
+
+        #chat .me {
+            text-align: right;
+        }
+
+        #chat .you .message {
+            background-color: #129f86;
+        }
+
+            #chat .you .message .messageDate {
+                text-align: left;
+            }
+
+        #chat .me .message {
+            background-color: #1A809B;
+        }
+
+
+    #footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0;
+        border-bottom-left-radius: 10px;
+        border-bottom-right-radius: 10px;
+    }
+
+        #footer textarea {
+            resize: none;
+            border: none;
+            width: 100%;
+            height: 40px;
+            border-radius: 3px;
+            padding: 10px;
+            font-size: 13px;
+            flex: 1;
+            padding: 9px 12px 11px;
+            margin: 5px 0;
+        }
+
+            #footer textarea::placeholder {
+                color: #888;
+                padding-left: 3px;
+            }
+
+        #footer .chatMessage {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 5px 0;
+        }
+
+            #footer .chatMessage #filescontainer {
+                max-width: 300px;
+                text-align: center;
+                padding: 0 1rem;
+                position: relative;
+            }
+
+                #footer .chatMessage #filescontainer img {
+                    max-height: 200px;
+                }
+
+                #footer .chatMessage #filescontainer .chatUploadImage span {
+                    position: absolute;
+                    top: 3px;
+                    right: 3px;
+                    color: #fff;
+                }
+
+                    #footer .chatMessage #filescontainer .chatUploadImage span:hover {
+                        transform: scale(1.1);
+                    }
+
+        #footer button {
+            color: #fff;
+            padding: 1rem;
+            font-size: 20px;
+        }
+
+            #footer button:hover, #footer button:active {
+                transform: scale(1.1);
+            }
+
+        #footer .dropzone {
+            background: none;
+            min-height: unset;
+            border: none;
+            padding: 0;
+        }
+
+            #footer .dropzone i {
+                color: #fff;
+                padding: 1rem;
+                font-size: 20px;
+            }
+
+    .dz-message {
+        margin: 0 !important;
+    }
+
+    #footer .dropzone i:hover, #footer .dropzone i:active {
+        transform: scale(1.1);
+    }
+    #chat .entete h2 {
+        text-transform:uppercase;
+    }
+</style>
+
+
+
+
+
+<main style="margin:20px 0  40px;" id="dZUpload" class="dragOpacity">
+    <header>
+        <div>
+            <h2>@Model.Nurse.Name @Model.Nurse.SurName ile Hasta Sohbeti</h2>
+        </div>
+    </header>
+    <ul id="chat">
+        @foreach (var item in Model.PackageChat)
+        {
+            if (item.IsDoctor)
+            {
+                <li class="me">
+                    @if (!statusYou)
+                    {
+                        <div class="entete">
+                            <h2>@Model.Nurse.Name @Model.Nurse.SurName</h2>
+
+                            <span class="status blue"></span>
+                        </div>
+                        statusYou = true;
+                        statusMe = false;
+                    }
+
+                    <div class="triangle"></div>
+                    <div class="message">
+                        @if (item.IsFile)
+                        {
+                            <span class="messageText"><img src="~/DailyCheckFiles/@item.Message" alt="@item.Message" /></span>
+                        }
+                        else
+                        {
+                            <span class="messageText">@item.Message</span>
+
+                        }
+                        @if (item.Date.AddDays(1) < DateTime.Now)
+                        {
+                            <span class="messageDate"><span>@item.Date</span></span>
+
+                        }
+                        else
+                        {
+                            <span class="messageDate">@item.Date.ToShortTimeString()</span>
+
+                        }
+                    </div>
+                </li>
+            }
+            else if (!item.IsDoctor)
+            {
+                <li class="you">
+                    @if (!statusMe)
+                    {
+                        <div class="entete">
+                            <span class="status green"></span>
+                            <h2>@item.DailyCheck.User.Name  @item.DailyCheck.User.SurName</h2>
+                        </div>
+                        statusMe = true;
+                        statusYou = false;
+
+                    }
+                    <div class="triangle"></div>
+                    <div class="message">
+                        @if (item.IsFile)
+                        {
+                            <span class="messageText"><img src="~/DailyCheckFiles/@item.Message" alt="@item.Message" /></span>
+                        }
+                        else
+                        {
+                            <span class="messageText">@item.Message</span>
+
+                        }
+                        @if (item.Date.AddDays(1) < DateTime.Now)
+                        {
+                            <span class="messageDate"><span>@item.Date</span></span>
+
+                        }
+                        else
+                        {
+                            <span class="messageDate">@item.Date.ToShortTimeString()</span>
+
+                        }
+                    </div>
+                </li>
+            }
+        }
+    </ul>
+    <footer id=footer>
+
+        <div id="dZUpload" class="dropzone" style="background-repeat: round;">
+            <div class="dz-default dz-message"><i class="fas fa-paperclip"></i></div>
+        </div>
+        <div class="chatMessage">
+            <div id="filescontainer" style="display:none"> </div>
+            <textarea id="mesajKutusu" oninput='textareaAutoSize()' placeholder="Bir mesaj yazın"></textarea>
+
+        </div>
+        <button type="submit" onclick="mesajGonder()" id="btnGonder"><i class="fas fa-paper-plane"></i></button>
+    </footer>
+</main>
+
+
+
+@section scripts{
+    <script src="~/js/dropzone.js"></script>
+    <script>
+
+    window.onload = function () {
+        console.log('@statusMe.ToString()');
+        document.getElementById("chat").scrollTo(0, document.getElementById("chat").scrollHeight);
+
+    };
+
+    function textareaAutoSize() {
+        if ($('#mesajKutusu').height() < 30) {
+            console.log($('#mesajKutusu').height());
+            document.getElementById("mesajKutusu").style.height = document.getElementById("mesajKutusu").scrollHeight + "px";
+
+        }
+
+    }
+    var isFile = false;
+    var dailyCheckId=@Model.Id;
+    var fullname = "@Model.Nurse.FullName()";
+    var lastMessage=false, lastMessageCheck = false;
+
+  function mesajGonder() {
+      var emptyCheck = document.getElementById("mesajKutusu").value;
+      if (emptyCheck == "" && !isFile) {
+		document.getElementById("mesajKutusu").placeholder = "Bu alanı boş bırakamazsınız...";
+	}
+	else{
+		const div = document.createElement('div');
+        var mesaj = document.getElementById("mesajKutusu").value;
+        if (isFile) {
+            mesaj = "";
+        }
+        var currentdate = new Date();
+	 $.ajax({
+        url: '/DoctorPanel/MesajGonder',
+         data: { Message: mesaj, DailyCheckId: dailyCheckId, files: files},
+        type: 'post',
+        dataType: 'json',
+         success: function (data) {
+             var tarih = data.date.toString();
+             tarih = tarih.substring(11, 16);
+             lastMessage = '@statusMe.ToString()';
+             console.log("lastMessage: " + lastMessage);
+             console.log("lastMessageCheck: " + lastMessageCheck);
+             if (lastMessage == "True" || lastMessageCheck == true) {
+                 if (isFile) {
+                     var messageli = "<li class='me'>" +
+                         "<div class='triangle'></div>" +
+                         "<div class='message'><span class='messageText'><img src='" + files + "' alt='" + files+"' />" +
+                         mesaj +
+                         "</span><span class='messageDate'>" +
+                         tarih
+                     " </span ></div > " +
+                         "</li>";
+                 } else {
+                     var messageli = "<li class='me'>" +
+                         "<div class='triangle'></div>" +
+                         "<div class='message'><span class='messageText'>" +
+                         mesaj +
+                         "</span><span class='messageDate'>" +
+                         tarih
+                     " </span ></div > " +
+                         "</li>";
+                 }
+
+             } else {
+                 var messageli = "<li class='me'>" +
+                     "<div class='entete'>" +
+                     "<h2> " + fullname + "</h2>" +
+                     "<span class='status blue'></span>" +
+                     "</div>" +
+                     "<div class='triangle'></div>" +
+                     "<div class='message'><span class='messageText'>" +
+                     mesaj +
+                     "</span><span class='messageDate'>" +
+                     tarih
+                 " </span ></div > " +
+                     "</li>";
+             }
+
+            $("#chat").append(messageli);
+            document.getElementById("chat").scrollTo(0, document.getElementById("chat").scrollHeight);
+             document.getElementById("mesajKutusu").style.height = '40px';
+             lastMessageCheck = true;
+             document.getElementById("mesajKutusu").value = '';
+             document.getElementById("mesajKutusu").disabled = false;
+             document.getElementById("mesajKutusu").style.opacity = 1;
+             isFile = false;
+             deletefile(counter-1);
+        },
+        error: function (data) {
+         Swal.fire({
+            title: 'Hata ile Karşılaşıldı',
+            text: 'Sistemsel bir hata ile karşılaşıldı.Lütfen sayfayı Yenileyiniz ve bu durumu bize bildiriniz',
+            icon: 'error',
+            timer: 2000,
+            showConfirmButton: false,
+        })
+        }
+    });
+
+	}
+}
+
+
+
+
+        document.getElementById("dZUpload").addEventListener("dragleave", function (event) {
+            document.querySelector(".dragOpacity").style.opacity = "1";
+            document.querySelector(".dragOpacity").style.cursor = "default";
+
+
+        }, false);
+        document.getElementById("dZUpload").addEventListener("dragend", function (event) {
+            document.querySelector(".dragOpacity").style.opacity = "1";
+            document.querySelector(".dragOpacity").style.cursor = "default";
+
+
+        }, false);
+        document.getElementById("dZUpload").addEventListener("addedfile", function (event) {
+            document.querySelector(".dragOpacity").style.opacity = "1";
+            document.querySelector(".dragOpacity").style.cursor = "default";
+
+
+        }, false);
+        function deletefile(index) {
+            console.log(index);
+      document.querySelectorAll("#filescontainer")[index].innerHTML = "";
+      files.pop(index);
+      counter--;
+            document.getElementById("dZUpload").style.backgroundImage = '';
+      document.getElementById("dZUpload").style.color = 'black';
+      document.getElementById("filescontainer").style.display = "none";
+      document.getElementById("mesajKutusu").disabled = false;
+      document.getElementById("mesajKutusu").style.opacity = 1;
+      isFile = false;
+
+        }
+        Dropzone.autoDiscover = false;
+        var counter = 0;
+        var files = new Array();
+        $(function () {
+            //-----------------  UPLOAD FILES
+
+            var base64 = '';
+            var filelimit = 1;
+            //var acceptedtype = "image/*,application/pdf,.doc,.docx";
+            var acceptedtype = "image/png,image/jpg,image/jpeg,"; //İzin Verilen Dosya Türleri
+            Dropzone.autoDiscover = false;
+            $("#kaydetbtn").click(function (e) { //Görünüz Buton
+                e.preventDefault();
+                files.forEach(function (file) {
+                    $("#profileform").append("<input type='text' name='photofile' value='" + file + "'/>");//Container
+                });
+                $('#hiddensubmit').trigger('click'); //Gizli Submit Button
+            });
+            $("#dZUpload").dropzone({
+                maxFiles: filelimit,
+                maxFilesize: 10024,
+                acceptedFiles: acceptedtype,
+                uploadMultiple: true,
+                parallelUploads: true,
+                paramName: "Userphoto", //Önemsiz
+                autoProcessQueue: false,
+                url: '/', //Önemsiz
+                dragenter: function () {
+                    document.querySelector(".dragOpacity").style.opacity = "0.5";
+                    document.querySelector(".dragOpacity").style.cursor = "cell";
+                },
+                addedfile: function (file) {
+                    var reader = new FileReader();
+                    reader.onload = function (event) {
+                        if (counter < filelimit) {
+                            base64 = event.target.result;
+                            files.push(base64);
+                            document.querySelector(".dragOpacity").style.opacity = "1";
+                            document.querySelector(".dragOpacity").style.cursor = "default";
+                            $("#filescontainer").append("<div class='chatUploadImage'><span class='fa fa-times' title='Sil' style='cursor:pointer' onclick='deletefile(" + counter + ")'></span><img src='" + base64+"' alt='"+file.name+"' />");
+                            document.getElementById("filescontainer").style.display = "block";
+                            document.getElementById("mesajKutusu").disabled = true;
+                            document.getElementById("mesajKutusu").style.opacity = 0.5;
+                            counter++;
+                            isFile = true;
+                        } else {
+                            Swal.fire({
+                                title: 'Dosya Ekleme Hatası',
+                                text: 'Daha Fazla Dosya Ekleyemezsiniz',
+                                icon: 'error',
+                                showConfirmButton: false,
+                            })
+                        }
+
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+
+            //-----------------  UPLOAD FILES
+
+        });
+
+
+    </script>
+
+}
+

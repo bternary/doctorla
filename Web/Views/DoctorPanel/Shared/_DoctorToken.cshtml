@@ -1,0 +1,440 @@
+﻿@using Data.Domain
+@model List<NotifyWarning>
+@{
+    Layout = null;
+}
+
+<a class="dropdown-toggle" data-toggle="dropdown" id="notifybtn">
+    <div class="dropdown-item">
+        <i class="sl sl-icon-bell"></i>
+        <span class="notify" id="notifysayi">@*@Model.Count*@</span>@* sayfa açıldığında bütün notfiyleri yazıyordu *@
+    </div>
+</a>
+<div class="dropdown-menu notification-menu dropdown-menu-right">
+    <ul id="bildirimleriGoster">
+        @if (Model.Count > 0)
+        {
+            @foreach (var item in Model) // Status 0:Beklemede 1:Red 2:Onay
+            {
+                if (item.Status == 0 && item.Date>=DateTime.Now)
+                {
+                    <li id="notify-@item.Id">
+                        <a href="#">
+                            <div class="notification-item">
+                                <div class="notification-image">
+                                    <i class="fas fa-calendar-alt" id="notifyicon-@item.Id" style="color:#"></i>
+                                </div>
+                                <div class="notification-content">
+                                    <p onclick="note('@item.Note','@item.User.FullName()','@item.Date.ToString("dd.MM.yyyy HH:mm")',@item.Id)"><span style="text-align:left">@item.User.FullName()</span> sizden <span>@item.Department.Name</span> bölümü için <span>@item.Date.ToString("dd.MM.yyyy HH:mm")</span>   Tarihine <strong>@(item.RequestType==1?"Tanışma Randevusu":"Randevu")  </strong>Talep Ediyor</p>
+                                    <div class="talepOnayRed">
+                                        <i class="fa fa-check-circle" id="onayicon-@item.Id" onclick="randevutalep(@item.Id,2,'@(item.RequestType==1?"True":"False")')"></i>
+                                        <i class="fa fa-minus-circle" id="redicon-@item.Id" onclick="randevutalep(@item.Id,1,'@(item.RequestType==1?"True":"False")')"></i>
+                                        <i class="fas fa-info-circle talepBilgi" onclick="note('@item.Note','@item.User.FullName()','@item.Date.ToString("dd.MM.yyyy HH:mm")',@item.Id)"></i>
+                                        <i class="fa fa-undo-alt geriAl"  style="display:none" id="gerial-@item.Id" onclick="randevutalep(@item.Id,0)"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </li>
+                }
+                else if (item.Status == 1)
+                {
+                    <li id="notify-@item.Id" @*style="background-color: #ffbeb5"*@>
+                        <a href="#">
+                            <div class="notification-item">
+                                <div class="notification-image">
+                                    <i class="fas fa-calendar-times" id="notifyicon-@item.Id" style="color:rgb(217,32,39)"></i>
+                                </div>
+                                <div class="notification-content">
+                                    <p onclick="note('@item.Note','@item.User.FullName()','@item.Date.ToString("dd.MM.yyyy HH:mm")',@item.Id)"><span style="text-align:left">@item.User.FullName()</span> sizden bölümü için <span>@item.Date.ToString("dd.MM.yyyy HH:mm")</span>    Tarihine Randevu Talep Etti </p>
+                                    <div class="talepOnayRed">
+                                        <i class="fas fa-info-circle talepBilgi" onclick="note('@item.Note','@item.User.FullName()','@item.Date.ToString("dd.MM.yyyy HH:mm")',@item.Id)"></i>
+                                        <i class="fa fa-check-circle" style="display:none" id="onayicon-@item.Id" onclick="randevutalep(@item.Id,2,'@(item.RequestType==1?"True":"False")')"></i>
+                                        <i class="fa fa-minus-circle" style="display:none" id="redicon-@item.Id" onclick="randevutalep(@item.Id,1,'@(item.RequestType==1?"True":"False")')"></i>
+                                        @if (item.Date >= DateTime.Now)
+                                        {
+                                    <i class="fa fa-undo-alt geriAl" id="gerial-@item.Id" onclick="randevutalep(@item.Id,0)"></i>
+                                        }
+                                    </div>
+
+                                </div>
+                            </div>
+                        </a>
+                    </li>
+                }
+                else if (item.Status == 2)
+                {
+                    <li id="notify-@item.Id" @*style="background-color: #c8fadc"*@>
+                        <a href="#">
+                            <div class="notification-item">
+                                <div class="notification-image">
+                                    <i class="fas fa-calendar-check" id="notifyicon-@item.Id" style="color:rgb(100,188,54)"></i>         
+                                </div>
+                                <div class="notification-content">
+                                    <p @*onclick="note('@item.Note','@item.User.FullName()','@item.Date.ToString("dd.MM.yyyy HH:mm")',@item.Id)"*@><span style="text-align:left">@item.User.FullName()</span> sizden  <span>@item.Department.Name</span> bölümü için <span>@item.Date.ToString("dd.MM.yyyy HH:mm")</span>   Tarihine Randevu Talep Etti</p>
+                                    <div class="talepOnayRed">
+                                        <i class="fas fa-info-circle talepBilgi" onclick="note('@item.Note','@item.User.FullName()','@item.Date.ToString("dd.MM.yyyy HH:mm")',@item.Id)"></i>                                     
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </li>
+                }
+
+            }
+        }
+        else
+        {
+            <li>
+                <a href="#">
+                    <div class="notification-item">
+                        <div class="notification-image">
+                            <i class="sl sl-icon-bell"></i>
+                        </div>
+                        <div class="notification-content">
+                            <p>Mesajınız Bulunmamaktadır.</p>
+                        </div>
+                    </div>
+                </a>
+            </li>
+
+        }
+
+    </ul>
+    @*<p class="all-noti"><a href="#">See all notifications</a></p>*@
+</div>
+
+<script>
+    @*$(function () {
+        if (@Model.Where(x=> x.Status==0 && x.Date>=DateTime.Now).ToList().Count>0) {
+            Swal.fire({
+                title: '<strong>Randevu Talebiniz Var</strong>',
+                html:
+                    '<strong>Bildirinizi Kontrol Edin</strong>',
+                showCloseButton: true,
+                showCancelButton: true,
+                focusConfirm: false,
+                cancelButtonText:
+                    "Kapat",
+                cancelButtonAriaLabel: '',
+                Cancelbuttoncolor: '#d33'
+            }).then((result) => {
+                if (result.value) {
+
+                }
+
+            });
+        }
+    });*@
+    function randevutalep(Id, status, ispreview) {
+        var kelime = "";
+        if (status == 2) {
+            kelime = "kabul etmek";
+        } else if (status==1) {
+            kelime = "reddetmek";
+        } else if (status == 0) {
+            kelime = "geri almak";
+        }
+        Swal.fire({
+            title: '<strong>Emin Misiniz?</strong>',
+            icon: 'warning',
+            text: 'Talebi ' + kelime + ' istediğinize emin misiniz?',
+            showCloseButton: true,
+            showCancelButton: true,
+            focusConfirm: false,
+            customClass: 'talepDetaySwal',
+            confirmButtonText:
+                'İşlemi Onayla',
+            confirmButtonAriaLabel: '',
+            cancelButtonText:
+                "İptal Et",
+            cancelButtonAriaLabel: '',
+            cancelButtonColor: '#d33'
+        }).then((result) => {
+            if (result.value) {
+                $.ajax({
+                    url: '/DoctorPanel/RandevuTalep',
+                    data: { Id: Id, Status: status, isPreview: ispreview },
+                    type: 'POST',
+                    dataType: 'json',
+                    success: function (data) {
+                        console.log("geldi");
+                        if (status == 2) {
+                            $("#onayicon-" + Id).css("display", "none");
+
+                            $("#notifyicon-" + Id).attr("class", "fas fa-calendar-check");
+                            $("#notifyicon-" + Id).css("color", "rgb(100, 188, 54)");
+
+                            $("#redicon-" + Id).css("display", "none");
+
+                            $("#notifysayi").html(parseInt($("#notifysayi").text()) == 0 ? 0 : parseInt($("#notifysayi").text()) - 1);
+                        }
+                        else if (status == 1) {
+                            $("#onayicon-" + Id).css("display", "none");
+                            $("#redicon-" + Id).css("display", "none");
+
+                            $("#gerial-" + Id).css("display", "block");
+
+                            $("#notifyicon-" + Id).attr("class", "fas fa-calendar-times");
+                            $("#notifyicon-" + Id).css("color", "rgb(217,32,39)");
+                            $("#notifysayi").html(parseInt($("#notifysayi").text()) == 0 ? 0 : parseInt($("#notifysayi").text()) - 1);
+                        }
+                        else if (status == 0) {
+                            $("#onayicon-" + Id).css("display", "block");
+                            $("#onayicon-" + Id).css("color", "#64bc36");
+
+                            $("#redicon-" + Id).css("display", "block");
+                            $("#redicon-" + Id).css("color", "#D92027");
+                            $("#redicon-" + Id).css("font-size", "2.5rem");
+
+                            $("#gerial-" + Id).css("display", "none");
+
+                            $("#notifyicon-" + Id).attr("class", "fas fa-calendar-alt");
+                            $("#notifyicon-" + Id).css("color", "#1db9a0");
+
+                            $("#notifysayi").html(parseInt($("#notifysayi").text()) + 1);
+                        }
+                        $("#notifybtn").trigger("click");
+                        if (data.status == 1) {
+                            Swal.close();
+                            toastr.success(data.message, data.title);
+                        }
+                        else {
+                            toastr.success(data.message, data.title);
+                        }
+                    },
+                    error: function (data) {
+                        console.log("gelmedi");
+
+                        $.ajax({
+                            url: '/DoctorPanel/ErrorLogs',
+                            data: { page: "DoctorPanel  - _DoctorToken - randevutalep" },
+                            type: 'post',
+                            dataType: 'json',
+                            success: function (data) {
+
+                            },
+                            error: function (data) {
+
+                            }
+                        });
+                    }
+                });
+            }
+
+        });
+      
+    }
+        function note(Note,Name,Date,Id) {
+            Swal.fire({
+                title: '<strong>Randevu Talep Detayları</strong>',
+                icon:'info',
+                html:
+                    '<span>Talep Eden Hastanın:</span><table>' +
+                    '<tr><th>Adı Soyadı </th><td>' + Name + '</td></tr>'+
+                    '<tr><th>Tarih </th><td>' + Date + '</td></tr>'+
+                    '<tr><th>Not </th><td>' + Note + '</td></tr>'+
+                    '</table>' ,
+                showCloseButton: true,
+                showCancelButton: true,
+                focusConfirm: false,
+                customClass:'talepDetaySwal',
+                confirmButtonText:
+                    'Randevu Onayla',
+                confirmButtonAriaLabel: '',
+                cancelButtonText:
+                    "Kapat",
+                cancelButtonAriaLabel: '',
+                cancelButtonColor: '#d33'
+            }).then((result) => {
+                if (result.value) {
+                    $("#onayicon-" + Id).trigger("click");
+                }
+
+            });
+    }
+
+    var bildirimsayisi = @Model.Where(x=> x.Status==0 && x.Date>=DateTime.Now).ToList().Count;
+    $(document).ready(function () {
+        console.log(bildirimsayisi);
+        $.ajax({
+                    url: '/DoctorPanel/isRequest',
+            data: { deneme: "1" },
+            type: 'post',
+            dataType: 'json',
+            success: function (data) {
+                console.log(Object.keys(data.veriler).length);
+                bildirimsayisi += Object.keys(data.veriler).length;
+                console.log(bildirimsayisi);
+
+                            document.getElementById("notifysayi").innerHTML = bildirimsayisi;
+                            for (i in data.veriler) {
+                                var string = '<li id="notify-' + data.veriler[i].id + '" >' +
+                                    ' <a href="#" >' +
+                                    '<div class="notification-item">' +
+                                    '   <div class="notification-image">' +
+                                    '     <i class="fas fa-video"></i>' +
+                                    ' </div>' +
+                                    '<div class="notification-content">' +          //tarih ve isrequest false ise butonlar düzenlenecek
+                                    '   <p>Özel hastanız <span style="text-align:left">' + data.veriler[i].userad + '</span> sizden <strong>' + data.veriler[i].liveRequestDate.replace('T', ' ').substring(0, 19)+ '</strong> tarihinde Canlı Görüşme Talep Ediyor</p>' +
+                                    '  <div class="talepOnayRed">' +
+                                    '     <i class="fa fa-check-circle" id="onayicon-' + data.veriler[i].id + '" onclick="odaOlustur(' + data.veriler[i].id + ')"></i>' +
+                                    '    <i class="fa fa-minus-circle" onclick="odaReddet(' + data.veriler[i].id + ')"></i>' +
+                                    '</div>' +
+                                    '             </div>' +
+                                    '        </div>' +
+                                    '   </a></li>';
+                                console.log(string);
+                                document.getElementById("bildirimleriGoster").insertAdjacentHTML('afterbegin', string);
+                            }
+
+
+                        },
+            error: function (data) {
+                            toastr.error('Bildirim Hatas', 'Hata!');
+                        }
+                    });
+
+                });
+
+    function odaReddet(id) {
+        Swal.fire({
+            title: '<strong>Emin Misiniz?</strong>',
+            icon: 'warning',
+            text: 'Talebi reddetmek istediğinize emin misiniz?',
+            showCloseButton: true,
+            showCancelButton: true,
+            focusConfirm: false,
+            customClass: 'talepDetaySwal',
+            confirmButtonText:
+                'İşlemi Onayla',
+            confirmButtonAriaLabel: '',
+            cancelButtonText:
+                "İptal Et",
+            cancelButtonAriaLabel: '',
+            cancelButtonColor: '#d33'
+        }).then((result) => {
+            if (result.value) {
+                $.ajax({
+                    url: '/DoctorPanel/isRequestDeny',
+                    data: { Id: id },
+                    type: 'post',
+                    dataType: 'json',
+                    success: function (data) {
+                        bildirimsayisi--;
+                        document.getElementById("notifysayi").innerHTML = bildirimsayisi;
+
+                        document.getElementById("notify-" + id).remove();
+                    },
+                    error: function (data) {
+                        toastr.error('Bildirim Hatas', 'Hata!');
+                    }
+                });
+            }
+        });
+    
+     
+
+            }
+
+    function odaOlustur(id, type) { //type  0 ise direk, 1 ise liverequest date secili
+        Swal.fire({
+            title: '<strong>Emin Misiniz?</strong>',
+            icon: 'warning',
+            text: 'Talebi kabul etmek istediğinize emin misiniz?',
+            showCloseButton: true,
+            showCancelButton: true,
+            focusConfirm: false,
+            customClass: 'talepDetaySwal',
+            confirmButtonText:
+                'İşlemi Onayla',
+            confirmButtonAriaLabel: '',
+            cancelButtonText:
+                "İptal Et",
+            cancelButtonAriaLabel: '',
+            cancelButtonColor: '#d33'
+        }).then((result) => {
+            if (result.value) {
+                var time = 0;
+                Swal.fire({
+                    title: 'Canlı Görüşme Süresi',
+                    input: 'number',
+                    text: 'Canlı görüşme için tahmini bir süre belirleyin. Bu süre dolduğunda görüşme otomatik olarak sonlanacaktır.',
+                    inputAttributes: {
+                        autocapitalize: 'off',
+                        'id': 'doctorCode',
+                        'onkeydown': 'javascript: return event.keyCode === 8 || event.keyCode === 46 ? true : !isNaN(Number(event.key))'
+                    },
+                    showCancelButton: true,
+                    customClass: 'swal-checkDoctor',
+                    confirmButtonText: 'Oda Oluştur',
+                    cancelmButtonText: 'İptal Et',
+                    showLoaderOnConfirm: true,
+                    cancelButtonColor: '#d33',
+                    preConfirm: (login) => {
+                        if (login == null || login == "") {
+                            Swal.showValidationMessage(
+                                'Lütfen boş bırakmayın'
+                            )
+                        } else {
+                            time = login;
+                            console.log(time);
+
+                        }
+
+                    },
+                    allowOutsideClick: () => !Swal.isLoading()
+                }).then((result) => {
+                    if (result.value) {
+                        console.log(time);
+                        $.ajax({
+                            url: '/DoctorPanel/createLiveChat',
+                            data: { Id: id, timer: time, type: 1 },
+                            type: 'post',
+                            dataType: 'json',
+                            success: function (data) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Oda başarıyla oluşturuldu. Canlı görüşmeye yönlendiriliyorsunuz',
+                                    showConfirmButton: false,
+                                    timer: 2500
+                                });
+                                document.getElementById("notify-" + id).remove();
+
+                                bildirimsayisi--;
+                                document.getElementById("notifysayi").innerHTML = bildirimsayisi;
+
+                            },
+                            error: function (data) {
+                                $.ajax({
+                                    url: '/DoctorPanel/ErrorLogs',
+                                    data: { page: "DoctorPanel  - GecmisPaketler - createLiveChat" },
+                                    type: 'post',
+                                    dataType: 'json',
+                                    success: function (data) {
+
+                                    },
+                                    error: function (data) {
+
+                                    }
+                                });
+                                toastr.error('Bir Hata İle Karşılaştık', 'Hata!');
+                            }
+                        });
+
+
+
+
+
+                    }
+                })
+
+            }
+        });
+
+              
+
+
+    }
+
+</script>

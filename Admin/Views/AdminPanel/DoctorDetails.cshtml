@@ -1,0 +1,688 @@
+﻿@model Data.Domain.User
+@{
+    ViewData["Title"] = "Doktor Detay Islemleri";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewBag.Kullanici = "active";
+    List<Data.Domain.Department> departments = ViewBag.Departments as List<Data.Domain.Department>;
+}
+@section css{
+    <link href="~/css/dropzone.min.css" rel="stylesheet" />
+    <style>
+        .my-profile textarea {
+            height: auto;
+        }
+
+        .label {
+            margin: 0px
+        }
+
+        .sidebar-content ul li a, .sidebar-box form, .recent-item {
+            background: #1db9a0;
+        }
+
+        .change-photo-btn {
+            bottom: 0px;
+            top: 30px;
+            left: -16px;
+            height: 74px;
+            width: 226px;
+        }
+    </style>
+}
+<div row>
+    <h2>@Model.Name @Model.SurName</h2>
+</div>
+<div class="row">
+    @using (Html.BeginForm("UpdatePhoto", "AdminPanel", FormMethod.Post, new { @id = "profileform", enctype = "multipart/form-data" }))
+    {
+        <input type="text" name="doctorid" value="@Model.Id" style="display:none" />
+        <div class="col-lg-6 col-md-6 col-xs-12">
+            <div class="edit-profile-photo">
+                <img id="profilephoto" src="@Model.PhotoUrl?t=@DateTime.Now" />
+            </div>
+        </div>
+        <div class="col-lg-6 col-md-6 col-xs-12">
+            <div class="col-lg-12 col-md-12 col-xs-12">
+                <div id="dZUpload" class="dropzone" style="background-repeat: round;">
+                    <div class="dz-default dz-message">Resim Yükle</div>
+                </div>
+            </div>
+            <div class="col-lg-12 col-md-12 col-xs-12" id="filescontainer">
+
+            </div>
+        </div>
+        <div class="row" style="text-align:center">
+            <button type="button" id="kaydetbtn" class="btn"><span class="fa fa-pencil-square-o"></span> Resmi Güncelle</button>
+        </div>
+        <input type="submit" style="display:none" id="hiddensubmit" />
+    }
+</div>
+
+
+
+<div class="row" style="padding-top:5%">
+    <div class="col-md-12">
+        <div class="row">
+            <form action="/AdminPanel/AddDoctorDepartment" style="height:100%;" data-ajax="true" data-ajax-success="DepartmentAdd" data-ajax-failure="error" data-ajax-method="POST" id="departmentform" method="post">
+                <input type="text" name="doctorid" value="@Model.Id" style="display:none" />
+                <div class="col-md-3">
+                    <label>Bölüm Seçiniz</label>
+                    <select name="departmentId">
+                        <option value="-1">Bölüm Seçiniz</option>
+                        @foreach (var item in departments)
+                        {
+                            <option value="@item.Id">@item.Name</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label>Oturum Süresi</label>  <input type="number" name="SessionTime" placeholder="Oturum Süresi" />
+                </div>
+                <div class="col-md-3">
+                    <label>Oturum Fiyatı</label>  <input type="number" name="Price" placeholder="Oturum Fiyatı" />
+                </div>
+                <div class="col-md-1">
+                    <label style="color:white"> .</label> <input class="btn btn-primary" type="submit" value="Ekle" />
+                </div>
+            </form>
+        </div>
+        <div class="row">
+            <div class="container" style="width:100%">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div id="tabid1">
+                            <div class="dashboard-content" style="padding: 0px 0px 0px 0px;margin-left: 0px">
+                                <div class="row">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        <div class="dashboard-list-box">
+                                            <h4 class="gray">Doktor Branşları</h4>
+                                            <div class="table-box">
+                                                <table class="basic-table booking-table">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Bölüm Adı</th>
+                                                            <th>Oturum Süresi</th>
+                                                            <th>Oturum Fiyatı</th>
+                                                            <th>İşlem</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody id="departments">
+                                                        @if (Model.RelUserDepartments.Count == 0)
+                                                        {
+                                                            <tr>
+                                                                <td>-</td>
+                                                                <td>-</td>
+                                                                <td>-</td>
+                                                                <td>-</td>
+                                                            </tr>
+                                                        }
+                                                        @foreach (var item in Model.RelUserDepartments)
+                                                        {
+                                                            <tr id="departments-@item.Id">
+                                                                <td>@item.Department.Name</td>
+                                                                <td>@item.SessionTime</td>
+                                                                <td>@item.Price</td>
+                                                                <td>
+                                                                    <a data-ajax="true" data-ajax-failure="error" data-ajax-success="DepartmentRemove(@item.Id)" data-ajax-method="post" href="/AdminPanel/RemoveDoctorDepartment/?doctordepartmentId=@item.Id"><i class="fa fa-remove"></i></a>
+                                                                </td>
+                                                            </tr>
+                                                        }
+
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="row" style="padding-top:5%">
+    <div class="col-md-6">
+        <div class="row">
+            <form action="/AdminPanel/AddDoctorEducation" style="height:100%;" data-ajax="true" data-ajax-success="EducationAdd" data-ajax-failure="error" data-ajax-method="POST" id="educationform" method="post">
+                <input type="text" name="doctorid" value="@Model.Id" style="display:none" />
+                <div class="col-md-3">
+                    <label>Eğitim</label>   <input type="text" name="Name" placeholder="Eğitim Adı" />
+                </div>
+                <div class="col-md-3">
+                    <label>Branş</label>  <input type="text" name="Branch" placeholder="Branş Adı" />
+                </div>
+                <div class="col-md-3">
+                    <label>Başlangıç</label> <input type="date" name="BeginDate" />
+                </div>
+                <div class="col-md-3">
+                    <label>Bitiş Tarihi</label> <input type="date" name="EndDate" />
+                </div>
+                <div class="col-md-1">
+                    <label style="color:white"> .</label> <input class="btn btn-primary" type="submit" value="Ekle" />
+                </div>
+            </form>
+        </div>
+        <div class="row">
+            <div class="container" style="width:100%">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div id="tabid1">
+                            <div class="dashboard-content" style="padding: 0px 0px 0px 0px;margin-left: 0px">
+                                <div class="row">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        <div class="dashboard-list-box">
+                                            <h4 class="gray">Doktor Eğitimleri</h4>
+                                            <div class="table-box">
+                                                <table class="basic-table booking-table">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Eğitim Adı</th>
+                                                            <th>Branş</th>
+                                                            <th>Başlangıç</th>
+                                                            <th>Bitiş</th>
+                                                            <th>İşlem</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody id="educations">
+                                                        @if (Model.DoctorDetail.DoctorEducations.Count == 0)
+                                                        {
+                                                            <tr>
+                                                                <td>-</td>
+                                                                <td>-</td>
+                                                                <td>-</td>
+                                                                <td>-</td>
+                                                                <td>-</td>
+                                                            </tr>
+                                                        }
+                                                        @foreach (var item in Model.DoctorDetail.DoctorEducations)
+                                                        {
+                                                            <tr id="education-@item.Id">
+                                                                <td>@item.Name</td>
+                                                                <td>@item.Branch</td>
+                                                                <td>@item.BeginDate.ToShortDateString()</td>
+                                                                <td>@(item.EndDate.Year > 1900 ? item.EndDate.ToShortDateString() : "Devam Ediyor")</td>
+                                                                <td>
+                                                                    <a data-ajax="true" data-ajax-failure="error" data-ajax-success="EducationRemove(@item.Id)" data-ajax-method="post" href="/AdminPanel/RemoveDoctorEducation/?educationId=@item.Id"><i class="fa fa-remove"></i></a>
+                                                                </td>
+                                                            </tr>
+                                                        }
+
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="row">
+            <form action="/AdminPanel/AddDoctorExperiences" style="height:100%;" data-ajax="true" data-ajax-success="ExperiencesAdd" data-ajax-failure="error" data-ajax-method="POST" id="experiencesform" method="post">
+                <input type="text" name="doctorid" value="@Model.Id" style="display:none" />
+                <div class="col-md-3">
+                    <label>Tecrübe</label>   <input type="text" name="Name" placeholder="Tecrübe Adı" />
+                </div>
+                <div class="col-md-3">
+                    <label>Branş</label>   <input type="text" name="Branch" placeholder="Branş Adı" />
+                </div>
+                <div class="col-md-3">
+                    <label>Başlangıç</label> <input type="date" name="BeginDate" />
+                </div>
+                <div class="col-md-3">
+                    <label>Bitiş Tarihi</label> <input type="date" name="EndDate" />
+                </div>
+                <div class="col-md-1">
+                    <label style="color:white"> .</label> <input class="btn btn-primary" type="submit" value="Ekle" />
+                </div>
+            </form>
+        </div>
+        <div class="row">
+            <div class="container" style="width:100%">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div id="tabid1">
+                            <div class="dashboard-content" style="padding: 0px 0px 0px 0px;margin-left: 0px">
+                                <div class="row">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        <div class="dashboard-list-box">
+                                            <h4 class="gray">Doktor Tecrübesi</h4>
+                                            <div class="table-box">
+                                                <table class="basic-table booking-table">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Tecrübe Adı</th>
+                                                            <th>Branş</th>
+                                                            <th>Başlangıç</th>
+                                                            <th>Bitiş</th>
+                                                            <th>İşlem</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody id="experiences">
+                                                        @if (Model.DoctorDetail.DoctorExperiences.Count == 0)
+                                                        {
+                                                            <tr>
+                                                                <td>-</td>
+                                                                <td>-</td>
+                                                                <td>-</td>
+                                                                <td>-</td>
+                                                                <td>-</td>
+                                                            </tr>
+                                                        }
+                                                        @foreach (var item in Model.DoctorDetail.DoctorExperiences)
+                                                        {
+                                                            <tr id="experiences-@item.Id">
+                                                                <td>@item.Name</td>
+                                                                <td>@item.Branch</td>
+                                                                <td>@item.BeginDate.ToShortDateString()</td>
+                                                                <td>@(item.EndDate != null ? item.EndDate.Value.ToShortDateString() : "Devam Ediyor")</td>
+                                                                <td>
+                                                                    <a data-ajax="true" data-ajax-failure="error" data-ajax-success="ExperiencesRemove(@item.Id)" data-ajax-method="post" href="/AdminPanel/RemoveDoctorExperiences/?experiencesId=@item.Id"><i class="fa fa-remove"></i></a>
+                                                                </td>
+                                                            </tr>
+                                                        }
+
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="row" style="padding-top:5%">
+    <div class="col-md-6">
+        <div class="row">
+            <form action="/AdminPanel/AddDoctorMedicalInterest" style="height:100%;" data-ajax="true" data-ajax-success="MedicalInterestAdd" data-ajax-failure="error" data-ajax-method="POST" id="interestform" method="post">
+                <input type="text" name="doctorid" value="@Model.Id" style="display:none" />
+                <div class="col-md-3">
+                    <label>Hobi</label>    <input type="text" name="Name" placeholder="Hobi Adı" />
+                </div>
+                <div class="col-md-1">
+                    <label style="color:white"> .</label> <input class="btn btn-primary" type="submit" value="Ekle" />
+                </div>
+            </form>
+        </div>
+        <div class="row">
+            <div class="container" style="width:100%">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div id="tabid1">
+                            <div class="dashboard-content" style="padding: 0px 0px 0px 0px;margin-left: 0px">
+                                <div class="row">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        <div class="dashboard-list-box">
+                                            <h4 class="gray">Medikal Hobiler</h4>
+                                            <div class="table-box">
+                                                <table class="basic-table booking-table">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Hobi Adı</th>
+                                                            <th>İşlem</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody id="interests">
+                                                        @if (Model.DoctorDetail.DoctorMedicalInterests.Count == 0)
+                                                        {
+                                                            <tr>
+                                                                <td>-</td>
+                                                                <td>-</td>
+                                                            </tr>
+                                                        }
+                                                        @foreach (var item in Model.DoctorDetail.DoctorMedicalInterests)
+                                                        {
+                                                            <tr id="interests-@item.Id">
+                                                                <td>@item.Name</td>
+                                                                <td>
+                                                                    <a data-ajax="true" data-ajax-failure="error" data-ajax-success="MedicalInterestRemove(@item.Id)" data-ajax-method="post" href="/AdminPanel/RemoveDoctorMedicalInterest/?MedicalInterestId=@item.Id"><i class="fa fa-remove"></i></a>
+                                                                </td>
+                                                            </tr>
+                                                        }
+
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="row">
+            <form action="/AdminPanel/AddDoctorScientificMembership" style="height:100%;" data-ajax="true" data-ajax-success="ScientificAdd" data-ajax-failure="error" data-ajax-method="POST" id="scientificform" method="post">
+                <input type="text" name="doctorid" value="@Model.Id" style="display:none" />
+                <div class="col-md-3">
+                    <label>Bilimsel Kuruluş</label>     <input type="text" name="Name" placeholder="Kuruluş Girin" />
+                </div>
+                <div class="col-md-3">
+                    <label>Başlangıç</label> <input type="date" name="BeginDate" />
+                </div>
+                <div class="col-md-3">
+                    <label>Bitiş Tarihi</label> <input type="date" name="EndDate" />
+                </div>
+                <div class="col-md-1">
+                    <label style="color:white"> .</label>     <input class="btn btn-primary" type="submit" value="Ekle" />
+                </div>
+            </form>
+        </div>
+        <div class="row">
+            <div class="container" style="width:100%">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div id="tabid1">
+                            <div class="dashboard-content" style="padding: 0px 0px 0px 0px;margin-left: 0px">
+                                <div class="row">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        <div class="dashboard-list-box">
+                                            <h4 class="gray">Bilimsel Üyelikler</h4>
+                                            <div class="table-box">
+                                                <table class="basic-table booking-table">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Bilimsel Üyelik</th>
+                                                            <th>Başlangıç</th>
+                                                            <th>Bitiş</th>
+                                                            <th>İşlem</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody id="scientific">
+                                                        @if (Model.DoctorDetail.DoctorScientificMembership.Count == 0)
+                                                        {
+                                                            <tr>
+                                                                <td>-</td>
+                                                                <td>-</td>
+                                                                <td>-</td>
+                                                                <td>-</td>
+                                                            </tr>
+                                                        }
+                                                        @foreach (var item in Model.DoctorDetail.DoctorScientificMembership)
+                                                        {
+                                                            <tr id="scientific-@item.Id">
+                                                                <td>@item.Name</td>
+                                                                <td>@(item.EndDate != null ? item.EndDate.Value.ToShortDateString() : "Belirtilmedi")</td>
+                                                                <td>@(item.EndDate != null ? item.EndDate.Value.ToShortDateString() : "Belirtilmedi")</td>
+                                                                <td>
+                                                                    <a data-ajax="true" data-ajax-failure="error" data-ajax-success="ScientificRemove(@item.Id)" data-ajax-method="post" href="/AdminPanel/RemoveDoctorScientificMembership/?scientificMembershipId=@item.Id"><i class="fa fa-remove"></i></a>
+                                                                </td>
+                                                            </tr>
+                                                        }
+
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="~/js/dropzone.js"></script>
+
+<script type="text/javascript">
+
+    function error() {
+        Swal.fire({
+            title: 'Hata',
+            text: 'İşlem Sırasında Bir Hata Oluştu',
+            icon: 'error',
+            timer: 4000,
+            showConfirmButton: false,
+        })
+    }
+
+
+    function DepartmentAdd(data) {
+        if (data.status == -1)
+            error();
+        else {
+            $("#departments").append("<tr id='departments-" + data.id + "'> <td>" + data.name + "</td>  <td>" + data.time + "</td> <td>" + data.price + "</td>   <td><a data-ajax='true' data-ajax-failure='error' data-ajax-success='DepartmentRemove(" + data.id + ")' data-ajax-method='post' href='/AdminPanel/RemoveDoctorDepartment/?doctordepartmentId=" + data.id + "'><i  class='fa fa-remove'></i></a></td> </tr>");
+            Swal.fire({
+                title: 'Başarılı',
+                text: 'Tecrübe Bilgisi Eklendi',
+                icon: 'success',
+                timer: 1000,
+                showConfirmButton: true,
+            })
+            $("#departmentform")[0].reset();
+        }
+
+    }
+    function DepartmentRemove(id) {
+        if (data.status == -1)
+            error();
+        else {
+            Swal.fire({
+                title: 'Başarılı',
+                text: 'Tecrübe Bilgisi Kaldırıldı',
+                icon: 'success',
+                timer: 1000,
+                showConfirmButton: true,
+            })
+            document.getElementById("departments-" + id).innerHTML = "";
+        }
+    }
+
+
+    function EducationAdd(data) {
+        if (data.status == -1)
+            error();
+        else {
+            $("#educations").append("<tr id='education-" + data.id + "'> <td>" + data.name + "</td> <td>" + data.branch + "</td> <td>" + data.date + "</td> <td>" + data.enddate + "</td>   <td><a data-ajax='true' data-ajax-failure='error' data-ajax-success='EducationRemove(" + data.id + ")' data-ajax-method='post' href='/AdminPanel/RemoveDoctorEducation/?educationId=" + data.id + "'><i  class='fa fa-remove'></i></a></td> </tr>");
+            Swal.fire({
+                title: 'Başarılı',
+                text: 'Eğitim Bilgisi Eklendi',
+                icon: 'success',
+                timer: 1000,
+                showConfirmButton: true,
+            })
+            $("#educationform")[0].reset();
+        }
+    }
+    function EducationRemove(id) {
+        if (data.status == -1)
+            error();
+        else {
+            Swal.fire({
+                title: 'Başarılı',
+                text: 'Eğitim Bilgisi Kaldırıldı',
+                icon: 'success',
+                timer: 1000,
+                showConfirmButton: true,
+            })
+            document.getElementById("education-" + id).innerHTML = "";
+        }
+    }
+
+
+    function ExperiencesAdd(data) {
+        if (data.status == -1)
+            error();
+        else {
+            $("#experiences").append("<tr id='experiences-" + data.id + "'> <td>" + data.name + "</td> <td>" + data.branch + "</td> <td>" + data.date + "</td> <td>" + data.enddate + "</td>   <td><a data-ajax='true' data-ajax-failure='error' data-ajax-success='ExperiencesRemove(" + data.id + ")' data-ajax-method='post' href='/AdminPanel/RemoveDoctorExperiences/?experiencesId=" + data.id + "'><i  class='fa fa-remove'></i></a></td> </tr>");
+            Swal.fire({
+                title: 'Başarılı',
+                text: 'Tecrübe Bilgisi Eklendi',
+                icon: 'success',
+                timer: 1000,
+                showConfirmButton: true,
+            })
+            $("#experiencesform")[0].reset();
+        }
+    }
+    function ExperiencesRemove(id) {
+        if (data.status == -1)
+            error();
+        else {
+            Swal.fire({
+                title: 'Başarılı',
+                text: 'Tecrübe Bilgisi Kaldırıldı',
+                icon: 'success',
+                timer: 1000,
+                showConfirmButton: true,
+            })
+            document.getElementById("experiences-" + id).innerHTML = "";
+        }
+    }
+
+
+
+
+    function MedicalInterestAdd(data) {
+        if (data.status == -1)
+            error();
+        else {
+            $("#interests").append("<tr id='interests-" + data.id + "'> <td>" + data.name + "</td>  <td><a data-ajax='true' data-ajax-failure='error' data-ajax-success='MedicalInterestRemove(" + data.id + ")' data-ajax-method='post' href='/AdminPanel/RemoveDoctorMedicalInterest/?MedicalInterestId=" + data.id + "'><i  class='fa fa-remove'></i></a></td> </tr>");
+            Swal.fire({
+                title: 'Başarılı',
+                text: 'Tecrübe Bilgisi Eklendi',
+                icon: 'success',
+                timer: 1000,
+                showConfirmButton: true,
+            })
+            $("#interestform")[0].reset();
+        }
+    }
+    function MedicalInterestRemove(id) {
+        if (data.status == -1)
+            error();
+        else {
+            Swal.fire({
+                title: 'Başarılı',
+                text: 'Tecrübe Bilgisi Kaldırıldı',
+                icon: 'success',
+                timer: 1000,
+                showConfirmButton: true,
+            })
+            document.getElementById("interests-" + id).innerHTML = "";
+        }
+    }
+
+
+
+    function ScientificAdd(data) {
+        if (data.status == -1)
+            error();
+        else {
+            $("#scientific").append("<tr id='scientific-" + data.id + "'> <td>" + data.name + "</td>  <td>" + data.date + "</td> <td>" + data.enddate + "</td>   <td><a data-ajax='true' data-ajax-failure='error' data-ajax-success='ScientificRemove(" + data.id + ")' data-ajax-method='post' href='/AdminPanel/RemoveDoctorScientificMembership/?scientificMembershipId=" + data.id + "'><i  class='fa fa-remove'></i></a></td> </tr>");
+            console.log(data);
+            Swal.fire({
+                title: 'Başarılı',
+                text: 'Tecrübe Bilgisi Eklendi',
+                icon: 'success',
+                timer: 1000,
+                showConfirmButton: true,
+            })
+            $("#scientificform")[0].reset();
+        }
+
+    }
+    function ScientificRemove(id) {
+        if (data.status == -1)
+            error();
+        else {
+            Swal.fire({
+                title: 'Başarılı',
+                text: 'Tecrübe Bilgisi Kaldırıldı',
+                icon: 'success',
+                timer: 1000,
+                showConfirmButton: true,
+            })
+            document.getElementById("scientific-" + id).innerHTML = "";
+        }
+    }
+
+
+    
+        Dropzone.autoDiscover = false;
+
+        function deletefile(index) {
+            document.querySelectorAll("#filescontainer p")[index].innerHTML=""
+            files.pop(index); counter--;
+            document.getElementById("dZUpload").style.backgroundImage = '';
+            document.getElementById("dZUpload").style.color = 'black';
+        }
+        var counter = 0;
+        var files = new Array();
+        $(function () {
+            //-----------------  UPLOAD FILES
+
+            var base64 = '';
+            var filelimit = 1;
+            //var acceptedtype = "image/*,application/pdf,.doc,.docx";
+            var acceptedtype = "image/png,image/jpg,image/jpeg,"; //İzin Verilen Dosya Türleri
+            Dropzone.autoDiscover = false;
+            $("#kaydetbtn").click(function (e) { //Görünüz Buton
+                e.preventDefault();
+                files.forEach(function (file) {
+                    $("#profileform").append("<input type='hidden' name='photofile' value='"+file+"'/>");//Container
+                });
+                $('#hiddensubmit').trigger('click'); //Gizli Submit Button
+            });
+             $("#dZUpload").dropzone({
+                 maxFiles: filelimit,
+                 maxFilesize: 10024,
+                 acceptedFiles: acceptedtype,
+                 uploadMultiple: true,
+                 parallelUploads: true,
+                 paramName: "Userphoto", //Önemsiz
+                 autoProcessQueue: false,
+                 url: '/', //Önemsiz
+                 addedfile: function (file) {
+                     console.log(file);
+                        var reader = new FileReader();
+                     reader.onload = function (event) {
+                         if (counter < filelimit) {
+                             base64 = event.target.result;
+                             files.push(base64);
+                             $("#filescontainer").append("<p class='label label-primary '><span class='fa fa-times' style='cursor:pointer' onclick='deletefile(" + counter + ")'></span> " + file.name + "</p> ");
+                             counter++;
+                             document.getElementById("dZUpload").style.backgroundImage ='url('+base64+')';
+                             document.getElementById("dZUpload").style.color ='white';
+                         } else {
+                               Swal.fire({
+                                    title: 'Dosya Ekleme Hatası',
+                                    text:'Daha Fazla Dosya Ekleyemezsiniz',
+                                    icon: 'error',
+                                    showConfirmButton: false,
+                               })
+                         }
+
+                    };
+                     reader.readAsDataURL(file);
+                 }
+             });
+
+            //-----------------  UPLOAD FILES
+        });
+
+</script>

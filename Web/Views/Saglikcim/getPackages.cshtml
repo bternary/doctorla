@@ -1,0 +1,1638 @@
+﻿@model PagedList.Core.PagedList<Data.Domain.DailyCheck>
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *,PagedList.Core.Mvc
+@{
+    ViewData["Title"] = "Takip Paketlerim";
+    List<Data.Domain.Country>
+    countrys = TempData["Countrys"] as List<Data.Domain.Country>
+        ;
+    int filecounter = 0;
+
+    string uyarı = ViewBag.Uyarı;
+
+}
+@section css{
+    <link href="~/css/dashboard.css" rel="stylesheet" type="text/css">
+    @*  <link href="~/css/dashboard.min.css" rel="stylesheet" type="text/css">*@
+    <link href="~/css/dropzone.min.css" rel="stylesheet" />
+    <style>
+        .doktor-randevu-detay .modal-body {
+            height: calc(100% - 140px);
+        }
+    </style>
+}
+
+<div class="detaylar">
+    <div class="modal2 fade goruntulu-konusma karart" id="appointmentmodal" tabindex="-1" role="dialog">
+    </div>
+</div>
+<section class="service-detail">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-10">
+                <div id="tabid3" class="premium-tab">
+                    <div class="dashboard-content" style="padding:0px;margin-left: 0px" id="packagesTab">
+                        <div class="row">
+                            <div class="col-lg-12 col-md-12 col-xs-12">
+                                <div class="dashboard-list-box">
+                                    <h4 class="gray">Premium Paketlerim</h4>
+                                    <div class="table-box table-responsive">
+                                        <table class="basic-table booking-table">
+                                            <thead>
+                                                <tr>
+
+                                                    <th>İlgili Ad Soyad</th>
+                                                    <th style="width: 11%;">İlgili İletişim</th>
+                                                    <th>Paket Adı</th>
+                                                    <th>Paket Başlangıç</th>
+                                                    <th>Paket Bitiş</th>
+                                                    <th>Sonraki Hatırlatma Günü</th>
+                                                    <th>Hatırlatma Saatleri</th>
+                                                    <th>Paket İşlemleri</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach (var item in Model)
+                                                {
+                                                    <tr id="paket-@item.Id">
+                                                        <td>
+                                                            @if (item.NurseId == 1 && !item.IsPremium)
+                                                            {
+                                                                <span> - </span>
+                                                            }
+                                                            else if (item.NurseId == 1)
+                                                            {
+                                                                <span>Hemşire Bekleniyor</span>
+                                                            }
+                                                            else
+                                                            {
+                                                                @(item.Nurse.Name + " " + @item.Nurse.SurName)
+                                                            }
+
+                                                        </td>
+                                                        <td>@item.Nurse.Phone</td>
+                                                        <td>@item.PackageName</td>
+                                                        <td>@item.Start.ToShortDateString()</td>
+                                                        <td>@item.Finish.ToShortDateString()</td>
+                                                        <td>
+                                                            @item.AlertDay.ToShortDateString()
+                                                            @*<span>@(item2 == "1" ? "Pazartesi" : item2 == "2" ? "Salı" : item2 == "3" ? "Çarşamba" : item2 == "4" ? "Perşembe" : item2 == "5" ? "Cuma" : item2 == "6" ? "Cumartesi" : "Pazar")</span>*@
+                                                        </td>
+                                                        <td>@item.NurseAlertDaysHours</td>
+
+                                                        <td class="islemler-yazi">
+                                                            @if (item.IsDoctor)
+                                                            {
+                                                                <a href="/Doctorla/Sohbet?id=@item.Id" id="olcumler" class="green" title="Mesaj Gönder">Mesaj Gönder</a>
+                                                                if (item.LiveEndDate > DateTime.Now)
+                                                                {
+
+                                                                    <a onclick="liveRequestDetay(@item.Id)" id="talepdetay" href="javascript:;" class="yellow">Görüşme Detayları</a>
+                                                                }
+                                                                else
+                                                                {
+                                                                    if (item.IsRequest)
+                                                                    {
+                                                                        <a onclick="liveRequestIptal(@item.Id)" id="talepgericek" href="javascript:;" class="yellow">Talebi Geri Çek</a>
+                                                                        <a onclick="liveRequestOlustur(@item.Id)" style="display:none" id="talepet" href="javascript:;" class="yellow">Canlı Görüşme Talebi</a>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <a onclick="liveRequestOlustur(@item.Id)" id="talepet" href="javascript:;" class="yellow">Canlı Görüşme Talebi</a>
+                                                                        <a onclick="liveRequestIptal(@item.Id)" style="display:none" id="talepgericek" href="javascript:;" class="yellow">Talebi Geri Çek</a>
+
+                                                                    }
+                                                                }
+                                                            }
+
+                                                            @if (item.IsPremium && item.Status == -1)
+                                                            {
+                                                                <a href="#" id="olcumler" onclick="NurseWaitingAlert()" class="blue" title="Ölçümlerim">Ölçümlerim</a>
+                                                            }
+                                                            else
+                                                            {
+                                                                <a href="#" id="olcumler" onclick="getDailyCheckToModal(@item.Id)" class="blue" title="Ölçümlerim">Ölçümlerim</a>
+                                                            }
+                                                            <a href="#" id="grafikler" onclick="grafikler(@item.Id)" class="red" title="Grafiklerim">Grafiklerim</a>
+                                                            <a href="#" id="hatirlatici-link" onclick="createReminders(@item.Id)" class="yellow" title="Hatırlatıcılarım">Hatırlatıcılarım</a>
+                                                            @*@if (item.IsPremium && item.Status == -1)
+                                                                {
+                                                                    <a href="#" id="premium-dosya-yukle" onclick="setFirstFileModalId(@item.Id)" data-toggle="modal" data-target="#premium-files" class="green" title="Dosya Yükle">Dosyalarım</a>
+                                                                }*@
+
+                                                        </td>
+                                                    </tr>
+                                                }
+
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                @*<div class="pagination-container">
+                                        <nav class="pagination">
+                                            <ul>
+                                                <li><a href="#" class="current-page">1</a></li>
+                                                <li><a href="#">2</a></li>
+                                                <li><a href="#"><i class="sl sl-icon-arrow-right"></i></a></li>
+                                            </ul>
+                                        </nav>
+                                    </div>*@
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-12 sayfalama">
+                                <div class="sayfalama-bilgi">Toplam <span>@Model.TotalItemCount</span> Kayıt Bulunuyor. Şu anda <span>@Model.FirstItemOnPage</span> - <span>@Model.LastItemOnPage</span> Arasındaki Kayıtlar Gösteriliyor. </div>
+
+                                <pager list="@Model" asp-controller="Saglikcim" options="@PagedList.Core.Mvc.PagedListRenderOptions.Bootstrap4PageNumbersOnly" asp-action="getPackages" />
+                            </div>
+                        </div>
+                        @*<div class="pagination-container">
+                                <nav class="pagination">
+                                    <ul>
+                                        <li><a href="#" class="current-page">1</a></li>
+                                        <li><a href="#">2</a></li>
+                                        <li><a href="#"><i class="sl sl-icon-arrow-right"></i></a></li>
+                                    </ul>
+                                </nav>
+                            </div>*@
+                    </div>
+                </div>
+
+            </div>
+            @*<div class="col-md-2">
+                    <div class="detail-sidebar">
+                        <div class="sidebar-box">
+                            <div class="sidebar-title ">
+                                <h3>@ViewBag.Name @ViewBag.SurName </h3> <br />
+                                <h3>Kredi:@ViewBag.AccountBalance TL</h3>
+                            </div>
+                            <div class="sidebar-content">
+                                <ul>
+                                    <li><a href="/Saglikcim/Profilim" class="btn">Randevularım</a></li>
+                                    <li><a href="/Saglikcim/EditProfile" class="btn">Profilim</a></li>
+                                    @if (ViewBag.DailyCheckCount > 0)
+                                    {
+                                        <li class="active"><a href="/Saglikcim/getPackages" class="btn takip-button">Takip Paketlerim</a></li>
+                                    }
+                                    else
+                                    {
+                                        <li><a class="btn premium-button" href="TakipModeli/#takipPaketleri">Premium Ol</a></li>
+                                    }
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>*@
+            @Html.Partial("Partials/_UserMenu.cshtml", new Data.Domain.User { SurName = ViewBag.SurName, Name = ViewBag.Name, AccountBalance = ViewBag.AccountBalance }, ViewData)
+
+        </div>
+
+    </div>
+    </div>
+    </div>
+
+
+</section>
+<div class="modal fade goruntulu-konusma" id="olcumModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+
+</div>
+
+
+@* DailyCheck Detail Modal*@
+<div class="modal fade goruntulu-konusma" id="grafikmodal" tabindex="-1" role="dialog" aria-labelledby="grafikmodal" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered doktor-randevu-detay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="olcumModalLabel">Grafiklerim</h5>
+                <button type="button" class="close modal-kapat" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body tasma22">
+                <div class="row" id="grafik-olustur">
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Kapat</button>
+            </div>
+        </div>
+    </div>
+</div>
+@* DailyCheck Detail Modal*@
+
+
+@* DailyCheck Upload First Files *@
+<div class="modal fade premium-modal" id="premium-files" tabindex="-1" role="dialog" aria-labelledby="premium-files" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="premium-files">Dosyalarım</h5>
+                <button type="button" class="close modal-kapat" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <span style="display:none" id="firstFileModalId">0</span>
+                <div class="premium-files-container row" id="fileuploadcontainer2">
+                    <div class="col-lg-12 col-md-12 col-xs-12">
+                        <div id="fileupload" class="dropzone" style="background-repeat: round;">
+                            <div class="dz-default dz-message">Buraya TIklayıp Dosya Yükleyiniz (<span id="filecounter2">0</span>)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn iptal" data-dismiss="modal">Kapat</button>
+                <input type="button" onclick="SaveDailyCheckFirstFiles()" value="Kaydet" class=" btn kaydet" style="display:none" id="hiddensubmitappointment" />
+            </div>
+        </div>
+    </div>
+</div>
+@* DailyCheck Upload First Files *@
+
+@*<link href="~/css/randevutakvim.css" rel="stylesheet" /> DEĞİŞTİR *@
+<link href="~/css/randevutakvim.min.css" rel="stylesheet" />
+
+
+
+@section script{
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+    <script src="~/js/dashboard-custom.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+    <script src="https://unpkg.com/imask"></script>
+
+    <script src="~/js/dropzone.js"></script>
+    <script type="text/javascript">
+        var timeId = 0;
+        var times = [];
+        var saatdegerleri = [];
+        $(function () {
+            $('[data-toggle="popover"]').popover();
+
+
+        })
+
+        var eklegüncelle = 1;
+        var hatirlaticiId = 0;
+        function createReminders(id) {
+            eklegüncelle = 1;
+            hatirlaticiId = 0;
+            var string = "";
+            var telefon = "";
+            var deger;
+            var gecerliId = "";
+            var saatler = document.getElementById("saatler");
+
+
+            var gun1 = "";
+            var gun2 ="";
+            var gun3 =  "";
+            var gun4 =  "";
+            var gun5 =  "";
+            var gun6 =  "";
+            var gun7 = "";
+            var gun8 =  "";
+            var gun9 ="";
+            var gun10 =  "";
+            var gun11 =  "";
+            var gun12 =  "";
+            var gun13 =  "";
+            var gun14 = "";
+            var gun15 =  "";
+            $.ajax({
+                url: '/Saglikcim/Hatirlaticilar',
+                data: { Id: id },
+                type: 'get',
+                dataType: 'json',
+                success: function (data) {
+                    telefon = data.phone;
+                    data.alerts.forEach(function (item) {
+                        gecerliId = "time" + item.Id;
+                        var bilgi = item.daycounter == 1 ? 'Her Gün' : (item.daycounter + ' Günde Bir');
+                        string += '<div class="saat-goster"  id="' + gecerliId + '"><div class="saat-goster-saat"><div class="hatirlaticiBilgiler"><span>' + item.alertdate + '</span><span class="hatirlaticiAralik">' + bilgi + ' </span></div><div class="hatirlaticiButon"><i class="far fa-times-circle" title="Sil" onclick="removeTime(' + id + ',' + item.id + ')"></i><i class="far fa-edit" title="Düzenle" onclick="editReminders(' + id + ',' + item.id + ',\'' + item.alertdate + '\',' + item.daycounter + ',\'' + item.message+'\')"></i></div></div><div class="saat-goster-not">' + item.message + '</div></div>';
+                    })
+                    Swal.fire({
+                        title: 'Hatırlatıcı Oluştur',
+                        html: '<div class="hatirlatici-form">' +
+                            '<div class="hatirlatici-form-group">' +
+                            '<label for="ikinciltel">İkincil Telefon No</label><div><input type="text" name="ikinciltel" id="ikinciltel"  onfocus="telno()" value="' + telefon +'"/></div>' +
+                            '</div>' +
+                            '<div class="hatirlatici-form-group">' +
+                            '<label for="hatirlaticibaslangic">Başlangıç Tarihi</label><div><input type="datetime-local" id="hatirlaticibaslangic" name="startdate" required=""></div>' +
+                            '</div>' +
+                            '<div class="hatirlatici-form-group">' +
+                            '<label for="hatirlaticiaralik">Hatırlatıcı Sıklığı</label><div><select id="hatirlaticiaralik"><option value="1"  ' + gun1 + '>Her Gün</option>        <option value="2" ' + gun2 + '>İki Günde Bir</option>        <option value="3" ' + gun3 + '>Üç Günde Bir</option>        <option value="4" ' + gun4 + '>Dört Günde Bir</option><option value="5" ' + gun5 + '>Beş Günde Bir</option><option value="6" ' + gun6 + '>Altı Günde Bir</option><option value="7" ' + gun7 + '>Yedi Günde Bir</option></select></div>' +
+                            '</div>' +
+                            '<div class="hatirlatici-form-group ">' +
+                            '<label for="hatirlatici-not">Hatırlatıcı Notu</label><div class="not-olustur"><textarea onkeyup="hatirlaticinotcounter()" maxlength="150" class= "hatirlatici-not" id="hatirlatici-not" ></textarea><div class="counter-ekle"> <div id="the-count"><span id="current" > 0 </span><span id="maximum">/ 150</span></div ></div></div>' +
+                            '</div>' +
+                            '<div class="saat-olustur-saatler" id="saatler">' +
+                            string +
+                            '</div>' +
+
+                            '</div>',
+                        showCloseButton: true,
+                        showCancelButton: true,
+                        focusConfirm: false,
+                        confirmButtonText:
+                            'Hatırlatıcı Ekle',
+                        confirmButtonAriaLabel: 'Hatırlatıcıyı Güncelle',
+                        customClass: {
+                            confirmButton: 'hatirlaticiConfirmButon'
+                        },
+                        cancelButtonText:
+                            'Kapat',
+                        preConfirm: () => {
+                            startdate = document.getElementById("hatirlaticibaslangic").value;
+                            var ikinciltelefon = document.getElementById("ikinciltel").value;
+                            var hatirlaticibaslangic = document.getElementById("hatirlaticibaslangic").value;
+                            var hatirlaticiaralik = document.getElementById("hatirlaticiaralik").value;
+                            var now = new Date();
+                            var selectedDate = new Date(startdate);
+                            selectedDate = selectedDate.setHours(23, 59, 59, 59);
+                            console.log(selectedDate);
+                            console.log(now);
+                            if (ikinciltelefon.indexOf('_') > -1 || hatirlaticibaslangic == "" || hatirlaticibaslangic === null || hatirlaticiaralik == "" || hatirlaticiaralik === null) {
+                                Swal.showValidationMessage('Lütfen Eksik Alan Bırakmayınız');
+
+                            } else if (selectedDate < now) {
+                                Swal.showValidationMessage('Geçmiş Bir Tarih Seçemezsiniz');
+                            }
+                        },
+                        cancelButtonColor: '#d33',
+                        cancelButtonAriaLabel: 'İptal Et'
+                    }).then((result) => {
+                        if (result.value) {
+                            var ikinciltelefon = document.getElementById("ikinciltel").value;
+                            var hatirlaticibaslangic = document.getElementById("hatirlaticibaslangic").value;
+                            var hatirlaticiaralik = document.getElementById("hatirlaticiaralik").value;
+                            var hatirlaticinot = document.getElementById("hatirlatici-not").value;
+                            var alertDayHours = "";
+                            var now = new Date();
+                            var selectedDate = new Date(hatirlaticibaslangic);
+                            console.log(now);
+                            console.log(selectedDate);
+                            selectedDate = selectedDate.setHours(23, 59, 59, 59);
+
+                            if (ikinciltelefon.indexOf('_') > -1 || hatirlaticibaslangic == "" || hatirlaticibaslangic === null || hatirlaticiaralik == "" || hatirlaticiaralik === null) {
+                                times.length = 0;
+                                toastr.error('Lütfen Eksik Alan Bırakmayınız!', 'Hata!');
+                                document.getElementById("hatirlatici-link").click();
+                            } else if (selectedDate < now) {
+                                times.length = 0;
+                                toastr.error('Lütfen Gelecekten Bir Tarih Seçiniz!', 'Hata!');
+                                document.getElementById("hatirlatici-link").click();
+                            } else {
+                                for (var i = 0; i < times.length; i++) {
+                                    alertDayHours += times[i][0] + ",";
+                                }
+                                alertDayHours = alertDayHours.substring(0, alertDayHours.length - 1);
+
+                                if (eklegüncelle == 1) {
+                                        $.ajax({
+                                            url: '/Saglikcim/HatirlaticiEkle',
+                                            data: { Id: id, AlertDay: hatirlaticibaslangic, ExtraPhone: ikinciltelefon, AlertDayCounter: hatirlaticiaralik,Message:hatirlaticinot},
+                                            type: 'post',
+                                            dataType: 'json',
+                                            success: function (data) {
+                                                if (data.status==1) {
+                                                    toastr.success(data.message, data.title);
+                                                    createReminders(id);
+                                                }
+                                                else {
+                                                    toastr.error(data.message, data.title);
+                                                }
+                                            },
+                                            error: function (data) {
+                                                $.ajax({
+                                                    url: '/Saglikcim/ErrorLogs',
+                                                    data: { page: "Saglikcim  - getPackages - createReminders HatirlaticiEkle" },
+                                                    type: 'post',
+                                                    dataType: 'json',
+                                                    success: function (data) {
+
+                                                    },
+                                                    error: function (data) {
+
+                                                    }
+                                                });
+                                                toastr.error('Bir Hata İle Karşılaştık', 'Hata!');
+                                            }
+                                        });
+                                    eklegüncelle = 1;
+                                    hatirlaticiId = 0;
+                                }
+                                else if(eklegüncelle==2) {
+                                    $.ajax({
+                                        url: '/Saglikcim/HatirlaticiGüncelle',
+                                        data: { Id: hatirlaticiId, ExtraPhone: telefon, AlertDay: hatirlaticibaslangic, AlertDayCounter: hatirlaticiaralik, Message: hatirlaticinot },
+                                        type: 'post',
+                                        dataType: 'json',
+                                        success: function (data) {
+                                            if (data.status == 1) {
+                                                toastr.success(data.message, data.title);
+                                                createReminders(id);
+                                            }
+                                            else {
+                                                toastr.error(data.message, data.title);
+                                            }
+                                        },
+                                        error: function (data) {
+                                            $.ajax({
+                                                url: '/Saglikcim/ErrorLogs',
+                                                data: { page: "Saglikcim  - getPackages - createReminders HatirlaticiEkle" },
+                                                type: 'post',
+                                                dataType: 'json',
+                                                success: function (data) {
+
+                                                },
+                                                error: function (data) {
+
+                                                }
+                                            });
+                                            toastr.error('Bir Hata İle Karşılaştık', 'Hata!');
+                                        }
+                                    });
+                                    eklegüncelle = 1;
+                                    hatirlaticiId = 0;
+                                }
+
+                            }
+                        }
+                    })
+                },
+                error: function (data) {
+                    console.log(data);
+                    $.ajax({
+                        url: '/Saglikcim/ErrorLogs',
+                        data: { page: "Saglikcim  - getPackages - createReminders Hatırlatıcılar" },
+                        type: 'post',
+                        dataType: 'json',
+                        success: function (data) {
+                        },
+                        error: function (data) {
+
+                        }
+                    });
+                    toastr.error('Bir Hata İle Karşılaştık', 'Hata!');
+                }
+            });
+
+        }
+
+        function editReminders(id, hatirlaticiid, tarih, aralik, not) {
+            eklegüncelle = 2;
+            hatirlaticiId = hatirlaticiid;
+            var tarihTakvim = tarih.substr(0, 10);
+            tarihTakvim = tarihTakvim.split('.').join('-');
+            var tarihSaat = tarih.substr(11);
+            var formatTarih = tarihTakvim.split("-").reverse().join("-");
+            var sonTarih = formatTarih + "T" + tarihSaat;
+            document.getElementById("hatirlaticibaslangic").value = sonTarih;
+            document.getElementById("hatirlaticiaralik").value = aralik;
+            document.getElementById("hatirlatici-not").value = not;
+            hatirlaticinotcounter();
+            document.querySelector(".hatirlaticiConfirmButon").innerHTML = "Hatırlatıcıyı Güncelle";
+            document.querySelector(".swal2-title").innerHTML = "Hatırlatıcıyı Güncelle";
+        }
+
+
+        function hatirlaticinotcounter() {
+            var characterCount = $("#hatirlatici-not").val().length,
+                current = $('#current'),
+                maximum = $('#maximum'),
+                theCount = $('#the-count');
+
+            current.text(characterCount + " ");
+
+            if (characterCount < 30) {
+                current.css('color', '#666');
+                maximum.css('color', '#666');
+
+            }
+            if (characterCount > 30 && characterCount < 50) {
+                maximum.css('color', '#6d5555');
+                current.css('color', '#6d5555');
+            }
+            if (characterCount > 50 && characterCount < 80) {
+                maximum.css('color', '#793535');
+
+                current.css('color', '#793535');
+            }
+            if (characterCount > 80 && characterCount < 110) {
+                maximum.css('color', '#841c1c');
+
+                current.css('color', '#841c1c');
+            }
+            if (characterCount > 110 && characterCount < 140) {
+                maximum.css('color', '#8f0001');
+
+                current.css('color', '#8f0001');
+            }
+
+            if (characterCount >= 140) {
+                maximum.css('color', '#8f0001');
+                current.css('color', '#8f0001');
+                theCount.css('font-weight', 'bold');
+            } else {
+                theCount.css('font-weight', 'normal');
+            }
+
+
+        }
+
+        function createRemindersTime() {
+
+            var saat = document.getElementById("saat").value;
+            var not = document.getElementById("hatirlatici-not").value;
+            var hatirlaticiBaslangic = document.getElementById("hatirlaticibaslangic").value;
+            var hatirlaticiAralik = document.getElementById("hatirlaticiaralik").value;
+            // TÜM DEĞERLERİ ALIYORUZ
+
+
+            var check = true;
+            if (saat && not) {
+                Swal.resetValidationMessage()
+
+                for (var i = 0; i < times.length; i++) {
+                    var deger = times[i][0].substring(0, 5);
+                    if (deger == saat || (not == "" || not == null)) {
+                        check = false;
+                        Swal.showValidationMessage(
+                            'Aynı saate birden fazla hatırlatıcı ekleyemezsiniz!'
+                        )
+                    }
+                }
+                console.log("check " + check);
+                if (check == true) {
+                    Swal.resetValidationMessage()
+                    timeId++;
+                    var saatler = document.getElementById("saatler");
+                    var gecerliId = "time" + timeId++;
+                    saatler.innerHTML += '<div class="saat-goster"  id="' + gecerliId + '"><div class="saat-goster-saat"><div><span>' + saat + '</span> | <span class="hatirlaticiAralik">'+hatirlaticiAralik+' Günde Bir</span></div><i class="far fa-times-circle" title="Saati Sil" onclick="removeTime(' + gecerliId + ')"></i></div><div class="saat-goster-not">' + not + '</div></div>';
+                    times.push([saat + "-" + not, gecerliId]);
+                    document.getElementById("hatirlatici-not").value = "";
+                }
+
+            } else {
+                Swal.showValidationMessage(
+                    'Not ve Saat Alanı Boş Bırakılamaz!'
+                )
+            }
+            console.log(times);
+
+
+        } $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+        })
+        function telno() {
+            var phoneMask = IMask(
+                document.getElementById('ikinciltel'), {
+                mask: '+9\\0 (000) 000-00-00',
+                lazy: false,
+                placeholderChar: '_'
+            });
+        }
+        function removeTime(dailyCheckId,Id) {
+            $.ajax({
+                url: '/Saglikcim/HatirlaticiSil',
+                data: {Id:Id },
+                type: 'post',
+                dataType: 'json',
+                success: function (data) {
+                    if (data.status==1) {
+                        toastr.success(data.message, data.title);
+                        createReminders(dailyCheckId);
+                    }
+                    else {
+                        toastr.error(data.message, data.title);
+                    }
+
+                },
+                error: function (data) {
+                    $.ajax({
+                        url: '/Saglikcim/ErrorLogs',
+                        data: { page: "Saglikcim  - getPackages - removeTime HatirlaticiSil" },
+                        type: 'post',
+                        dataType: 'json',
+                        success: function (data) {
+
+                        },
+                        error: function (data) {
+
+                        }
+                    });
+                    toastr.error('Bir Hata İle Karşılaştık', 'Hata!');
+                }
+            });
+        }
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+        })
+        function telno() {
+            var phoneMask = IMask(
+                document.getElementById('ikinciltel'), {
+                mask: '+9\\0 (000) 000-00-00',
+                lazy: false,
+                placeholderChar: '_'
+            });
+        }
+
+        function grafikler(Id) {
+            $.ajax({
+                url: '/Saglikcim/GetDailyCheckDetail',
+                data: { Id: Id },
+                type: 'POST',
+                dataType: 'html',
+                success: function (data) {
+                    $("#olcumModal").html(data);
+                    $('#grafikmodal').on('show.bs.modal', function (e) {
+                        var items = document.getElementById("olcumler-tablo");
+                        document.getElementById("grafik-olustur").innerHTML = '';
+                        console.log(items);
+
+
+                        for (var a = 1; a < items.rows[0].cells.length - 4; a++) {
+                            var icon = items.rows[0].cells[a].dataset.icon;
+                            document.getElementById("grafik-olustur").innerHTML += '<div class="col-xs-12 col-sm-6 col-md-4 graph"><div class="graphtitle"><i class="' + icon + '"></i><h1>' + items.rows[0].cells[a].innerHTML + ' Grafiği</h1></div><canvas id = "myChart' + a + '" style = "height:100%; width:100%;" ></canvas ></div>';
+
+                        }
+                        var tarihler = new Array();
+                        var minimumDeger = new Array();
+                        var maximumDeger = new Array();
+                        for (var i = 1; i < items.rows.length; i++) {
+                            tarihler.push(items.rows[i].cells[0].innerHTML);
+                            ;
+                        }
+
+                        for (var a = 1; a < items.rows[0].cells.length - 4; a++) {
+                            var degerler = new Array();
+
+                            for (var i = 1; i < items.rows.length; i++) {
+                                degerler.push(items.rows[i].cells[a].innerHTML);
+                            }
+
+
+                            var ctx = document.getElementById('myChart' + a).getContext('2d');
+
+                            // GERÇEK DEĞERLER
+                            var dataFirst = {
+                                label: items.rows[0].cells[a].innerHTML + ' Değeri',
+                                data: degerler,
+                                fill: false,
+
+                                backgroundColor: 'rgb(25, 99, 255)',
+                                borderColor: 'rgb(25, 99, 255)'
+                            };
+
+                            minimumDeger = []
+                            maximumDeger = []
+                            // MİNİMUM DEĞERLER
+                            var minValue = items.rows[0].cells[a].dataset.minvalue;
+
+                            minValue = minValue.replace(",", ".");
+                            for (var i = 1; i < items.rows.length; i++) {
+                                minimumDeger.push(minValue);
+                            }
+                                                        // MAXİMUM DEĞERLER
+
+                            var maxValue = items.rows[0].cells[a].dataset.maxvalue;
+
+                            maxValue = maxValue.replace(",", ".");
+                            for (var i = 1; i < items.rows.length; i++) {
+                                maximumDeger.push(maxValue);
+                            }
+
+                            var dataSecond = {
+                                label: "En Düşük Değer (" + minValue + ")",
+                                data: minimumDeger,
+                                fill: 2,
+                                propagate: true,
+
+                                backgroundColor: 'rgb(255, 99, 132,0.3)',
+                                borderColor: 'rgb(255, 99, 132)'
+                            };
+
+                            var dataThird = {
+                                label: 'En Yüksek Değer (' + maxValue + ')',
+                                data: maximumDeger,
+                                fill: 1,
+                                backgroundColor:'#d33',
+                                propagate: true,
+                                backgroundColor: 'rgb(255, 99, 132,0.3)',
+                                borderColor: 'rgb(255, 99, 132)'
+
+                            };
+
+
+
+                            // GRAFİĞİ DEĞERLERİNİ BELİRLEME
+                            var speedData = {
+                                labels: tarihler,
+                                datasets: [dataFirst, dataSecond, dataThird]
+                            };
+                            // GRAFİK AYARLARI
+                            var chartOptions = {
+                                tooltips: {
+
+                                    callbacks: {
+
+                                        label: function (tooltipItem, data) {
+                                            if (tooltipItem.datasetIndex == 0) {
+                                                var label = data.datasets[tooltipItem.datasetIndex].label || '';
+                                                var min = data.datasets[1].data[0];
+                                                var max = data.datasets[2].data[0];
+
+
+
+
+                                                if (Number(tooltipItem.yLabel) >= Number(min) && Number(tooltipItem.yLabel) <= Number(max)) {
+
+                                                    return [label + " Değeri:" + Number(tooltipItem.yLabel), "Değeriniz Normal"];
+                                                } else if (Number(tooltipItem.yLabel) > Number(max)) {
+                                                    return [label + " Değeri:" + Number(tooltipItem.yLabel), " Değeriniz Yüksek"];
+
+                                                } else if (Number(tooltipItem.yLabel) < Number(min)) {
+                                                    return [label + " Değeri:" + Number(tooltipItem.yLabel), " Değeriniz Düşük"];
+
+                                                }
+
+                                            } else {
+                                                var min = data.datasets[1].data[0];
+                                                var max = data.datasets[2].data[0];
+                                                return "Değeriniz " + min + "-" + max + " Aralığında Olmalıdır";
+                                            }
+                                        }
+                                    },
+                                },
+                            };
+
+                            // GRAFİĞİ ÇİZ
+                            var lineChart = new Chart(ctx, {
+                                type: 'line',
+                                data: speedData,
+                                options: chartOptions
+                            });
+                        }
+                    });
+                    $('#grafikmodal').modal('show');
+                    toastr.success('Veriler Başarılı Bir Şekilde Getirildi', 'Başarılı!');
+                },
+                error: function (data) {
+                    $.ajax({
+                        url: '/Saglikcim/ErrorLogs',
+                        data: { page: "Saglikcim  - Profilim - grafikler" },
+                        type: 'post',
+                        dataType: 'json',
+                        success: function (data) {
+
+                        },
+                        error: function (data) {
+
+                        }
+                    });
+                    toastr.error('Veriler Yüklenirken Bir Sorunla Karşılaşıldı. Lütfen Bu Durumu Bize Bildiriniz..', 'Hata!');
+                }
+            });
+        }
+
+        $("#appointmentmodal").on('hide.bs.modal', function () {
+        });
+        // Paket İşlemleri
+
+
+        var itemId;
+        function getDailyCheckToModal(Id) {
+            $.ajax({
+                url: '/Saglikcim/GetDailyCheckDetail',
+                data: { Id: Id },
+                type: 'POST',
+                dataType: 'html',
+                success: function (data) {
+                    $("#olcumModal").html(data);
+                    toastr.success('Veriler Başarılı Bir Şekilde Getirildi', 'Başarılı!');
+                    $('#olcumModal').modal('show');
+                },
+                error: function (data) {
+                    $.ajax({
+                        url: '/Saglikcim/ErrorLogs',
+                        data: { page: "Saglikcim  - getPackages - getDailyCheckToModal" },
+                        type: 'post',
+                        dataType: 'json',
+                        success: function (data) {
+
+                        },
+                        error: function (data) {
+
+                        }
+                    });
+                    toastr.error('Veriler Yüklenirken Bir Sorunla Karşılaşıldı. Lütfen Bu Durumu Bize Bildiriniz..', 'Hata!');
+                }
+            });
+        }
+        var itemId;
+        function UpdateDailyCheckDetail() {
+            var string = new Array();
+            var values = '[';
+            for (var i = 0; i < document.getElementById("veriCount").innerHTML - 1; i++) {
+                var value = document.getElementById("values-" + i);
+                if (value.value == 'veriyok')
+                    value.value = '';
+                string.push(value.value);
+                values += '{"DailyCheckDetailId":"' + value.dataset.id + '","Value":"' + value.value + '"},';
+                console.log(values);
+            }
+            values = values.substring(0, values.length - 1) + ']';
+
+            $.ajax({
+                url: '/Saglikcim/UpdateDailyCheckDetail',
+                data: { Key: itemId, Values: values },
+                type: 'post',
+                dataType: 'json',
+                success: function (data) {
+                    if (data.status == 1) {
+                        var items = document.getElementById("dailycheckdetail-" + itemId).getElementsByTagName("td");
+                        for (var i = 0; i < string.length; i++) {
+                            items[i + 1].innerHTML = string[i];
+                        }
+                        toastr.success(data.message, data.title);
+                        document.getElementById("olcumler-form").reset();
+                        document.getElementById("dailyEkle").style.display = "block";
+                        document.getElementById("dailyIptal").style.display = "none";
+                        document.getElementById("dailyGuncelle").style.display = "none";
+                        itemId = -1;
+                    }
+                    else if (data.status == -1) {
+                        toastr.error(data.message, data.title);
+                    }
+                },
+                error: function (data) {
+                    $.ajax({
+                        url: '/Saglikcim/ErrorLogs',
+                        data: { page: "Saglikcim  - getPackages - UpdateDailyCheckDetail" },
+                        type: 'post',
+                        dataType: 'json',
+                        success: function (data) {
+
+                        },
+                        error: function (data) {
+
+                        }
+                    });
+                    toastr.error('Bir Hata İle Karşılaştık', 'Hata!');
+                }
+            });
+        }
+        function cancelDailyCheckDetail() {
+            document.getElementById("olcumler-form").reset();
+
+            document.getElementById("dailyEkle").style.display = "block";
+            document.getElementById("dailyIptal").style.display = "none";
+            document.getElementById("dailyGuncelle").style.display = "none";
+            itemId = -1;
+
+        }
+
+        function updateDailyCheckValues(Id) {
+            document.getElementById("dailyEkle").style.display = "none";
+            document.getElementById("dailyGuncelle").style.display = "block";
+            document.getElementById("dailyIptal").style.display = "block";
+            var items = document.getElementById("dailycheckdetail-" + Id).getElementsByTagName("td");
+            console.log(items);
+            for (var i = 1; i < (items.length) - 2; i++) {
+                var values = document.getElementById("values-" + (i - 1));
+                values.value = items[i].innerHTML;
+            }
+            if (itemId != Id)
+            toastr.success("Veriler Başarıyla Ölçümlerime Aktarıldı", "İşlem Başarılı");
+            itemId = Id;
+        }
+        function createDailyCheckDetail(Id) {
+            var values = '[';
+            var valuesstring = '';
+            var anydata = false;
+            for (var i = 0; i < document.getElementById("veriCount").innerHTML - 1; i++) {
+                var value = document.getElementById("values-" + i);
+                if (value.value == 'veriyok')
+                    value.value = '';
+                if (value.value != '') anydata = true;
+                valuesstring += '<td>' + value.value + '</td>';
+                values += '{"DailyCheckDetailId":"' + value.dataset.id + '","Value":"' + value.value + '"},';
+            }
+            values = values.substring(0, values.length - 1) + ']';
+            if (!anydata) {
+                toastr.error("Lütfen enaz bir değer girişi yapınız!");
+                return;
+            }
+            $.ajax({
+                url: '/Saglikcim/CreateDailyCheckDetail',
+                data: { Id: Id, Values: values, files: files3 }, // Files 3 ile verileri alıyoruz
+                type: 'post',
+                dataType: 'json',
+                success: function (data) {
+                    if (data.status == 1) {
+                        var string = '<tr  id="dailycheckdetail-' + data.id + '"><td>' + data.date + '</td>';
+                        string += valuesstring;
+                        string += '<td>' + data.files + '</td>';
+                        string += '<td class="islemler"><a href="#"  onclick="updateDailyCheckValues(' + data.id + ')"  style="color: #35d0ba;"><i class="fa fa-edit"></i></a></td></tr>';
+                        $("#dailycheckdatas").append(string);
+                        document.getElementById("olcumler-form").reset();
+                        files3 = ""; document.querySelectorAll("#fileuploadcontainer3 .yuklenen-dosya").forEach(function (item) { item.innerHTML = "" }); // Yükleme Alanı Sıfırlama
+                        toastr.success(data.message, data.title);
+                    }
+                    else if (data.status == -1) {
+                        toastr.error(data.message, data.title);
+                    }
+                },
+                error: function (data) {
+                    $.ajax({
+                        url: '/Saglikcim/ErrorLogs',
+                        data: { page: "Saglikcim  - getPackages - createDailyCheckDetail" },
+                        type: 'post',
+                        dataType: 'json',
+                        success: function (data) {
+
+                        },
+                        error: function (data) {
+
+                        }
+                    });
+                    toastr.error('Bir Hata İle Karşılaştık', 'Hata!');
+                }
+            });
+        }
+
+        function NurseWaitingAlert() {
+            Swal.fire({
+                title: 'Sağlık Danışmanı Bekleniyor',
+                text: 'Sağlık Danışmanınız En Kısa Sürede Sizinle İletişime Geçerek Size Özel Menü Hazırlayacaktır. Eğer Raporunuz Mevcut İse Dosyalarım Kısmından Yükleyerek Daha İyi Bir Hizmet Alabilirsiniz.',
+                confirmButtonText: 'Tamam',
+                confirmButtonColor: '#f8bb86',
+                icon: 'warning',
+                showConfirmButton: true,
+            })
+        }
+
+
+
+        function karaktersiniri() {
+            var smskodu = document.getElementById("smscode").value.length;
+            document.getElementById("smscode").maxLength = "4";
+            if (smskodu >= 4) {
+                document.getElementById("smskodubuton").disabled = false;
+                document.getElementById("smskodubuton").classList.remove("tiklanamaz");
+            } else {
+                document.getElementById("smskodubuton").disabled = true;
+                document.getElementById("smskodubuton").classList.add("tiklanamaz");
+
+
+            }
+        }
+        function sadecesayi(evt) {
+            var charCode = (evt.which) ? evt.which : event.keyCode
+            if (charCode > 31 && (charCode < 48 || charCode > 57))
+                return false;
+
+            return true;
+
+        }
+
+        function appointmentDeleteTimeError() {
+            Swal.fire({
+                title: 'İşlem Başarısız',
+                text: 'Randevu Başlama Saatine 1 Saat Kaldıktan Sonra Randevuyu İptal Edemezsiniz!',
+                confirmButtonText: 'Tamam',
+                confirmButtonColor: '#f8bb86',
+                icon: 'warning',
+                showConfirmButton: true,
+            })
+        }
+
+
+        function userDeleteAppointment(_sessionkey) {
+            Swal.fire({
+                title: '<strong>Lütfen Alınmış Olan Randevunun İptal Sebebini Giriniz. <span style="color:red"> (İptal Ettiğiniz Randevular Hesabınıza Kredi Olarak Aktarılacaktır. Para İadesi Yapılmamaktadır.)</span></strong>',
+                html: '<input type="textarea" min="10" cols="20" rows="20" id="deletereason" name="deletereason" class="form-control" placeholder="En Az 10 Harf Giriniz" required />',
+                showCancelButton: true,
+                confirmButtonText: 'Anladım, Randevuyu İptal Etmek İstiyorum',
+                cancelButtonText: 'İptal',
+                cancelButtonColor: 'green',
+                confirmButtonColor: 'red',
+                showLoaderOnConfirm: true,
+            }).then((result) => {
+                if (result.value) {
+                    var deletereasontext = document.getElementById("deletereason").value;
+                    if (deletereasontext.length >= 10) {
+                        $.ajax({
+                            url: '/Saglikcim/deleteAppointment',
+                            data: { sessionkey: _sessionkey, deleteReason: deletereasontext },
+                            type: 'post',
+                            dataType: 'json',
+                            success: function (data) {
+                                if (data.status == 1) {
+
+                                    Swal.fire({
+                                        title: data.title,
+                                        text: data.message,
+                                        confirmButtonText: 'Tamam',
+                                        confirmButtonColor: 'green',
+                                        icon: 'success',
+                                        showConfirmButton: true,
+                                    })
+                                    setTimeout(function () { location.reload(); }, 5000)
+                                }
+                                else {
+                                    Swal.fire({
+                                        title: data.title,
+                                        text: data.message,
+                                        confirmButtonText: 'Tamam',
+                                        confirmButtonColor: 'red',
+                                        icon: 'error',
+                                        showConfirmButton: true,
+                                    })
+                                    setTimeout(function () { location.reload(); }, 5000)
+                                }
+                            },
+                            error: function (data) {
+                                $.ajax({
+                                    url: '/Saglikcim/ErrorLogs',
+                                    data: { page: "Saglikcim  - getPackages - userDeleteAppointment" },
+                                    type: 'post',
+                                    dataType: 'json',
+                                    success: function (data) {
+
+                                    },
+                                    error: function (data) {
+
+                                    }
+                                });
+                                toastr.error('Silme İşlemi Sırasında. Lütfen Bu Durumu Bize Bildiriniz..', 'Hata!');
+                            }
+                        });
+                    }
+                    else { userDeleteAppointment(_sessionkey); }
+                }
+            })
+        }
+
+        function ratesOfAppointment(_sessionkey) {
+            $.ajax({
+                url: '/Saglikcim/ratesOfAppointment',
+                data: { sessionkey: _sessionkey },
+                type: 'get',
+                dataType: 'json',
+                success: function (data) {
+                    var inputs = "";
+                    inputs += "<div class='oylama-kapsa'>";
+                    inputs += "<div class='oylama-notlar col-xs-12 col-md-5'>";
+                    if (data.rate == -1)
+                        inputs += '<div class="oylama"><input type="radio" class="radio" value="-1" id="rate1" name="rate" checked/><label for="rate1" style="color:red">Doktor Gelmedi</label></div>';
+                    else
+                        inputs += '<div class="oylama"><input type="radio" class="radio" value="-1" id="rate1" name="rate" /><label for="rate1" style="color:red">Doktor Gelmedi</label></div>';
+                    if (data.rate == 1)
+                        inputs += '<div class="oylama"><input type="radio" class="radio" value="1" id="rate2" name="rate" checked/><label for="rate2" >Çok Kötü</label></div>';
+                    else
+                        inputs += '<div class="oylama"><input type="radio" class="radio" value="1" id="rate2" name="rate" /><label for="rate2" >Çok Kötü</label></div>';
+                    if (data.rate == 2)
+                        inputs += '<div class="oylama"><input type="radio" class="radio" value="2" id="rate3" name="rate" checked/><label for="rate3" >Kötü</label></div>';
+                    else
+                        inputs += '<div class="oylama"><input type="radio" class="radio" value="2" id="rate3" name="rate" /><label for="rate3" >Kötü</label></div>';
+                    if (data.rate == 3)
+                        inputs += '<div class="oylama"><input type="radio" class="radio" value="3" id="rate4" name="rate" checked/><label for="rate4" >Daha İyi Olabilir</label></div>';
+                    else
+                        inputs += '<div class="oylama"><input type="radio" class="radio" value="3" id="rate4" name="rate" /><label for="rate4" >Daha İyi Olabilir</label></div>';
+                    if (data.rate == 4)
+                        inputs += '<div class="oylama"><input type="radio" class="radio" value="4" id="rate5" name="rate" checked/><label for="rate5" >Orta</label></div>';
+                    else
+                        inputs += '<div class="oylama"><input type="radio" class="radio" value="4" id="rate5" name="rate" /><label for="rate5" >Orta</label></div>';
+                    if (data.rate == 5)
+                        inputs += '<div class="oylama"><input type="radio" class="radio" value="5" id="rate6" name="rate" checked/><label for="rate6">İyi</label></div>';
+                    else
+                        inputs += '<div class="oylama"><input type="radio" class="radio" value="5" id="rate6" name="rate" /><label for="rate6">İyi</label></div>';
+                    if (data.rate == 6)
+                        inputs += '<div class="oylama"><input type="radio" class="radio" value="6" id="rate7" name="rate" checked/><label for="rate7" >Çok İyi</label></div>';
+                    else
+                        inputs += '<div class="oylama"><input type="radio" class="radio" value="6" id="rate7" name="rate" /><label for="rate7" >Çok İyi</label></div>';
+                    inputs += "</div>";
+                    inputs += "<div class='col-xs-12 col-md-7'>";
+
+                    if (data.note)
+                        inputs += '<textarea min="10"  id="note" name="note" placeholder="Randevu Notunuz" value="' + data.note + '" class="form-control" /></textarea>';
+                    else
+                        inputs += '<textarea min="10"  id="note" name="note" placeholder="Randevu Notunuz" class="form-control" /></textarea>';
+                    inputs += "</div>";
+                    inputs += "</div>";
+
+                    Swal.fire({
+                        title: '<strong>Lütfen Randevu Hakkındaki Görüşlerinizi Yazın</strong>',
+                        html: inputs,
+                        showCancelButton: true,
+                        confirmButtonText: 'Kaydet',
+                        cancelButtonText: 'İptal',
+                        cancelButtonColor: 'primary',
+                        confirmButtonColor: 'green',
+                        showLoaderOnConfirm: true,
+                    }).then((result) => {
+                        if (result.value) {
+                            var note = document.getElementById("note").value;
+                            var rate;
+                            if (document.getElementById("rate1").checked)
+                                rate = -1;
+                            else if (document.getElementById("rate2").checked)
+                                rate = 1;
+                            else if (document.getElementById("rate3").checked)
+                                rate = 2;
+                            else if (document.getElementById("rate4").checked)
+                                rate = 3;
+                            else if (document.getElementById("rate5").checked)
+                                rate = 4;
+                            else if (document.getElementById("rate6").checked)
+                                rate = 5;
+                            else if (document.getElementById("rate7").checked)
+                                rate = 6;
+                            $.ajax({
+                                url: '/Saglikcim/UpdateratesOfAppointment',
+                                data: { sessionkey: data.sessionkey, Rate: rate, Note: note },
+                                type: 'post',
+                                dataType: 'json',
+                                success: function (data) {
+                                    if (data.status == 1) {
+                                        Swal.fire({
+                                            title: data.title,
+                                            text: data.message,
+                                            confirmButtonText: 'Tamam',
+                                            confirmButtonColor: 'green',
+                                            icon: 'success',
+                                            showConfirmButton: true,
+                                        })
+                                    }
+                                    else {
+                                        Swal.fire({
+                                            title: data.title,
+                                            text: data.message,
+                                            confirmButtonText: 'Tamam',
+                                            confirmButtonColor: 'red',
+                                            icon: 'error',
+                                            showConfirmButton: true,
+                                        })
+                                    }
+                                },
+                                error: function (data) {
+                                    $.ajax({
+                                        url: '/Saglikcim/ErrorLogs',
+                                        data: { page: "Saglikcim  - getPacages - UpdateratesOfAppointment" },
+                                        type: 'post',
+                                        dataType: 'json',
+                                        success: function (data) {
+
+                                        },
+                                        error: function (data) {
+
+                                        }
+                                    });
+                                    toastr.error('Silme İşlemi Sırasında. Lütfen Bu Durumu Bize Bildiriniz..', 'Hata!');
+                                }
+                            });
+                        }
+                    })
+                },
+                error: function (data) {
+                    $.ajax({
+                        url: '/Saglikcim/ErrorLogs',
+                        data: { page: "Saglikcim  - getPackages - ratesOfAppointment" },
+                        type: 'post',
+                        dataType: 'json',
+                        success: function (data) {
+
+                        },
+                        error: function (data) {
+
+                        }
+                    });
+                }
+            });
+
+        }
+        function liveRequestDetay(id) {
+            $.ajax({
+                url: '/Saglikcim/liveRequestDetay',
+                data: { Id: id },
+                type: 'POST',
+                dataType: 'html',
+                success: function (data) {
+                    var mapData = JSON.parse(data);
+                    var tarih = mapData.date.replace("T", " ");
+                    var link = '<div class="alert alert-info" role="alert">' +
+                               '  Görüşme saatinde katılım linki aktif olacaktır!' +
+                               '</div>';
+                    if (mapData.kosul == true) { link = '\'<a href="/Doctorla/dailyCheckLive?id=' + id + '\" target="_blank" class="yellow">Görüşmeye Git</a>\''; }
+                    Swal.fire({
+                    title: '<strong><u>Görüşme Detayları</u></strong>',
+                    html:
+                        'Görüşmeniz <b>'+tarih+'</b> tarihinde gerçekleşecektir.<p>' +
+                         link,
+                    showCloseButton: true,
+                    showCancelButton: true,
+                    focusConfirm: false,
+                    confirmButtonText:
+                        '<i class="fa fa-calendar-times"></i> Görüşme Talebini Geri Çek!',
+                    confirmButtonAriaLabel: 'Thumbs up, great!',
+                    cancelButtonColor: '#d33',
+                    cancelButtonText:
+                        ' Kapat',
+                    cancelButtonAriaLabel: 'Thumbs down'
+                    }).then((result) => {
+                    if (result.value) {
+                        Swal.fire(
+                        'Tamamlandı!',
+                        'Görüşme talebiniz başarıyla geri çekildi.',
+                        'success'
+                        )
+                        liveRequestIptal(mapData.id);
+                    }
+                    })
+                },
+                error: function (data) {
+                }
+            });
+        }
+
+        function liveRequestIptal(id) {
+            Swal.fire({
+                title: 'Emin Misiniz?',
+                text: "Canlı Görüşme Talebini Geri Çekmek İstiyor Musunuz?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Evet, Talebi Geri Çek',
+                cancelButtonText: 'Kapat'
+            }).then((result) => {
+                if (result.value) {
+                    $.ajax({
+                        url: '/Saglikcim/liveRequestIptal',
+                        data: { Id: id },
+                        type: 'POST',
+                        dataType: 'html',
+                        success: function (data) {
+                            document.getElementById("talepet").style.display = "block";
+                            document.getElementById("talepgericek").style.display = "none";
+                            Swal.fire({
+                                title: data.title,
+                                text: data.message,
+                                icon: 'success',
+                                showConfirmButton: false,
+                                timer: 1500,
+
+                            })
+
+                        },
+                        error: function (data) {
+                            $.ajax({
+                                url: '/Saglikcim/ErrorLogs',
+                                data: { page: "Saglikcim  - getPackages - liveRequest" },
+                                type: 'post',
+                                dataType: 'json',
+                                success: function (data) {
+
+                                },
+                                error: function (data) {
+
+                                }
+                            });
+                            Swal.fire({
+                                title: 'Hata',
+                                text: 'Bir Sorunla Karşılaşıldı. Lütfen Bu Durumu Bize Bildiriniz..',
+                                icon: 'error',
+                                showConfirmButton: false,
+                            })
+                        }
+                    });
+
+                }
+            })
+
+
+        }
+
+        function liveRequestOlustur(id) {
+            var startdate;
+            Swal.fire({
+                title: '<strong>Canlı Görüşme Talebi Oluştur</strong>',
+                html:
+                '<span id="baslangic">Tarih ve Zaman:</span>'+
+                '<input type="datetime-local" id="startdate" name="startdate" class="form-control startdate" value="@DateTime.Now.ToString("yyyy-MM-dd HH:mm").Replace(' ','T')" required />' ,
+                showCancelButton: true,
+                cancelButtonText: 'Kapat',
+                cancelButtonColor: '#d33',
+
+                focusConfirm: false,
+                preConfirm: () => {
+                    startdate = document.getElementById("startdate").value;
+                    var selectedDate = new Date(startdate);
+
+                    var now = new Date();
+                    console.log(startdate);
+                    console.log(now);
+
+                    if (selectedDate<now) {
+                        Swal.showValidationMessage('Geçmiş Bir Tarih Seçemezsiniz');
+                    }
+                },
+                confirmButtonText:
+                'Talebi Oluştur',
+            }).then((result) => {
+                if (result.value) {
+                    startdate = document.getElementById("startdate").value.toString().replace('T', ' ');
+                    $.ajax({
+                        url: '/Saglikcim/liveRequestOlustur',
+                        data: { Id: id, liveRequestDate: startdate },
+                        type: 'POST',
+                        dataType: 'html',
+                        success: function (data) {
+
+                            document.getElementById("talepet").style.display = "none";
+                            document.getElementById("talepgericek").style.display = "block";
+                        },
+                        error: function (data) {
+                            $.ajax({
+                                url: '/Saglikcim/ErrorLogs',
+                                data: { page: "Saglikcim  - getPackages - liveRequest" },
+                                type: 'post',
+                                dataType: 'json',
+                                success: function (data) {
+
+                                },
+                                error: function (data) {
+
+                                }
+                            });
+                            Swal.fire({
+                                title: 'Hata',
+                                text: 'Bir Sorunla Karşılaşıldı. Lütfen Bu Durumu Bize Bildiriniz..',
+                                icon: 'error',
+                                showConfirmButton: false,
+                            })
+                        }
+                    });
+                }
+            })
+        }
+
+        function getAppointmentDetailToModal(sessionkey) {
+            $.ajax({
+                url: '/Saglikcim/GetAppointmentDetail',
+                data: { sessionkey: sessionkey },
+                type: 'GET',
+                dataType: 'html',
+                success: function (data) {
+                    $("#appointmentmodal").html(data);
+                    $('#appointmentmodal').modal('show');
+                },
+                error: function (data) {
+                    $.ajax({
+                        url: '/Saglikcim/ErrorLogs',
+                        data: { page: "Saglikcim  - getPackages - getAppointmentDetailToModal" },
+                        type: 'post',
+                        dataType: 'json',
+                        success: function (data) {
+
+                        },
+                        error: function (data) {
+
+                        }
+                    });
+                    Swal.fire({
+                        title: 'Hata',
+                        text: 'Veriler Yüklenirken Bir Sorunla Karşılaşıldı. Lütfen Bu Durumu Bize Bildiriniz..',
+                        icon: 'error',
+                        showConfirmButton: false,
+                    })
+                }
+            });
+        }
+
+
+        function deletefile(index) {
+            document.querySelectorAll("#filescontainer p")[index].innerHTML = ""
+            files.pop(index); counter--;
+            document.getElementById("dZUpload").style.backgroundImage = '';
+            document.getElementById("dZUpload").style.color = 'black';
+        }
+        Dropzone.autoDiscover = false;
+        var counter = 0;
+        var files = new Array();
+        $(function () {
+            //-----------------  UPLOAD FILES
+
+            var base64 = '';
+            var filelimit = 1;
+            //var acceptedtype = "image/*,application/pdf,.doc,.docx";
+            var acceptedtype = "image/png,image/jpg,image/jpeg,"; //İzin Verilen Dosya Türleri
+            Dropzone.autoDiscover = false;
+            $("#kaydetbtn").click(function (e) { //Görünüz Buton
+                e.preventDefault();
+                files.forEach(function (file) {
+                    $("#profileform").append("<input type='text' name='photofile' value='" + file + "'/>");//Container
+                });
+                $('#hiddensubmit').trigger('click'); //Gizli Submit Button
+            });
+            $("#dZUpload").dropzone({
+                maxFiles: filelimit,
+                maxFilesize: 10024,
+                acceptedFiles: acceptedtype,
+                uploadMultiple: true,
+                parallelUploads: true,
+                paramName: "Userphoto", //Önemsiz
+                autoProcessQueue: false,
+                url: '/', //Önemsiz
+                addedfile: function (file) {
+                    var reader = new FileReader();
+                    reader.onload = function (event) {
+                        if (counter < filelimit) {
+                            base64 = event.target.result;
+                            files.push(base64);
+                            $("#filescontainer").append("<p class='label label-primary '><span class='fa fa-times' style='cursor:pointer' onclick='deletefile(" + counter + ")'></span> " + file.name + "</p> ");
+                            counter++;
+                            document.getElementById("dZUpload").style.backgroundImage = 'url(' + base64 + ')';
+                            document.getElementById("dZUpload").style.color = 'white';
+                        } else {
+                            Swal.fire({
+                                title: 'Dosya Ekleme Hatası',
+                                text: 'Daha Fazla Dosya Ekleyemezsiniz',
+                                icon: 'error',
+                                showConfirmButton: false,
+                            })
+                        }
+
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+
+            //-----------------  UPLOAD FILES
+
+        });
+
+
+
+
+        $(document).ready(function () {
+            setTimeout(function () {
+                GetCitys();
+            }, 1000)
+        });
+        var lasttabid = 1;
+        function tab(tabid) {
+            localStorage.setItem('activeTab', tabid);
+            document.getElementById("tabid" + lasttabid).style.display = "none";
+            document.getElementById("tabli" + lasttabid).classList.remove("active");
+            document.getElementById("tabid" + tabid).style.display = "";
+            document.getElementById("tabli" + tabid).classList.add("active");
+            lasttabid = tabid;
+            console.log(tabid);
+            if (tabid == 2) {
+                document.getElementById("kaydetbtn").style.display = "block";
+            } else {
+                document.getElementById("kaydetbtn").style.display = "none";
+
+            }
+        }
+
+
+        function GetCitys() {
+            var countryid = $("#Country").val();
+            if (countryid) {
+                $.ajax({
+                    url: "/Saglikcim/GetCity",
+                    type: "get",
+                    dataType: "json",
+                    data: { CountryId: countryid },
+                    success: function (data) {
+                        $("#City").html('');
+                        data.forEach(function (item) {
+
+                            if (item.id == cityid)
+                                $("#City").append('<option value="' + item.id + '" selected>' + item.name + '</option>');
+                            else
+                                $("#City").append('<option value="' + item.id + '" >' + item.name + '</option>');
+
+
+                        });
+                        GetCounty();
+                    },
+                    error: function (data) {
+                        $.ajax({
+                            url: '/Saglikcim/ErrorLogs',
+                            data: { page: "Saglikcim  - Profilim - GetCitys" },
+                            type: 'post',
+                            dataType: 'json',
+                            success: function (data) {
+
+                            },
+                            error: function (data) {
+
+                            }
+                        });
+                    }
+                });
+            }
+
+        }
+        function GetCounty() {
+            var cityid = $("#City").val();
+            if (cityid) {
+                $.ajax({
+                    url: "/Saglikcim/GetCounty",
+                    type: "get",
+                    dataType: "json",
+                    data: { CityId: cityid },
+                    success: function (data) {
+                        $("#County").html('');
+                        data.forEach(function (item) {
+                            if (item.id == countyid)
+                                $("#County").append('<option value="' + item.id + '" selected>' + item.name + '</option>');
+                            else
+                                $("#County").append('<option value="' + item.id + '">' + item.name + '</option>');
+
+                        });
+
+                    },
+                    error: function (data) {
+                        $.ajax({
+                            url: '/Saglikcim/ErrorLogs',
+                            data: { page: "Saglikcim  - getPackages - GetCounty" },
+                            type: 'post',
+                            dataType: 'json',
+                            success: function (data) {
+
+                            },
+                            error: function (data) {
+
+                            }
+                        });
+                    }
+                });
+            }
+
+        }
+        //$(document).ready(function () {
+        //    console.log(0);
+        //    console.log(uyari.length);
+        //    if (uyari.length>15) {
+        //        Swal.fire({
+        //            title: '<strong style="color:#3FC3EE">YENİ GÖREV EKLENDİ!</strong>',
+        //            icon: 'info',
+        //            html: '<div class="randevuTalepBilgi">' +
+        //                uyari +
+        //                doktorAdi+
+        //                '</div>',
+        //            showCloseButton: true,
+        //            showCancelButton: false,
+        //            showConfirmButton: false,
+        //            focusConfirm: false,
+        //        });
+        //    }
+
+        //});
+
+        var uyari ='@Html.Raw(ViewBag.Uyarı)';
+
+        var doktorAdi = '@ViewBag.DoktorAdi';
+           $(document).ready(function () {
+            console.log("var");
+               console.log(0);
+
+               console.log(uyari);
+           // console.log(uyari.length);
+               if (uyari.length>15) {
+                Swal.fire({
+                    title: '<strong style="color:#3FC3EE">YENİ GÖREV EKLENDİ!</strong>',
+                    icon: 'info',
+                    html: '<div class="randevuTalepBilgi">' +
+                        '<p><strong>'+doktorAdi+'</strong> sizin için yeni görevler belirledi.</p>' +
+                        '<ol>' +
+                        uyari +
+                        '</ol>' +
+                        '</div>',
+                    showCloseButton: true,
+                    showCancelButton: false,
+                    showConfirmButton: false,
+                    focusConfirm: false,
+                });
+            }
+
+        });
+
+
+
+
+
+
+
+
+
+    </script>
+}

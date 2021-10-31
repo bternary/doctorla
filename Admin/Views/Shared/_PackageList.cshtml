@@ -1,0 +1,84 @@
+﻿@using Data.Domain
+@model PagedList.Core.PagedList<Data.Domain.DailyCheck>
+@{PagedList.Core.PagedList<User> nurses = ViewBag.Nurse as PagedList.Core.PagedList<User>; }
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *,PagedList.Core.Mvc
+<div class="container" style="width:100%">
+    <div class="row">
+        <div class="col-md-12">
+            <div id="tabid1">
+                <div class="dashboard-content" style="padding: 0px 0px 0px 0px;margin-left: 0px">
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12 col-xs-12">
+                            <div class="dashboard-list-box">
+                                <h4 class="gray">Paketler</h4>
+                                <div class="table-box">
+                                    <table class="basic-table booking-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Hasta Ad Soyad</th>
+                                                <th>Hemşire Ad Soyad</th>
+                                                <th>Paket Adi</th>
+                                                <th>Paket Başlangıç</th>
+                                                <th>Paket Bitiş</th>
+                                                <th>Hatırlatma Günleri</th>
+                                                <th>Hatırlatma Saatleri</th>
+                                                <th>Randevu İşlemleri</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var item in Model)
+                                            {
+                                                <tr>
+                                                    <td>@item.User.Name @item.User.SurName</td>
+                                                    <td>@(item.NurseId == 1 ? "Hemşire Bekleniyor" : item.Nurse.Name + " " + item.Nurse.SurName)</td>
+                                                    <td>@item.PackageName</td>
+                                                    <td>@item.Start.ToShortDateString()</td>
+                                                    <td>@item.Finish.ToShortDateString()</td>
+                                                    <td>
+                                                        @if (item.NurseAlertDays != null)
+                                                        {
+                                                            foreach (var item2 in item.NurseAlertDays.Split(','))
+                                                            {
+                                                                <span>@(item2 == "1" ? "Pazartesi" : item2 == "2" ? "Salı" : item2 == "3" ? "Çarşamba" : item2 == "4" ? "Perşembe" : item2 == "5" ? "Cuma" : item2 == "6" ? "Cumartesi" : "Pazar")</span>
+                                                            }
+                                                        }
+                                                    </td>
+                                                    <td>@item.NurseAlertDaysHours</td>
+                                                    <td class="islemler-yazi buyuk-islemler-yazi">
+                                                        <a id="popupDetailbtn" onclick="getDailyCheckToModal('@item.Id')" data-toggle="modal" data-target="#userdetailmodalas" href="#" class="blue">Detaylar</a>
+                                                        @if (item.NurseId == 1)
+                                                        {
+                                                            <a onclick="getNurses(@item.Id)" href="#" class="yellow">Hemşire Ata</a>
+                                                        }
+                                                    </td>
+                                                </tr>
+                                            }
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            @*<div class="pagination-container">
+                                    <nav class="pagination">
+                                        <ul>
+                                            <li><a href="#" class="current-page">1</a></li>
+                                            <li><a href="#">2</a></li>
+                                            <li><a href="#"><i class="sl sl-icon-arrow-right"></i></a></li>
+                                        </ul>
+                                    </nav>
+                                </div>*@
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12 sayfalama">
+                            <div class="sayfalama-bilgi">Toplam <span>@Model.TotalItemCount</span> Kayıt Bulunuyor. Şu anda <span>@Model.FirstItemOnPage</span> - <span>@Model.LastItemOnPage</span> Arasındaki Kayıtlar Gösteriliyor. </div>
+
+                            <pager list="@Model" asp-route-name="@ViewBag.UserName" asp-controller="AdminPanel" options="@PagedList.Core.Mvc.PagedListRenderOptions.Bootstrap4PageNumbersOnly" asp-action="Paketler" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

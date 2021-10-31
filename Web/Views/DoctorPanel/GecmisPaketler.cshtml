@@ -1,0 +1,1513 @@
+﻿@model PagedList.Core.PagedList<Data.Domain.DailyCheck>
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *,PagedList.Core.Mvc
+
+@{
+    ViewData["Title"] = "Takip Paketleri";
+    Layout = "~/Views/DoctorPanel/Shared/_DoctorLayout.cshtml";
+    ViewBag.GecmisPaketler = "active";
+}
+@section css{
+    <link href="~/css/dropzone.min.css" rel="stylesheet" />
+    <link href="~/css/select2.min.css" rel="stylesheet" />
+    <link href="~/css/style.css" rel="stylesheet" />
+    <link href="~/css/fontawesome.min.css" rel="stylesheet" />
+    <link href="~/css/FontAwesome.css" rel="stylesheet" />
+    <link href="~/css/fontawesome5.css" rel="stylesheet" />
+    <link href="~/css/all.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
+
+}
+<style>
+    .swal2-validation-message {
+        font-size:1.4rem;
+    }
+    .modal-open .dashboard-sticky-nav {
+        z-index: 0 !important;
+    }
+
+    #gecmis-paketler th, td {
+        font-size: 1.3rem;
+    }
+
+    .islemler-yazi {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-gap: 0.5rem;
+        min-width: 200px;
+    }
+
+        .islemler-yazi a {
+            border: 1px solid #00a3c8;
+            border-radius: 5px;
+            margin: 0.1rem 0;
+            font-size: 1rem;
+            text-align: center;
+            font-weight: 400;
+        }
+
+    a.blue {
+        border-color: #00a3c8;
+        color: #00a3c8;
+    }
+
+        a.blue:hover, a.blue:focus {
+            background-color: #00a3c8;
+            color: #fff;
+        }
+
+    a.red {
+        border-color: #cc0f0f;
+        color: #cc0f0f;
+    }
+
+        a.red:hover, a.red:focus {
+            background-color: #cc0f0f;
+            color: #fff;
+        }
+
+    a.yellow {
+        border-color: #FF8008;
+        color: #FF8008;
+    }
+
+        a.yellow:hover, a.yellow:focus {
+            background-color: #FF8008;
+            color: #fff;
+        }
+
+    a.yellow {
+        border-color: #FF8008;
+        color: #FF8008;
+    }
+
+        a.yellow:hover, a.yellow:focus {
+            background-color: #FF8008;
+            color: #fff;
+        }
+
+    a.green {
+        border-color: #4BB543;
+        color: #4BB543;
+    }
+
+        a.green:hover, a.green:focus {
+            background-color: #4BB543;
+            color: #fff;
+        }
+
+    .uzun-yazi span {
+        max-height: 110px;
+        overflow-y: auto;
+        display: inline-block;
+        max-width: 300px;
+    }
+
+    .olcumlerim-buton {
+        display: flex;
+        padding: 15px;
+    }
+
+        .olcumlerim-buton button {
+            flex: 1;
+        }
+
+        .olcumlerim-buton .kaydet:focus {
+            border: 1px solid #5f99f5;
+            background-color: #00a3c8;
+            color: #fff;
+        }
+
+    button.kaydet, input.kaydet {
+        border: 1px solid #00a3c8;
+        color: #00a3c8;
+        background: none;
+        border-radius: 2px;
+        padding: 0.4rem 1rem;
+        transition: 0.2s;
+    }
+
+        button.kaydet:hover, input.kaydet:hover {
+            border: 1px solid #5f99f5;
+            background-color: #00a3c8;
+            color: #fff;
+        }
+
+    button.iptal {
+        background: none;
+        border: 1px solid #cc0f0f;
+        border-radius: 2px;
+        color: #00a3c8;
+        padding: 0.4rem 1rem;
+        transition: 0.2s;
+        color: #cc0f0f;
+        margin-left: 0.5rem;
+    }
+
+        button.iptal:hover, button.iptal:focus {
+            color: #fff;
+            background-color: #cc0f0f;
+            border-color: #b20e0e;
+        }
+
+    .olcumlerim .form-group {
+        display: flex;
+        flex-direction: column;
+        padding: 0 15px;
+    }
+
+        .olcumlerim .form-group label {
+            margin: 0.5rem 0 !important;
+        }
+
+    .olcumlerim {
+        flex: 1;
+        padding-top: 1rem;
+    }
+
+    .dashboard-list-box {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    nav.sayfalama {
+        display: flex;
+        justify-content: center;
+    }
+
+    nav ul.pagination {
+        display: flex;
+    }
+
+        nav ul.pagination li {
+            flex: 1;
+            padding: 0;
+        }
+
+    .dashboard-list-box {
+        margin-bottom: 0 !important;
+    }
+
+    textarea#userinfo {
+        max-height: 300px;
+        min-height:50px;
+    }
+
+    .hatirlatici-form-group {
+        display: flex;
+        align-items: center;
+        margin: 0.5rem auto;
+    }
+
+        .hatirlatici-form-group label {
+            margin: 0;
+            line-height: normal;
+            margin-right: .5rem;
+            flex: 1;
+            text-align: left;
+        }
+
+        .hatirlatici-form-group input, .hatirlatici-form-group select {
+            flex: 1;
+            margin: 0;
+        }
+
+        .hatirlatici-form-group .saat-olustur {
+            display: flex;
+        }
+
+            .hatirlatici-form-group .saat-olustur button {
+                color: #00a3c8;
+            }
+
+                .hatirlatici-form-group .saat-olustur button:hover {
+                    color: #0786a3;
+                }
+
+        .hatirlatici-form-group div {
+            flex: 2;
+            align-items: center;
+        }
+
+    .modal-open .modal#olcumbelirle {
+        margin: 0 !important;
+        background-color: rgb(0,0,0); /* Fallback color */
+        background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    }
+
+    .modal-open .modal#olcumbelirle {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .modal .modal-header {
+        display: flex;
+        align-items: center;
+    }
+
+        .modal .modal-header h5 {
+            flex: 1;
+        }
+
+    .select2-container {
+        width: 100% !important;
+    }
+
+    .select2-container {
+        height: 100% !important;
+        width: 100% !important;
+    }
+
+    .select2-selection {
+        overflow: hidden;
+    }
+
+    .select2-selection__rendered[title] {
+        background-color: #cc0f0f;
+    }
+
+    .select2-results__option[aria-selected=true] {
+        pointer-events: none;
+        background-color: #808080;
+        opacity: 0.7;
+    }
+
+    .select2-results {
+        margin: 0 !important;
+    }
+
+    .select2-container--default .select2-selection--multiple .select2-selection__choice {
+        color: #fff !important;
+        background-color: #00a3c8 !important;
+        border: none;
+        display: flex;
+        align-items: center;
+    }
+
+    .select2-selection__choice__remove {
+        color: #fa1818 !important;
+        margin-top: 2px;
+    }
+
+        .select2-selection__choice__remove:hover {
+            color: #cc0f0f !important;
+        }
+
+    .swal-checkDoctor .swal2-validation-message {
+        margin-top: 10px;
+    }
+
+    .swal-checkDoctor input[type=number] {
+        -moz-appearance: textfield;
+        max-width: 100% !important;
+    }
+
+    .swal-checkDoctor input::-webkit-outer-spin-button,
+    .swal-checkDoctor input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    .saat-goster, .saat-olustur input {
+        font-size: 1.5rem !important;
+    }
+
+    .swal2-popup {
+        width: 45em;
+    }
+
+    .counter-ekle div {
+        font-size: 1.3rem !important;
+    }
+
+    .counter-ekle a {
+        font-size: 1.8rem !important;
+    }
+
+    .swal2-actions button {
+        font-size: 1.5rem !important;
+    }
+
+    .saat-goster-saat i {
+        font-size: 2rem !important;
+    }
+</style>
+
+<div class="container" style="width:100%">
+    <div class="row">
+        <div class="col-md-12">
+            <div id="tabid1">
+                <div class="dashboard-content" style="        padding: 0px 0px 0px 0px;
+        margin-left: 0px
+">
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12 col-xs-12">
+                            <div class="dashboard-list-box">
+                                <h4 class="gray">Paketlerim</h4>
+                                <div class="table-box">
+                                    <table class="basic-table booking-table" id="gecmis-paketler">
+                                        <thead>
+                                            <tr>
+                                                <th>Ad Soyad</th>
+                                                <th style="width: 11%;">Telefon</th>
+                                                <th>Paket Adi</th>
+                                                <th>Paket Başlangıç</th>
+                                                <th>Paket Bitiş</th>
+                                                <th>Hatırlatma Günleri</th>
+                                                <th>Hatırlatma Saatleri</th>
+                                                <th>Hasta Ön Bilgi</th>
+                                                <th>Paket İşlemleri</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var item in Model)
+                                            {
+                                                string classname = "";
+                                                if (item.IsNewData)
+                                                {
+                                                    classname = "yeniOlcu";
+                                                }
+                                                <tr class="@classname">
+                                                    <td>@item.User.Name @item.User.SurName</td>
+                                                    <td>@item.User.Phone</td>
+                                                    <td>@item.PackageName</td>
+                                                    <td>@item.Start.ToShortDateString()</td>
+                                                    <td>@item.Finish.ToShortDateString()</td>
+                                                    <td>
+                                                        @if (String.IsNullOrWhiteSpace(item.NurseAlertDays))
+                                                        {
+                                                            <span></span>
+                                                        }
+                                                        else
+                                                        {
+                                                            foreach (var item2 in item.NurseAlertDays.Split(','))
+                                                            {
+                                                                <span>@(item2 == "1" ? "Pazartesi" : item2 == "2" ? "Salı" : item2 == "3" ? "Çarşamba" : item2 == "4" ? "Perşembe" : item2 == "5" ? "Cuma" : item2 == "6" ? "Cumartesi" : "Pazar")</span>
+                                                            }
+                                                        }
+                                                    </td>
+                                                    <td>@item.NurseAlertDaysHours</td>
+                                                    <td class="uzun-yazi"><span class="tasma" id="data-@item.Id">@item.UserInfo</span></td>
+                                                    <td class="islemler-yazi">
+                                                        <a href="/DoctorPanel/Sohbet?id=@item.Id" id="olcumler" class="green" title="Mesaj Gönder">Mesaj Gönder</a>
+                                                        @if(item.LiveEndDate > DateTime.Now){                                                                                     
+                                                        <a onclick="liveRequestDetay(@item.Id)" id="talepdetay" href="javascript:;" class="yellow">Görüşme Detayları</a>
+                                                        }
+                                                        else
+                                                        {
+                                                                <a onclick="odaOlustur(@item.Id)" id="talepet" href="javascript:;" class="yellow">Oda Oluştur</a>
+                                                        }                        
+
+                                                        <a id="popupDetailbtn" onclick="getDailyCheckToModal('@item.Id')" data-toggle="modal" data-target="#userdetailmodalas" href="#" class="blue">Görevler</a>
+                                                        <a onclick="HastaDetay(@item.Id,'@item.UserInfo')" href="#" class="red">Ön Bilgi</a>
+                                                        <a onclick="OlcumBelirle(@item.Id)" href="#" class="green">Görev Oluştur</a>
+                                                        <a href="#" id="hatirlatici-link" onclick="createReminders(@item.Id)" class="yellow" title="Hatırlatıcılarım">Hatırlatıcılar</a>
+                                                        <a href="#" id="" onclick="DoktorOlcumEkle()" class="blue" title="Özel Ölçüm Oluştur">Özel Ölçüm Oluştur</a>
+                                                        <a href="#" id="grafikler" onclick="grafikler(@item.Id)" class="red" title="Grafiklerim">Grafiklerim</a>
+                                                    </td>
+                                                </tr>
+                                                }
+
+                                            </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            @*<div class="pagination-container">
+                                    <nav class="pagination">
+                                        <ul>
+                                            <li><a href="#" class="current-page">1</a></li>
+                                            <li><a href="#">2</a></li>
+                                            <li><a href="#"><i class="sl sl-icon-arrow-right"></i></a></li>
+                                        </ul>
+                                    </nav>
+                                </div>*@
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12 sayfalama">
+            <div class="sayfalama-bilgi">Toplam <span>@Model.TotalItemCount</span> Kayıt Bulunuyor. Şu anda <span>@Model.FirstItemOnPage</span> - <span>@Model.LastItemOnPage</span> Arasındaki Kayıtlar Gösteriliyor. </div>
+
+            <pager list="@Model" asp-controller="NursePanel" options="@PagedList.Core.Mvc.PagedListRenderOptions.Bootstrap4PageNumbersOnly" asp-action="GecmisPaketler" />
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="olcumbelirle" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+
+</div>
+
+<div class="modal fade goruntulu-konusma" id="userdetailmodal" tabindex="1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+
+</div>
+@* Grafikler *@
+<div class="modal fade goruntulu-konusma" id="grafikmodal" tabindex="-1" role="dialog" aria-labelledby="grafikmodal" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered doktor-randevu-detay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="olcumModalLabel">Grafiklerim</h5>
+                <button type="button" class="close modal-kapat" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body tasma22">
+                <div class="row" id="grafik-olustur">
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Kapat</button>
+            </div>
+        </div>
+    </div>
+</div>
+@* Grafikler *@
+<script src="~/js/select2.full.min.js"></script>
+<script src="~/js/dropzone.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+<script type="text/javascript">
+
+        function liveRequestDetay(id) {            
+            $.ajax({
+                url: '/DoctorPanel/liveRequestDetay',
+                data: { id: id },
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    console.log("koşul: ",data.kosul);
+                    var link = '<div class="alert alert-info" role="alert">' +
+                               '  Görüşme saatinde katılım linki aktif olacaktır!' +
+                               '</div>';
+                    if (data.kosul == true) { link = '\'<a href="/Doctorla/dailyCheckLive?id=' + id + '\" target="_blank" class="yellow">Görüşmeye Git</a>\''; }
+                    console.log(data);
+                    Swal.fire({
+                        title: '<strong><u>Görüşme Detayları</u></strong>',
+                        html:
+                            'Görüşmeniz <b>' + data.date.replace("T", " ") + '</b> tarihinde gerçekleşecektir.<p>' +
+                             link,
+                        showCloseButton: true,
+                        showCancelButton: true,
+                        focusConfirm: false,
+                        confirmButtonText:
+                            '<i class="fa fa-calendar-times"></i> Görüşmeyi iptal et!',
+                        confirmButtonAriaLabel: 'Thumbs up, great!',
+                        cancelButtonColor: '#d33',
+                        cancelButtonText:
+                            ' Kapat',
+                        cancelButtonAriaLabel: 'Thumbs down'
+                    }).then((result) => {
+                        if (result.value) {
+                          
+                            liveRequestIptal(data.id);
+                        }
+                    });
+                                
+                    
+                },
+                error: function (data) {
+                }
+            });
+        }        
+
+        function liveRequestIptal(id) {
+            $.ajax({
+                url: '/DoctorPanel/liveRequestIptal',
+                data: { Id: id },
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                      Swal.fire(
+                                'Tamamlandı!',
+                                'Görüşme  başarıyla iptal edildi..',
+                                'success'
+                            )
+                    location.reload();
+                },
+                error: function (data) {
+                    $.ajax({
+                        url: '/DoctorPanel/ErrorLogs',
+                        data: { page: "DoctorPanel  - GecmisPaketler - liveRequest" },
+                        type: 'post',
+                        dataType: 'json',
+                        success: function (data) {
+
+                        },
+                        error: function (data) {
+
+                        }
+                    });
+                    Swal.fire({
+                        title: 'Hata',
+                        text: 'Bir Sorunla Karşılaşıldı. Lütfen Bu Durumu Bize Bildiriniz..',
+                        icon: 'error',
+                        showConfirmButton: false,
+                    })
+                }
+            });
+        }
+
+        @*function liveRequestOlustur(id) {
+            var startdate;
+            var time = 0;
+            Swal.fire({
+                title: '<strong>Canlı Görüşme Talebi Oluştur</strong>',
+                html:
+                '<span id="baslangic">Tarih ve Zaman:</span>'+
+                '<input type="datetime-local" id="startdate" name="startdate" class="form-control startdate" value="@DateTime.Now.ToString("yyyy-MM-dd HH:mm").Replace(' ','T')" required />' +
+                '<div class="form-group row">'+
+                '<label for="example-number-input" class="col-2 col-form-label">Canlı görüşme için tahmini bir süre belirleyin: </label>'+
+                '<div class="col-10">'+
+                    '<input class="form-control" type="number" minvalue="1" id="dakika" placeholder="Süre dolduğunda görüşme otomatik olarak sonlanacaktır">'+
+                '</div>',
+                showCloseButton: true,
+                showCancelButton: true,
+                focusConfirm: false,
+                confirmButtonText:
+                'Talebi Oluştur',
+                cancelButtonColor: '#d33',
+                cancelButtonText:
+                    ' Kapat',
+                cancelButtonAriaLabel: 'Thumbs down'
+            }).then((result) => {
+                if (result.value) {
+                    startdate = document.getElementById("startdate").value.toString().replace('T', ' '); 
+                    time = document.getElementById("dakika").value;          
+                    $.ajax({
+                    url: '/DoctorPanel/createLiveChat',
+                    data: { Id: id, timer: time, liveRequestDate: startdate },
+                    type: 'post',
+                    dataType: 'json',
+                    success: function (data) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Oda başarıyla oluşturuldu. Sayfanızı Yenileyiniz.',
+                            showConfirmButton: false,
+                            timer: 2500
+                        });
+                    },
+                    error: function (data) {
+                        $.ajax({
+                            url: '/DoctorPanel/ErrorLogs',
+                            data: { page: "DoctorPanel  - GecmisPaketler - createLiveChat" },
+                            type: 'post',
+                            dataType: 'json',
+                            success: function (data) {
+
+                            },
+                            error: function (data) {
+
+                            }
+                        });
+                        toastr.error('Bir Hata İle Karşılaştık', 'Hata!');
+                    }
+                });
+                }
+            })
+        }*@
+        
+    function odaOlustur(Id) {
+        var time = 0;
+        Swal.fire({
+            title: 'Canlı Görüşme Süresi',
+            input: 'number',
+            text: 'Canlı görüşme için tahmini bir süre belirleyin. Bu süre dolduğunda görüşme otomatik olarak sonlanacaktır.',
+            inputAttributes: {
+                autocapitalize: 'off',
+                'id': 'doctorCode',
+                'onkeydown': 'javascript: return event.keyCode === 8 || event.keyCode === 46 ? true : !isNaN(Number(event.key))'
+            },
+            showCancelButton: true,
+            customClass: 'swal-checkDoctor',
+            confirmButtonText: 'Oda Oluştur',
+            cancelmButtonText: 'İptal Et',
+            showLoaderOnConfirm: true,
+            cancelButtonColor: '#d33',
+            preConfirm: (login) => {
+                console.log(login);
+                if (login == null || login == "") {
+                    Swal.showValidationMessage(
+                        'Lütfen boş bırakmayın'
+                    )
+                } else {
+                    time = login;
+                    console.log(time);
+                }
+            },
+            allowOutsideClick: () => !Swal.isLoading()
+        }).then((result) => {
+            if (result.value) {
+                console.log(time);
+                $.ajax({
+                    url: '/DoctorPanel/createLiveChat',
+                    data: { Id: Id, timer: time,type:0 },
+                    type: 'post',
+                    dataType: 'json',
+                    success: function (data) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Oda başarıyla oluşturuldu. Sayfanızı Yenileyiniz',
+                            showConfirmButton: false,
+                            timer: 2500
+                        });
+                    },
+                    error: function (data) {
+                        $.ajax({
+                            url: '/DoctorPanel/ErrorLogs',
+                            data: { page: "DoctorPanel  - GecmisPaketler - createLiveChat" },
+                            type: 'post',
+                            dataType: 'json',
+                            success: function (data) {
+
+                            },
+                            error: function (data) {
+
+                            }
+                        });
+                        toastr.error('Bir Hata İle Karşılaştık', 'Hata!');
+                    }
+                });
+            }
+        })
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+    function HastaDetay(Id, userInfo) {
+        Swal.fire({
+            title: 'Kullanıcı Bilgi Girişi',
+            html: '<div class="hatirlatici-form">' +
+                '<div class="hatirlatici-form-group">' +
+                '<div><textarea name="UserInfo"  id="userinfo"  >'+userInfo+'</textarea></div>' +
+                '</div>' +
+                '</div>',
+            showCloseButton: true,
+            showCancelButton: true,
+            focusConfirm: false,
+            confirmButtonText:
+                'Kullanıcı Bilgisi Ekle',
+            confirmButtonAriaLabel: 'Kullanıcı Bilgisi Ekle',
+            cancelButtonText:
+                'İptal Et',
+            cancelButtonColor: '#d33',
+            cancelButtonAriaLabel: 'İptal Et'
+        }).then((result) => {
+            if (result.value) {
+                var userInfo = document.getElementById("userinfo").value;
+                console.log(userInfo);
+                $.ajax({
+                    url: '/DoctorPanel/UpdateUserInfo',
+                    data: { Id: Id, UserInfo: userInfo },
+                    type: 'post',
+                    dataType: 'json',
+                    success: function (data) {
+                        if (data.status == 1) {
+                            toastr.success(data.message, data.title);
+                            document.getElementById("data-" + Id).innerHTML = userInfo;
+                        }
+                    },
+                    error: function (data) {
+                        $.ajax({
+                            url: '/DoctorPanel/ErrorLogs',
+                            data: { page: "DoctorPanel  - GecmisPaketler - HastaDetay" },
+                            type: 'post',
+                            dataType: 'json',
+                            success: function (data) {
+
+                            },
+                            error: function (data) {
+
+                            }
+                        });
+                        toastr.error('Bir Hata İle Karşılaştık', 'Hata!');
+                    }
+                });
+            }
+
+        })
+    }
+    function getDailyCheckToModal(Id) {
+        $.ajax({
+            url: '/DoctorPanel/GetDailyCheckDetail',
+            data: { Id: Id },
+            type: 'POST',
+            dataType: 'html',
+            success: function (data) {
+                $("#userdetailmodal").html(data);
+                toastr.success('Veriler Başarılı Bir Şekilde Getirildi', 'Başarılı!');
+                $('#userdetailmodal').modal('show');
+            },
+            error: function (data) {
+                $.ajax({
+                    url: '/DoctorPanel/ErrorLogs',
+                    data: { page: "DoctorPanel  - GecmisPaketler - getDailyCheckToModal" },
+                    type: 'post',
+                    dataType: 'json',
+                    success: function (data) {
+
+                    },
+                    error: function (data) {
+
+                    }
+                });
+                toastr.error('Veriler Yüklenirken Bir Sorunla Karşılaşıldı. Lütfen Bu Durumu Bize Bildiriniz..', 'Hata!');
+            }
+        });
+    }
+    function grafikler(Id) {
+        $.ajax({
+            url: '/DoctorPanel/GetDailyCheckDetail',
+            data: { Id: Id },
+            type: 'POST',
+            dataType: 'html',
+            success: function (data) {
+                $("#userdetailmodal").html(data);
+                $('#grafikmodal').on('show.bs.modal', function (e) {
+                    var items = document.getElementById("olcumler-tablo");
+                    document.getElementById("grafik-olustur").innerHTML = '';
+                    console.log(items.rows[0].cells.length-4);
+
+
+                    for (var a = 1; a < items.rows[0].cells.length -4; a++) {
+                        var icon = items.rows[0].cells[a].dataset.icon;
+                        document.getElementById("grafik-olustur").innerHTML += '<div class="col-xs-12 col-sm-6 col-md-4 graph"><div class="graphtitle"><i class="' + icon + '"></i><h1>' + items.rows[0].cells[a].innerHTML + ' Grafiği</h1></div><canvas id = "myChart' + a + '" style = "height:100%; width:100%;" ></canvas ></div>';
+
+                    }
+                    var tarihler = new Array();
+                    var minimumDeger = new Array();
+                    var maximumDeger = new Array();
+                    for (var i = 1; i < items.rows.length; i++) {
+                        tarihler.push(items.rows[i].cells[0].innerHTML);
+                        ;
+                    }
+                    for (var a = 1; a < items.rows[0].cells.length-4; a++) {
+                        var degerler = new Array();
+
+                        for (var i = 1; i < items.rows.length; i++) {
+                            degerler.push(items.rows[i].cells[a].innerHTML);
+                        }
+
+                        var ctx = document.getElementById('myChart' + a).getContext('2d');
+
+                        // GERÇEK DEĞERLER
+                        var dataFirst = {
+                            label: items.rows[0].cells[a].innerHTML + ' Değeri',
+                            data: degerler,
+                            fill: false,
+
+                            backgroundColor: 'rgb(25, 99, 255)',
+                            borderColor: 'rgb(25, 99, 255)'
+                        };
+
+                        minimumDeger = []
+                        maximumDeger = []
+                        // MİNİMUM DEĞERLER
+                        var minValue = items.rows[0].cells[a].dataset.minvalue;
+                        
+                        minValue = minValue.replace(",", ".");
+                        for (var i = 1; i < items.rows.length; i++) {
+                            minimumDeger.push(minValue);
+                        }
+                        // MAXİMUM DEĞERLER
+
+                        var maxValue = items.rows[0].cells[a].dataset.maxvalue;
+
+                        maxValue = maxValue.replace(",", ".");
+                        for (var i = 1; i < items.rows.length; i++) {
+                            maximumDeger.push(maxValue);
+                        }
+
+                        var dataSecond = {
+                            label: "En Düşük Değer (" + minValue + ")",
+                            data: minimumDeger,
+                            fill: 2,
+                            propagate: true,
+
+                            backgroundColor: 'rgb(255, 99, 132,0.3)',
+                            borderColor: 'rgb(255, 99, 132)'
+                        };
+
+                        var dataThird = {
+                            label: 'En Yüksek Değer (' + maxValue + ')',
+                            data: maximumDeger,
+                            fill: 1,
+                            backgroundColor: '#d33',
+                            propagate: true,
+                            backgroundColor: 'rgb(255, 99, 132,0.3)',
+                            borderColor: 'rgb(255, 99, 132)'
+
+                        };
+
+
+
+                        // GRAFİĞİ DEĞERLERİNİ BELİRLEME
+                        var speedData = {
+                            labels: tarihler,
+                            datasets: [dataFirst, dataSecond, dataThird]
+                        };
+                        // GRAFİK AYARLARI
+                        var chartOptions = {
+                            tooltips: {
+
+                                callbacks: {
+
+                                    label: function (tooltipItem, data) {
+                                        if (tooltipItem.datasetIndex == 0) {
+                                            var label = data.datasets[tooltipItem.datasetIndex].label || '';
+                                            var min = data.datasets[1].data[0];
+                                            var max = data.datasets[2].data[0];
+
+
+
+
+                                            if (Number(tooltipItem.yLabel) >= Number(min) && Number(tooltipItem.yLabel) <= Number(max)) {
+
+                                                return [label + " Değeri:" + Number(tooltipItem.yLabel), "Değeriniz Normal"];
+                                            } else if (Number(tooltipItem.yLabel) > Number(max)) {
+                                                return [label + " Değeri:" + Number(tooltipItem.yLabel), " Değeriniz Yüksek"];
+
+                                            } else if (Number(tooltipItem.yLabel) < Number(min)) {
+                                                return [label + " Değeri:" + Number(tooltipItem.yLabel), " Değeriniz Düşük"];
+
+                                            }
+
+                                        } else {
+                                            var min = data.datasets[1].data[0];
+                                            var max = data.datasets[2].data[0];
+                                            return "Değeriniz " + min + "-" + max + " Aralığında Olmalıdır";
+                                        }
+                                    }
+                                },
+                            },
+                        };
+
+                        // GRAFİĞİ ÇİZ
+                        var lineChart = new Chart(ctx, {
+                            type: 'line',
+                            data: speedData,
+                            options: chartOptions
+                        });
+                        //var chart = new Chart(ctx, {
+                        //    // The type of chart we want to create
+                        //    type: 'line',
+
+                        //    // The data for our dataset
+                        //    data: {
+                        //        labels: tarihler,
+                        //        datasets: [{
+                        //            label: items.rows[0].cells[a].innerHTML+' Grafiği',
+                        //            backgroundColor: 'rgb(255, 99, 132)',
+                        //            borderColor: 'rgb(255, 99, 132)',
+                        //            data: degerler
+                        //        }]
+                        //    },
+
+                        //    // Configuration options go here
+                        //    options: {}
+                        //});
+
+                    }
+
+
+                });
+                $('#grafikmodal').modal('show');
+                toastr.success('Veriler Başarılı Bir Şekilde Getirildi', 'Başarılı!');
+            },
+            error: function (data) {
+                $.ajax({
+                    url: '/Doctorla/ErrorLogs',
+                    data: { page: "Saglikcim  - Profilim - grafikler" },
+                    type: 'post',
+                    dataType: 'json',
+                    success: function (data) {
+
+                    },
+                    error: function (data) {
+
+                    }
+                });
+                toastr.error('Veriler Yüklenirken Bir Sorunla Karşılaşıldı. Lütfen Bu Durumu Bize Bildiriniz..', 'Hata!');
+            }
+        });
+    }
+    var itemId;
+    function UpdateDailyCheckDetail() {
+        var string = new Array();
+        var values = '[';
+        for (var i = 0; i < document.getElementById("veriCount").innerHTML - 1; i++) {
+            var value = document.getElementById("values-" + i);
+            if (value.value == 'veriyok')
+                value.value = '';
+            string.push(value.value);
+            values += '{"DailyCheckDetailId":"' + value.dataset.id + '","Value":"' + value.value + '"},';
+        }
+        values = values.substring(0, values.length - 1) + ']';
+        $.ajax({
+            url: '/DoctorPanel/UpdateDailyCheckDetail',
+            data: { Key: itemId, Values: values },
+            type: 'post',
+            dataType: 'json',
+            success: function (data) {
+                if (data.status == 1) {
+                    var items = document.getElementById("dailycheckdetail-" + itemId).getElementsByTagName("td");
+                    for (var i = 0; i < string.length; i++) {
+                        items[i + 1].innerHTML = string[i];
+                    }
+                    toastr.success(data.message, data.title);
+                    document.getElementById("olcumler-form").reset();
+                    document.getElementById("dailyEkle").style.display = "block";
+                    document.getElementById("dailyIptal").style.display = "none";
+                    document.getElementById("dailyGuncelle").style.display = "none";
+                }
+                else if (data.status == -1) {
+                    toastr.error(data.message, data.title);
+                }
+            },
+            error: function (data) {
+                $.ajax({
+                    url: '/DoctorPanel/ErrorLogs',
+                    data: { page: "DoctorPanel  - GecmisPaketler - UpdateDailyCheckDetail" },
+                    type: 'post',
+                    dataType: 'json',
+                    success: function (data) {
+
+                    },
+                    error: function (data) {
+
+                    }
+                });
+                toastr.error('Bir Hata İle Karşılaştık', 'Hata!');
+            }
+        });
+    }
+    function cancelDailyCheckDetail() {
+        document.getElementById("olcumler-form").reset();
+
+        document.getElementById("dailyEkle").style.display = "block";
+        document.getElementById("dailyIptal").style.display = "none";
+        document.getElementById("dailyGuncelle").style.display = "none";
+
+
+    }
+
+    function updateDailyCheckValues(Id) {
+        document.getElementById("dailyEkle").style.display = "none";
+        document.getElementById("dailyGuncelle").style.display = "block";
+        document.getElementById("dailyIptal").style.display = "block";
+        itemId = Id;
+        var items = document.getElementById("dailycheckdetail-" + Id).getElementsByTagName("td"); console.log(items);
+        for (var i = 1; i < document.getElementById("veriCount").innerHTML; i++) {
+            var values = document.getElementById("values-" + (i - 1));
+            values.value = items[i].innerHTML;
+        }
+        toastr.success("Veriler Başarıyla Ölçümlerime Aktarıldı", "İşlem Başarılı");
+    }
+    function createDailyCheckDetail(Id) {
+        var values = '[';
+        var valuesstring = '';
+        for (var i = 0; i < document.getElementById("veriCount").innerHTML - 1; i++) {
+            var value = document.getElementById("values-" + i);
+            valuesstring += '<td>' + value.value + '</td>';
+            values += '{"DailyCheckDetailId":"' + value.dataset.id + '","Value":"' + value.value + '"},';
+        }
+        values = values.substring(0, values.length - 1) + ']';
+        $.ajax({
+            url: '/DoctorPanel/CreateDailyCheckDetail',
+            data: { Id: Id, Values: values, files: files2 },
+            type: 'post',
+            dataType: 'json',
+            success: function (data) {
+                if (data.status == 1) {
+                    files2 = ""; document.querySelectorAll("#fileuploadcontainer2 .yuklenen-dosya").forEach(function (item) { item.innerHTML = "" });
+                    var string = '<tr  id="dailycheckdetail-' + data.id + '"><td>' + data.date + '</td>';
+                    string += valuesstring;
+                    string += '<td>' + data.files + '</td>';
+                    string += '<td class="islemler"><a href="#"  onclick="updateDailyCheckValues(' + data.id + ')"  style="color: #35d0ba;"><i class="fa fa-edit"></i></a></td></tr>';
+                    $("#dailycheckdatas").append(string);
+                    document.getElementById("olcumler-form").reset();
+                    toastr.success(data.message, data.title);
+                }
+                else if (data.status == -1) {
+                    toastr.error(data.message, data.title);
+                }
+            },
+            error: function (data) {
+                $.ajax({
+                    url: '/DoctorPanel/ErrorLogs',
+                    data: { page: "DoctorPanel  - GecmisPaketler - createDailyCheckDetail" },
+                    type: 'post',
+                    dataType: 'json',
+                    success: function (data) {
+
+                    },
+                    error: function (data) {
+
+                    }
+                });
+                toastr.error('Bir Hata İle Karşılaştık', 'Hata!');
+            }
+        });
+    }
+    var updatedailycheckdetailId;
+    function OlcumBelirle(id) {
+        updatedailycheckdetailId = id;
+        $.ajax({
+            url: '/DoctorPanel/GetPackagesValues',
+            data: { Id: id },
+            type: 'POST',
+            dataType: 'html',
+            success: function (data) {
+                $("#olcumbelirle").html(data);
+                toastr.success('Veriler Başarılı Bir Şekilde Getirildi', 'Başarılı!');
+                $('#olcumbelirle').modal('show');
+            },
+            error: function (data) {
+                $.ajax({
+                    url: '/DoctorPanel/ErrorLogs',
+                    data: { page: "DoctorPanel  - GecmisPaketler - OlcumBelirle" },
+                    type: 'post',
+                    dataType: 'json',
+                    success: function (data) {
+
+                    },
+                    error: function (data) {
+
+                    }
+                });
+                toastr.error('Veriler Yüklenirken Bir Sorunla Karşılaşıldı. Lütfen Bu Durumu Bize Bildiriniz..', 'Hata!');
+            }
+        });
+    }
+
+
+
+    var timeId = 0;
+    var times = [];
+    var saatdegerleri = [];
+
+    var eklegüncelle = 1;
+    var hatirlaticiId = 0;
+    function createReminders(id) {
+        eklegüncelle = 1;
+        hatirlaticiId = 0;
+        var string = "";
+        var telefon = "";
+        var deger;
+        var gecerliId = "";
+        var saatler = document.getElementById("saatler");
+
+
+        var gun1 = "";
+        var gun2 = "";
+        var gun3 = "";
+        var gun4 = "";
+        var gun5 = "";
+        var gun6 = "";
+        var gun7 = "";
+        var gun8 = "";
+        var gun9 = "";
+        var gun10 = "";
+        var gun11 = "";
+        var gun12 = "";
+        var gun13 = "";
+        var gun14 = "";
+        var gun15 = "";
+        $.ajax({
+            url: '/Doctorla/Hatirlaticilar',
+            data: { Id: id },
+            type: 'get',
+            dataType: 'json',
+            success: function (data) {
+                telefon = data.phone;
+                data.alerts.forEach(function (item) {
+                    gecerliId = "time" + item.Id;
+                    string += '<div class="saat-goster"  id="' + gecerliId + '"><div class="saat-goster-saat"><div><span>' + item.alertdate + '</span> | <span class="hatirlaticiAralik">' + item.daycounter + ' Günde Bir</span></div><i class="far fa-times-circle" title="Saati Sil" onclick="removeTime(' + id + ',' + item.id + ')"></i><i class="far fa-edit" title="Düzenle" onclick="editReminders(' + id + ',' + item.id + ',\'' + item.alertdate + '\',' + item.daycounter + ',\'' + item.message +'\')"></i></div><div class="saat-goster-not">' + item.message + '</div></div>';
+                })
+                Swal.fire({
+                    title: 'Hatırlatıcı Oluştur',
+                    html: '<div class="hatirlatici-form">' +
+                        '<div class="hatirlatici-form-group">' +
+                        '<label for="hatirlaticibaslangic">Başlangıç Tarihi</label><div><input type="datetime-local" id="hatirlaticibaslangic" name="startdate" required=""></div>' +
+                        '</div>' +
+                        '<div class="hatirlatici-form-group">' +
+                        '<label for="hatirlaticiaralik">Hatırlatıcı Sıklığı</label><div><select id="hatirlaticiaralik"><option value="1"  ' + gun1 + '>Her Gün</option>        <option value="2" ' + gun2 + '>İki Günde Bir</option>        <option value="3" ' + gun3 + '>Üç Günde Bir</option>        <option value="4" ' + gun4 + '>Dört Günde Bir</option><option value="5" ' + gun5 + '>Beş Günde Bir</option><option value="6" ' + gun6 + '>Altı Günde Bir</option><option value="7" ' + gun7 + '>Yedi Günde Bir</option></select></div>' +
+                        '</div>' +
+                        '<div class="hatirlatici-form-group ">' +
+                        '<label for="hatirlatici-not">Hatırlatıcı Notu</label><div class="not-olustur"><textarea onkeyup="hatirlaticinotcounter()" maxlength="150" class= "hatirlatici-not" id="hatirlatici-not" ></textarea><div class="counter-ekle"> <div id="the-count"><span id="current" > 0 </span><span id="maximum">/ 150</span></div ></div></div>' +
+                        '</div>' +
+                        '<div class="saat-olustur-saatler" id="saatler">' +
+                        string +
+                        '</div>' +
+
+                        '</div>',
+                    showCloseButton: true,
+                    showCancelButton: true,
+                    focusConfirm: false,
+                    confirmButtonText:
+                        'Hatırlatıcı Ekle',
+                    customClass: {
+                        confirmButton: 'hatirlaticiConfirmButon'
+                    },
+                    confirmButtonAriaLabel: 'Hatırlatıcıyı Güncelle',
+                    cancelButtonText:
+                        'İptal Et',
+                    preConfirm: () => {
+                        startdate = document.getElementById("hatirlaticibaslangic").value;
+                        var hatirlaticibaslangic = document.getElementById("hatirlaticibaslangic").value;
+                        var hatirlaticiaralik = document.getElementById("hatirlaticiaralik").value;
+                        var now = new Date();
+                        var selectedDate = new Date(startdate);
+                        selectedDate = selectedDate.setHours(23, 59, 59, 59);
+                        console.log(selectedDate);
+                        console.log(now);
+                        if (hatirlaticibaslangic == "" || hatirlaticibaslangic === null || hatirlaticiaralik == "" || hatirlaticiaralik === null) {
+                            Swal.showValidationMessage('Lütfen Eksik Alan Bırakmayınız');
+
+                        } else if (selectedDate < now) {
+                            Swal.showValidationMessage('Geçmiş Bir Tarih Seçemezsiniz');
+                        }
+                    },
+                    cancelButtonColor: '#d33',
+                    cancelButtonAriaLabel: 'İptal Et'
+                }).then((result) => {
+                    if (result.value) {
+                        var hatirlaticibaslangic = document.getElementById("hatirlaticibaslangic").value;
+                        var hatirlaticiaralik = document.getElementById("hatirlaticiaralik").value;
+                        var hatirlaticinot = document.getElementById("hatirlatici-not").value;
+                        var alertDayHours = "";
+                        var now = new Date();
+                        var selectedDate = new Date(hatirlaticibaslangic);
+                        console.log(now);
+                        console.log(selectedDate);
+                        selectedDate = selectedDate.setHours(23, 59, 59, 59);
+
+                        if (hatirlaticibaslangic == "" || hatirlaticibaslangic === null || hatirlaticiaralik == "" || hatirlaticiaralik === null) {
+                            times.length = 0;
+                            toastr.error('Lütfen Eksik Alan Bırakmayınız!', 'Hata!');
+                            document.getElementById("hatirlatici-link").click();
+                        } else if (selectedDate < now) {
+                            times.length = 0;
+                            toastr.error('Lütfen Gelecekten Bir Tarih Seçiniz!', 'Hata!');
+                            document.getElementById("hatirlatici-link").click();
+                        } else {
+                            for (var i = 0; i < times.length; i++) {
+                                alertDayHours += times[i][0] + ",";
+                            }
+                            alertDayHours = alertDayHours.substring(0, alertDayHours.length - 1);
+
+                            if (eklegüncelle == 1) {
+                                $.ajax({
+                                    url: '/Doctorla/HatirlaticiEkle',
+                                    data: { Id: id, AlertDay: hatirlaticibaslangic,  AlertDayCounter: hatirlaticiaralik, Message: hatirlaticinot },
+                                    type: 'post',
+                                    dataType: 'json',
+                                    success: function (data) {
+                                        if (data.status == 1) {
+                                            toastr.success(data.message, data.title);
+                                            createReminders(id);
+                                        }
+                                        else {
+                                            toastr.error(data.message, data.title);
+                                        }
+                                    },
+                                    error: function (data) {
+                                        $.ajax({
+                                            url: '/DoctorPanel/ErrorLogs',
+                                            data: { page: "DoctorPanel  - GecmisPaketler - createReminders HatirlaticiEkle" },
+                                            type: 'post',
+                                            dataType: 'json',
+                                            success: function (data) {
+
+                                            },
+                                            error: function (data) {
+
+                                            }
+                                        });
+                                        toastr.error('Bir Hata İle Karşılaştık', 'Hata!');
+                                    }
+                                });
+                                eklegüncelle = 1;
+                                hatirlaticiId = 0;
+                            }
+                            else if (eklegüncelle == 2) {
+                                $.ajax({
+                                    url: '/Doctorla/HatirlaticiGüncelle',
+                                    data: { Id: hatirlaticiId, ExtraPhone: telefon, AlertDay: hatirlaticibaslangic, AlertDayCounter: hatirlaticiaralik, Message: hatirlaticinot },
+                                    type: 'post',
+                                    dataType: 'json',
+                                    success: function (data) {
+                                        if (data.status == 1) {
+                                            toastr.success(data.message, data.title);
+                                            createReminders(id);
+                                        }
+                                        else {
+                                            toastr.error(data.message, data.title);
+                                        }
+                                    },
+                                    error: function (data) {
+                                        $.ajax({
+                                            url: '/DoctorPanel/ErrorLogs',
+                                            data: { page: "DoctorPanel  - GecmisPaketler - createReminders HatirlaticiEkle" },
+                                            type: 'post',
+                                            dataType: 'json',
+                                            success: function (data) {
+
+                                            },
+                                            error: function (data) {
+
+                                            }
+                                        });
+                                        toastr.error('Bir Hata İle Karşılaştık', 'Hata!');
+                                    }
+                                });
+                                eklegüncelle = 1;
+                                hatirlaticiId = 0;
+                            }
+                        }
+                    }
+                })
+            },
+            error: function (data) {
+                console.log(data);
+                $.ajax({
+                    url: '/DoctorPanel/ErrorLogs',
+                    data: { page: "DoctorPanel  - GecmisPaketler - createReminders Hatırlatıcılar" },
+                    type: 'post',
+                    dataType: 'json',
+                    success: function (data) {
+                    },
+                    error: function (data) {
+
+                    }
+                });
+                toastr.error('Bir Hata İle Karşılaştık', 'Hata!');
+            }
+        });
+    }
+    function editReminders(id, hatirlaticiid, tarih, aralik, not) {
+        eklegüncelle = 2;
+        hatirlaticiId = hatirlaticiid;
+        var tarihTakvim = tarih.substr(0, 10);
+        tarihTakvim = tarihTakvim.split('.').join('-');
+        var tarihSaat = tarih.substr(11);
+        var formatTarih = tarihTakvim.split("-").reverse().join("-");
+        var sonTarih = formatTarih + "T" + tarihSaat;
+        document.getElementById("hatirlaticibaslangic").value = sonTarih;
+        document.getElementById("hatirlaticiaralik").value = aralik;
+        document.getElementById("hatirlatici-not").value = not;
+        hatirlaticinotcounter();
+        document.querySelector(".hatirlaticiConfirmButon").innerHTML = "Hatırlatıcıyı Güncelle";
+        document.querySelector(".swal2-title").innerHTML = "Hatırlatıcıyı Güncelle";
+    }
+
+    function hatirlaticinotcounter() {
+        var characterCount = $("#hatirlatici-not").val().length,
+            current = $('#current'),
+            maximum = $('#maximum'),
+            theCount = $('#the-count');
+
+        current.text(characterCount + " ");
+
+        if (characterCount < 30) {
+            current.css('color', '#666');
+            maximum.css('color', '#666');
+
+        }
+        if (characterCount > 30 && characterCount < 50) {
+            maximum.css('color', '#6d5555');
+            current.css('color', '#6d5555');
+        }
+        if (characterCount > 50 && characterCount < 80) {
+            maximum.css('color', '#793535');
+
+            current.css('color', '#793535');
+        }
+        if (characterCount > 80 && characterCount < 110) {
+            maximum.css('color', '#841c1c');
+
+            current.css('color', '#841c1c');
+        }
+        if (characterCount > 110 && characterCount < 140) {
+            maximum.css('color', '#8f0001');
+
+            current.css('color', '#8f0001');
+        }
+
+        if (characterCount >= 140) {
+            maximum.css('color', '#8f0001');
+            current.css('color', '#8f0001');
+            theCount.css('font-weight', 'bold');
+        } else {
+            theCount.css('font-weight', 'normal');
+        }
+
+
+    }
+
+    function createRemindersTime() {
+
+        var saat = document.getElementById("saat").value;
+        var not = document.getElementById("hatirlatici-not").value;
+        var check = true;
+        if (saat && not) {
+            Swal.resetValidationMessage()
+
+            for (var i = 0; i < times.length; i++) {
+                var deger = times[i][0].substring(0, 5);
+                if (deger == saat || (not == "" || not == null)) {
+                    check = false;
+                    Swal.showValidationMessage(
+                        'Aynı saate birden fazla hatırlatıcı ekleyemezsiniz!'
+                    )
+                }
+            }
+            console.log("check " + check);
+            if (check == true) {
+                Swal.resetValidationMessage()
+                timeId++;
+                var saatler = document.getElementById("saatler");
+                var gecerliId = "time" + timeId++;
+                saatler.innerHTML += '<div class="saat-goster"  id="' + gecerliId + '"><div class="saat-goster-saat"><span>' + saat + '</span><i class="far fa-times-circle" title="Saati Sil" onclick="removeTime(' + gecerliId + ')"></i></div><div class="saat-goster-not">' + not + '</div></div>';
+                times.push([saat + "-" + not, gecerliId]);
+                document.getElementById("hatirlatici-not").value = "";
+            }
+
+        } else {
+            Swal.showValidationMessage(
+                'Not ve Saat Alanı Boş Bırakılamaz!'
+            )
+        }
+        console.log(times);
+
+
+    }
+    function removeTime(dailyCheckId, Id) {
+        $.ajax({
+            url: '/Doctorla/HatirlaticiSil',
+            data: { Id: Id },
+            type: 'post',
+            dataType: 'json',
+            success: function (data) {
+                if (data.status == 1) {
+                    toastr.success(data.message, data.title);
+                    createReminders(dailyCheckId);
+                }
+                else {
+                    toastr.error(data.message, data.title);
+                }
+
+            },
+            error: function (data) {
+                $.ajax({
+                    url: '/DoctorPanel/ErrorLogs',
+                    data: { page: "DoctorPanel  - GecmisPaketler - removeTime  HatirlaticiSil" },
+                    type: 'post',
+                    dataType: 'json',
+                    success: function (data) {
+
+                    },
+                    error: function (data) {
+
+                    }
+                });
+                toastr.error('Bir Hata İle Karşılaştık', 'Hata!');
+            }
+        });
+    }
+    //function removeTime(Id) {
+
+    //    for (var i = 0; i < times.length; i++) {
+    //        if (times[i][1] == Id.id) {
+    //            times.splice(i, 1);
+    //        }
+    //    }
+    //    console.log(times);
+    //    Id.remove();
+
+    //}
+    function kontrol(id) {
+        var deger = document.getElementById(id).value;
+        if (deger == "" || deger == null) {
+            document.getElementById(id).value = "0";
+        }
+
+    }
+
+    //Özel Ölçüm
+    function DoktorOlcumEkle() {
+        Swal.fire({
+                title: '<strong>Ölçüm Ekle</strong>',
+                html: '<div class="hatirlatici-form">' +
+                    '<div class="hatirlatici-form-group" >' +
+                    '<label for="olcumadi">Ölçüm Adı</label><div><input type="text" name="olcumadi" value="" id="olcumadi" placeholder="Ölçüm Adı" /></div>' +
+                    '</div>' +
+                    '<div class="hatirlatici-form-group">' +
+                    '<label for="minValue">En Düşük Değer</label><div><input type="number" min="0" step="0.01" name="minValue" value="0" id="minValue" placeholder="En Düşük Değer" onblur="kontrol(this.id)" /></div>' +
+                    '</div> ' +
+                    '<div class="hatirlatici-form-group">' +
+                    '<label for="maxValue">En Yüksek Değer</label><div><input type="number" min="0" step="0.01" name="maxValue" value="0" id="maxValue" placeholder="En Yüksek Değer" onblur="kontrol(this.id)"/></div>' +
+                    '</div> ' +
+
+                    '</div>',
+                showCloseButton: true,
+                customClass: 'swal-update',
+                showCancelButton: true,
+                focusConfirm: false,
+                confirmButtonText:
+                    'Yeni Ölçüm Ekle',
+                confirmButtonAriaLabel: 'add',
+                cancelButtonColor: '#d33',
+                cancelButtonText:
+                    'İptal Et',
+            cancelButtonAriaLabel: 'cancel',
+            showLoaderOnConfirm: true,
+
+            preConfirm: () => {
+                var name = document.getElementById("olcumadi").value;
+                var minvalue = document.getElementById("minValue").value;
+                var maxvalue = document.getElementById("maxValue").value;
+                if (name == null || name == "" || minvalue == null || minvalue == "" || maxvalue == null || maxvalue == "") {
+                    Swal.showValidationMessage('Lütfen Boş Alan Bırakmayınız');
+                } else {
+                    return $.ajax({
+                        url: '/DoctorPanel/DoktorOlcumEkle',
+                        data: { NameOlcum: name, minValue: minvalue, maxValue: maxvalue },
+                        type: 'post',
+                        dataType: 'json',
+                        success: function (data) {
+                            console.log(data);
+                            if (data.status == 1) {
+                                toastr.success(data.message, data.title);
+                            }
+                            else if (data.status == -1) {
+                                Swal.showValidationMessage(data.message);
+                            }
+                        },
+                        error: function (data) {
+                            toastr.error("Bir Hata oluştu", "Lütfen Bize Bildiriniz");
+                        }
+                    });
+                }
+            },
+            }).then((result) => {
+                if (result.value) {
+                   uyariBasarisiz = document.getElementById("sifreSifirlamaBasarisiz");
+                
+
+                    }
+            });
+    }
+
+</script>

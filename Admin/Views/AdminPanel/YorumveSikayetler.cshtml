@@ -1,0 +1,47 @@
+﻿@model PagedList.Core.PagedList<Data.Domain.Appointment>
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *,PagedList.Core.Mvc
+@{
+    ViewData["Title"] = "Randevu Islemleri";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewBag.Kullanici = "active";
+}
+
+<div class="row panelSearch">
+    <form action="/AdminPanel/YorumveSikayetler" data-ajax-update="#appointmennotetList" style="height:100%;" data-ajax="true" data-ajax-failure="error" data-ajax-method="GET" id="appointmentnoteforms" method="get">
+
+        <div class="col-xs-12 panelSearchItems">
+            <input type="text" name="username" placeholder="Kullanıcı Adı Giriniz" />
+
+            <input type="text" name="doctorname" placeholder="Doktor Adı Giriniz" />
+
+            <input type="text" name="sessioncode" placeholder="Randevu Kodu Giriniz" />
+
+            <input class="btn btn-primary" type="submit" value="Filtrele" />
+ 
+            <input class="btn btn-danger" type="button" value="Temizle" onclick="$('#appointmentnoteforms')[0].reset();" />
+        </div>
+    </form>
+</div>
+
+<div id="appointmennotetList">
+    @Html.Partial("~/views/Shared/_AppointmentNoteList.cshtml", Model)
+</div>
+
+
+
+<script type="text/javascript">
+
+    function error() {
+        Swal.fire({
+            title: 'Hata',
+            text: 'İşlem Sırasında Bir Hata Oluştu',
+            icon: 'error',
+            timer: 4000,
+            showConfirmButton: false,
+        })
+    }
+
+
+
+</script>

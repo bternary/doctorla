@@ -1,0 +1,128 @@
+﻿@model List<Data.Domain.DailyCheckDetail>
+@using Data.Domain
+@{
+    List<DailyCheckDetailValues> values = new List<DailyCheckDetailValues>();
+    foreach (var item in Model.OrderBy(x => x.TitleOrder))
+    {
+        values.AddRange(item.Values);
+    }
+    string key = ""; int counter = 1;
+    var TitleCount = 0;
+}
+<div class="modal-dialog" id="olcumModal" tabindex="1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered doktor-randevu-detay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="olcumModalLabel">Ölçümlerim</h5>
+                <button type="button" class="close modal-kapat" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body tasma2">
+                <div class="row detay-kapsa">
+                    <div class="col-12  gecmisOlcumler">
+                        <div class="dashboard-list-box">
+                            <h4 class="gray">Geçmiş Ölçümlerim</h4>
+                            <div class="table-box">
+                                <table class="basic-table booking-table" id="olcumler-tablo">
+                                    <thead>
+
+                                        <tr>
+                                            <th>Tarih</th>
+                                            @foreach (var item in Model.OrderBy(x=> x.TitleOrder))
+                                            {
+                                                <th>@item.ValuesTitle.Name</th>
+                                            }
+                                        </tr>
+                                    </thead>
+                                    <tbody id="dailycheckdatas">
+                                         @foreach (var item in values.OrderBy(x => x.IDate.ToString("yyyy.MM.dd HH:mm")).ThenBy(x => x.Key).ThenBy(x => x.TitleOrder))
+                                        {
+                                            if (key != item.Key)
+                                            {
+                                                @:<tr id="dailycheckdetail-@item.Key"   >
+                                                    <td>@item.IDate.ToString("yyyy.MM.dd HH:mm")</td>
+                                                    if (item.TitleOrder == 1100 && Model.Count != counter + 2)
+                                                    {
+                                                        int newcounter = counter;
+                                                        for (int i = 0; i < Model.Count - newcounter - 2; i++)
+                                                        {
+                                                            counter++;
+                                                            <td> </td>
+                                                        }
+                                                    }
+                                                    <td>@item.Value</td>
+                                                    key = item.Key; counter = 1;
+                                                }
+                                                else if (item.TitleOrder == 1102)
+                                                {
+                                                    <td>
+                                                        @if (!String.IsNullOrWhiteSpace(item.Value))
+                                                        {
+                                                            foreach (var file in item.Value.Split(','))
+                                                            {
+                                                                <a style="color:blue" href="~/DailyCheckFiles/@file" download><i class="fa fa-file"></i> @file.Substring(0, 10)..</a>
+                                                            }
+                                                        }
+                                                    </td>
+                                            }
+                                            else
+                                            {
+                                                @if (item.TitleOrder == 1101 && ViewBag.IsPremium == false)
+                                                {
+                                                    continue;
+                                                }
+                                                if (item.TitleOrder == 1100 && Model.Count != counter + 2)
+                                                {
+                                                    int newcounter = counter;
+                                                    for (int i = 0; i < Model.Count - newcounter - 2; i++)
+                                                    {
+                                                        counter++;
+                                                        <td> </td>
+                                                    }
+                                                }
+                                                <td>@(item.Value ?? "-")</td>
+                                            }
+                                            counter++;
+                                            TitleCount = Model.Count;
+                                        }
+                                        <span id="veriCount" style="display:none">@TitleCount</span>
+                                    </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>                      
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Kapat</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
+
+    <script type="text/javascript">
+        function NoteUpdate(data) {
+            if (data.status == 1) {
+                Swal.fire({
+                    title: data.title,
+                    text: data.message,
+                    icon: 'success',
+                    timer: 2000,
+                    showConfirmButton: false,
+                })
+                if (deleteindex != -1)
+                    deletefile(deleteindex);
+            } else {
+                Swal.fire({
+                    title: data.title,
+                    text: data.message,
+                    icon: 'error',
+                    timer: 2000,
+                    showConfirmButton: false,
+                })
+            }
+        }
+    </script>

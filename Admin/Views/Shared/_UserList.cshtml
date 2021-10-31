@@ -1,0 +1,113 @@
+﻿@model PagedList.Core.PagedList<Data.Domain.User>
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *,PagedList.Core.Mvc
+
+
+<div class="container" style="width:100%">
+    <div class="row">
+        <div class="col-md-12">
+            <div id="tabid1">
+                <div class="dashboard-content" style="padding: 0px 0px 0px 0px;margin-left: 0px">
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12 col-xs-12">
+                            <div class="dashboard-list-box">
+                                <h4 class="gray">@ViewBag.Pagename </h4>
+                                <div class="table-box">
+                                    <table class="basic-table booking-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Ad Soyad</th>
+                                                <th>TC</th>
+                                                <th>Telefon</th>
+                                                <th>Email</th>
+                                                @if (User.Claims.FirstOrDefault(c => c.Type == "rolename").Value == "SuperAdmin")
+                                                {
+                                                    <th>Şifre</th>
+                                                }
+                                                <th>Son Giriş</th>
+                                                @if (ViewBag.Id != 2)
+                                                {
+                                                    <th>Bakiye</th>
+                                                }
+                                                @if (ViewBag.Id == 3)
+                                                {
+                                                    <th>Hasta/Doktor</th>
+                                                }
+                                                <th>İşlemler</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @if (Model.Count == 0)
+                                            {
+                                                <tr>
+                                                    <td>-</td>
+                                                    <td>-</td>
+                                                    <td>-</td>
+                                                    <td>-</td>
+                                                    <td>-</td>
+                                                    <td>-</td>
+                                                    @if (User.Claims.FirstOrDefault(c => c.Type == "rolename").Value == "SuperAdmin")
+                                                    {
+                                                        <td>-</td>
+                                                    }
+                                                    <td>-</td>
+                                                    <td>-</td>
+                                                </tr>
+                                            }
+                                            @foreach (var item in Model)
+                                            {
+                                        <tr>
+                                            <td>@item.Name @item.SurName</td>
+                                            <td>@item.TC</td>
+                                            <td>@item.Phone</td>
+                                            <td style="max-width:100px; word-break:break-all">@item.Email</td>
+                                            @if (User.Claims.FirstOrDefault(c => c.Type == "rolename").Value == "SuperAdmin")
+                                            {
+                                                <td id="pass-@item.Id">@item.Password</td>
+                                            }
+                                            <td>@item.LastLoginDate</td>
+                                            @if (item.TypeId != 4)
+                                            {
+                                                <td id="balance-@item.Id">@item.AccountBalance ₺</td>
+                                            }
+                                            @if (ViewBag.Id == 3)
+                                            {
+                                                <td>@(item.TypeId == 1 ? "Doktor" :item.TypeId==2? "Hemşire":"Hasta")</td>
+                                            }
+                                            <td class="islemler-yazi buyuk-islemler-yazi">
+                                                <a data-ajax="true" data-ajax-failure="error" data-ajax-success="StatusChange" data-ajax-method="post" href="/AdminPanel/ChangeUserStatus?id=@item.Id" class="@(item.IsActive?"green":"red")"><span id="activity-@item.Id">@(item.IsActive? "Hesabı Kapat" : "Hesabı Aç")</span></a>
+                                                <a class="yellow" onclick="changePassword(@item.Id)">Şifre Değiştir</a>
+                                                @if (item.TypeId == 1)
+                                                {
+                                                    <a href="/AdminPanel/DoctorDetails/@item.Id"><i title="Doktor Detayları" style="color:#36c6d3" class="fa fa-cog"></i></a>
+                                                    <a href="/AdminPanel/RandevuIslemleri/?doctorname=@item.FullName()"><i title="Doktor Randevuları" style="color:#36c6d3" class="fa fa-list-alt"></i></a>
+                                                    <a href="/AdminPanel/Paketler?name=@item.FullName()"><i title="Doktor Paketleri" style="color:#36c6d3" class="fa fa-address-book"></i></a>
+                                                }
+                                                @if (item.TypeId != 4)
+                                                {
+                                                    <a class="blue" href="#" onclick="changeBalance(@item.Id,@item.AccountBalance)">Bakiye</a>
+                                                }
+                                            </td>
+                                        </tr>
+                                            }
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12 sayfalama">
+                            <div class="sayfalama-bilgi">Toplam <span>@Model.TotalItemCount</span> Kayıt Bulunuyor. Şu anda <span>@Model.FirstItemOnPage</span> - <span>@Model.LastItemOnPage</span> Arasındaki Kayıtlar Gösteriliyor. </div>
+
+                            <pager list="@Model" asp-controller="AdminPanel" options="@PagedList.Core.Mvc.PagedListRenderOptions.Bootstrap4PageNumbersOnly" asp-action="KullaniciIslemleri" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+

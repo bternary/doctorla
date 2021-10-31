@@ -1,0 +1,763 @@
+﻿
+.modalhizli {
+    position: fixed;
+    top: unset !important;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 45px;
+    background: linear-gradient(to right, #1DB9A0 0%, #4d94c4 100%);
+    display: -webkit-box;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    flex-direction: column;
+    -webkit-box-align: center;
+    align-items: center;
+    -webkit-box-pack: center;
+    justify-content: center;
+    -webkit-transition: 0.4s;
+    transition: 0.4s;
+}
+.hearthline {
+    width: 100%;
+    left: 30px;
+    background-position: center;
+    background-image: url(../images/heartmonitor.gif);
+    background-repeat-x: space;
+    background-repeat-y: no-repeat;
+}
+.modal-closebtn {
+    width: 25px;
+    height: 25px;
+    cursor: pointer;
+    position: absolute;
+    right: 6px;
+    top: 0;
+    z-index: 998;
+    text-align: center;
+    font-size: 18px;
+    text-shadow: none;
+    background: #57bce2;
+    line-height: 25px;
+    color: #fff;
+    border-radius: 50px;
+    opacity: 1;
+    margin: -1rem 0rem -1rem auto;
+}
+    .modal-closebtn:hover {
+        background: #73d5fa;
+    }
+    .modal-container {
+        width: 356px;
+        margin-right: -10px;
+        height: 70%;
+        max-height: 70%;
+        overflow: unset;
+        bottom: 0;
+        right: 0;
+        display: -webkit-box;
+        display: flex;
+        max-width: 720px;
+        border-radius: 10px 0 0 0;
+        position: absolute;
+        opacity: 0;
+        pointer-events: none;
+        -webkit-transition-duration: 0.3s;
+        transition-duration: 0.3s;
+        background: #fff;
+        -webkit-transform: translateY(100px) scale(0.4);
+        transform: translateY(100px) scale(0.4);
+    }
+
+.modal-title {
+    font-size: 26px;
+    margin: 0;
+    font-weight: 400;
+    color: #55311c;
+}
+
+.modal-desc {
+    margin: 6px 0 30px 0;
+}
+
+.modal-left {
+    padding: 60px 30px 20px;
+    background: #fff;
+    -webkit-box-flex: 1.5;
+    flex: 1.5;
+    -webkit-transition-duration: 0.5s;
+    transition-duration: 0.5s;
+    -webkit-transform: translateY(80px);
+    transform: translateY(80px);
+    opacity: 0;
+}
+
+
+
+.modal-right {
+    -webkit-box-flex: 2;
+    flex: 2;
+    font-size: 0;
+    -webkit-transition: 0.3s;
+    transition: 0.3s;
+    overflow: hidden;
+}
+
+    .modal-right img {
+        width: 100%;
+        height: 100%;
+        -webkit-transform: scale(2);
+        transform: scale(2);
+        -o-object-fit: cover;
+        object-fit: cover;
+        -webkit-transition-duration: 1.2s;
+        transition-duration: 1.2s;
+    }
+
+.modal.is-open {
+    height: 100%;
+    background: rgba(51, 51, 51, 0.85);
+}
+
+    .modal.is-open .modal-button {
+        opacity: 0;
+    }
+    .modal.is-open .hearthline {
+        background-image:none;
+    }
+    .modal.is-open .modal-container {
+        opacity: 1;
+        -webkit-transition-duration: 0.6s;
+        transition-duration: 0.6s;
+        pointer-events: auto;
+        -webkit-transform: translateY(0) scale(1);
+        transform: translateY(0) scale(1);
+    }
+
+    .modal.is-open .modal-right img {
+        -webkit-transform: scale(1);
+        transform: scale(1);
+    }
+
+    .modal.is-open .modal-left {
+        -webkit-transform: translateY(0);
+        transform: translateY(0);
+        opacity: 1;
+        -webkit-transition-delay: 0.1s;
+        transition-delay: 0.1s;
+    }
+
+.modal-buttons {
+    display: -webkit-box;
+    display: flex;
+    -webkit-box-pack: justify;
+    justify-content: space-between;
+    -webkit-box-align: center;
+    align-items: center;
+}
+
+    .modal-buttons a {
+        color: rgba(51, 51, 51, 0.6);
+        font-size: 14px;
+    }
+
+.sign-up {
+    margin: 60px 0 0;
+    font-size: 14px;
+    text-align: center;
+}
+
+    .sign-up a {
+        color: #8c7569;
+    }
+
+.input-button {
+    padding: 8px 12px;
+    outline: none;
+    border: 0;
+    color: #fff;
+    border-radius: 4px;
+    background: #8c7569;
+    font-family: "Nunito", sans-serif;
+    -webkit-transition: 0.3s;
+    transition: 0.3s;
+    cursor: pointer;
+}
+
+    .input-button:hover {
+        background: #55311c;
+    }
+
+.input-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    font-family: "Nunito", sans-serif;
+    font-weight: 600;
+    letter-spacing: 0.7px;
+    color: #8c7569;
+    -webkit-transition: 0.3s;
+    transition: 0.3s;
+}
+
+.input-block {
+    display: -webkit-box;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    flex-direction: column;
+    padding: 10px 10px 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    -webkit-transition: 0.3s;
+    transition: 0.3s;
+}
+
+    .input-block input {
+        outline: 0;
+        border: 0;
+        padding: 4px 0 0;
+        font-size: 14px;
+        font-family: "Nunito", sans-serif;
+    }
+
+        .input-block input::-webkit-input-placeholder {
+            color: #ccc;
+            opacity: 1;
+        }
+
+        .input-block input::-moz-placeholder {
+            color: #ccc;
+            opacity: 1;
+        }
+
+        .input-block input:-ms-input-placeholder {
+            color: #ccc;
+            opacity: 1;
+        }
+
+        .input-block input::-ms-input-placeholder {
+            color: #ccc;
+            opacity: 1;
+        }
+
+        .input-block input::placeholder {
+            color: #ccc;
+            opacity: 1;
+        }
+
+    .input-block:focus-within {
+        border-color: #8c7569;
+    }
+
+        .input-block:focus-within .input-label {
+            color: rgba(140, 117, 105, 0.8);
+        }
+
+.icon-button {
+    outline: 0;
+    position: absolute;
+    right: 10px;
+    top: 12px;
+    width: 32px;
+    height: 32px;
+    border: 0;
+    background: 0;
+    padding: 0;
+    cursor: pointer;
+}
+
+.scroll-down {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    display: -webkit-box;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    flex-direction: column;
+    -webkit-box-align: center;
+    align-items: center;
+    text-align: center;
+    color: #7d695e;
+    font-size: 32px;
+    font-weight: 800;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+}
+
+    .scroll-down svg {
+        margin-top: 16px;
+        width: 52px;
+        fill: currentColor;
+    }
+
+@media (max-width: 356px) {
+    .modal-container {
+        width: 100%;
+    }
+
+    }
+
+
+.tabs {
+    display: flex;
+    flex-wrap: wrap;
+    background: linear-gradient(to right, #1DB9A0 0%, #4d94c4 100%);
+    height:70px !important;
+}
+
+    .tabs > label {
+        width: 20% !important;
+        order: 1;
+        // Put the labels first display: block;
+        height:100%;
+        padding:0.8rem;
+        color: white;
+        cursor: pointer;
+        font-weight: bold;
+        transition: background ease 0.2s;
+    }
+    .tabs > label:hover {
+        background-position:left;
+    }
+    .tabs .tab {
+        order: 99;
+        // Put the tabs last flex-grow: 1;
+        width: 100%;
+        display: none;
+        padding: 1rem;
+        background: #fff;
+    }
+
+    .tabs > input[type="radio"] {
+        display: none;
+    }
+
+        .tabs > input[type="radio"]:checked + label {
+            background: #fff;
+            color: #57bce2;
+        }
+        
+            .tabs > input[type="radio"]:checked + label + .tab {
+                display: block;
+            }
+
+
+
+.tab {
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    line-height: 1.42857143;
+    font-size: 14px;
+    font-family: 'proxima_nova_rgregular';
+    color: #333;
+    box-sizing: border-box;
+    padding: 20px;
+    background: #fff;
+    height: 600px;
+    display: block;
+}
+.tablist {
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    line-height: 1.42857143;
+    font-size: 14px;
+    font-family: 'proxima_nova_rgregular';
+    color: #333;
+    box-sizing: border-box;
+    margin-bottom: 10px;
+    display: block;
+    height: 63%;
+    overflow-y: auto;
+    padding: 0 10px;
+    list-style-type: none;
+    border: solid 1px #cdcbd9;
+    margin-top: 15px;
+    position: static;
+    zoom: 1;
+}
+    .tablist li {
+        border-bottom: ridge;
+    }
+        .tablist li:hover a {
+            color: #57bce2;
+        }
+    .tablist a {
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+        list-style-type: none;
+        box-sizing: border-box;
+        text-decoration: none;
+        background-color: transparent;
+        color: #787878;
+        font-family: 'proxima_nova_rgregular';
+        font-size: 18px;
+        line-height: 17px;
+        padding: 9px 0;
+        display: block;cursor:pointer;
+    }
+    .tablist a :after{
+        
+    }
+
+.destek {
+    font-family:inherit;
+}
+#hizlirandevu .modal-dialog .secenekler {
+    margin: 1rem 0;
+}
+
+    #hizlirandevu .modal-dialog .secenekler input {
+        width: 15px !important;
+        height: 15px !important;
+        top: 3px;
+        left: -1px;
+        right: 2px;
+        position: relative;
+    }
+
+        #hizlirandevu .modal-dialog .secenekler input[type='radio']:after {
+            width: 15px !important;
+            height: 15px !important;
+            border-radius: 50%;
+            position: relative;
+            background-color: #ffffff;
+            color: #99a1a7;
+            border: 1px solid #0094ff;
+            content: '';
+            display: inline-block;
+            visibility: visible;
+            transition: .3s;
+        }
+
+        #hizlirandevu .modal-dialog .secenekler input[type='radio']:checked:after {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            position: relative;
+            background-color: #0094ff;
+            border: none;
+            content: '';
+            display: inline-block;
+            visibility: visible;
+        }
+
+    #hizlirandevu .modal-dialog .secenekler input, .hearthline .secenekler label {
+        cursor: pointer;
+    }
+
+        #hizlirandevu .modal-dialog .secenekler input[type='radio']:checked + label {
+            font-weight: bold;
+        }
+
+
+.hizlibuton {
+    width: 170px;
+    height: 35px;
+    background: #31A9B0;
+    border: 4px solid white;
+    color: white;
+    font-weight: 700;
+    text-transform: uppercase;
+    cursor: pointer;
+    font-size: 14px;
+    position: absolute;
+    left: 50%; /* position the left edge of the element at the middle of the parent */
+    transform: translate(-50%, -20%);
+border-radius: 5px;
+margin-top:12px;
+}
+
+    .hizlibuton::before, .hizlibuton::after {
+        content: "";
+        position: absolute;
+        width: 14px;
+        height: 4px;
+        background-color: #31A9B0;
+        transform: skewX(45deg);
+        transition: .4s linear;
+    }
+
+    .hizlibuton::before {
+        top: -4px;
+        left: 10%;
+    }
+
+    .hizlibuton::after {
+        bottom: -4px;
+        right: 10%;
+    }
+
+    .hizlibuton:hover::before {
+        left: 80%;
+
+    }
+
+    .hizlibuton:hover::after {
+        right: 80%;
+    }
+
+.butongonder {
+    font-family: 'Century Gothic';
+}
+
+#giris, #kayit, .bolumler {
+    -webkit-animation: swing-in-left-fwd 1s cubic-bezier(.25,.46,.45,.94) both;
+    animation: swing-in-left-fwd 1s cubic-bezier(.25,.46,.45,.94) both
+}
+@-webkit-keyframes swing-in-left-fwd {
+    0% {
+        -webkit-transform: rotateY(100deg);
+        transform: rotateY(100deg);
+        -webkit-transform-origin: left;
+        transform-origin: left;
+        opacity: 0
+    }
+
+    100% {
+        -webkit-transform: rotateY(0);
+        transform: rotateY(0);
+        -webkit-transform-origin: left;
+        transform-origin: left;
+        opacity: 1
+    }
+}
+
+@keyframes swing-in-left-fwd {
+    0% {
+        -webkit-transform: rotateY(100deg);
+        transform: rotateY(100deg);
+        -webkit-transform-origin: left;
+        transform-origin: left;
+        opacity: 0
+    }
+
+    100% {
+        -webkit-transform: rotateY(0);
+        transform: rotateY(0);
+        -webkit-transform-origin: left;
+        transform-origin: left;
+        opacity: 1
+    }
+}
+
+.sekmeler > label {
+    display:inline-block;
+    font-size:45px;
+    text-align:center;
+    font-weight:normal;
+   line-height:50px;
+}
+
+.hizli-randevu {
+    display: block;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    background: linear-gradient(to right, #1DB9A0 0%, #4d94c4 100%);
+    height:45px;
+    width:100%;
+    z-index:50;
+
+}
+.kalp-atisi {
+    display: inline-block;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 45px;
+    background-position: center;
+    background-image: url(../images/heartmonitor.gif);
+    background-repeat-x: space;
+    background-repeat-y: no-repeat;
+}
+#hizlirandevu .modal-dialog {
+    position:fixed;
+    bottom:0;
+    right:0;
+    margin:0;
+    border-radius:0;
+    width:400px;
+}
+    #hizlirandevu .modal-dialog .modal-content {
+        border-radius: 10px 0 0 0;
+        border:none;
+        border-bottom:1px solid #1DB9A0;
+        height:100%;
+    }
+    .sekmeler a {
+        display: inline-block;
+        font-size: 45px;
+        text-align: center;
+        font-weight: normal;
+        line-height: 50px;
+    }
+
+
+.sekmeler  {
+    display: flex;
+    background: linear-gradient(to right, #1DB9A0 0%, #4d94c4 100%);
+    border-radius: 10px 0 0 0;
+    flex:1;
+}
+
+    .sekmeler .nav-item {
+        width: 20% !important;
+        height: 100%;
+        cursor: pointer;
+        transition: background ease 0.2s;
+        margin:0;
+    }
+        .sekmeler .nav-item a {
+            color: rgba(255,255,255,0.5);
+            padding: 0.5rem 0;
+            border-radius: 0;
+            -moz-osx-font-smoothing: grayscale;
+            -webkit-font-smoothing: antialiased !important;
+            -moz-font-smoothing: antialiased !important;
+            text-rendering: optimizelegibility !important;
+        }
+        .sekmeler .nav-item:first-child a {
+            border-radius: 10px 0 0 0;
+        }
+
+
+#doktorlistesi a:hover .randevuyok{
+    color:white
+}
+.randevuyok {
+    color: #57bce2;
+    background: none;
+}
+  
+
+#hizlirandevu .tab-content {
+    height:55vh;
+    padding:0.5rem 1rem;
+}
+    #hizlirandevu .tab-content .tab-pane {
+        height:100%;
+    }
+    #hizlirandevu .tab-content .listeler {
+        font-family: 'Poppins', sans-serif;
+        transition: 0s;
+        cursor: pointer;
+        overflow: auto;
+        height: 90%;
+        margin:0.5rem 0;
+    }
+
+        #hizlirandevu .tab-content  .listeler a:hover {
+            background-color: #b4ebee;
+        }
+
+        #hizlirandevu .tab-content  .listeler::-webkit-scrollbar {
+            width: 2px;
+        }
+
+        #hizlirandevu .tab-content .listeler::-webkit-scrollbar-track {
+            box-shadow: inset 0 0 5px grey;
+            border-radius: 10px;
+        }
+
+    .listeler::-webkit-scrollbar-thumb   {
+        background: #333;
+        border-radius: 10px;
+    }
+    .bagis-secenek {
+        margin-top: 0.5rem;
+    }
+.bagis-secenek .custom-radio {
+    display: flex;
+}
+.bagis-secenek .custom-radio input {
+    width:15px;
+    height:15px;
+}
+.bagis-secenek .custom-radio label {
+    padding-left:0.3rem;
+}
+.butongonder {
+    margin-top:auto;
+}
+.hizli-randevu-takvim {
+    width:100%;
+    overflow-x:hidden;
+}
+#hizlirandevu .nav-pills > .active > a, #hizlirandevu .nav-pills > .active > a:hover {
+    background-color: white;
+    color: #57bce2;
+}
+
+@media (max-width: 400px) {
+    #hizlirandevu .modal-dialog {
+        width: 100%;
+    }
+}
+
+.randevuTalepButtons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: default;
+    margin-bottom:0.5rem;
+}
+    .randevuTalepButtons label {
+        cursor: pointer;
+        font-size: .8rem;
+        margin: 0;
+        display: inline-block;
+        border: 1px solid #ff6a00;
+        border-radius: 5px;
+        padding: 0.2rem 0.5rem;
+        color: #ff6a00;
+        z-index: 10;
+    }
+        .randevuTalepButtons label:first-child {
+            border-color: rgb(28,186,159);
+            color: rgb(28,186,159);
+        }
+        .randevuTalepButtons span {
+            flex: 1;
+            cursor: pointer;
+        }
+
+    .randevuTalepButtons label:hover {
+        color: #fff;
+        background-color: #ff6a00;
+    }
+    .randevuTalepButtons label:first-child:hover {
+        color: #fff;
+        background-color: rgb(28,186,159);
+    }
+    
+    
+
+
+.bildirim-izin {
+    text-align:justify;
+}
+    .bildirim-izin ol {
+        list-style-type: decimal;
+        margin: 0 0 0 1rem;
+    }
+    .bildirim-izin ol li {
+        margin:0;
+        padding:0;
+        padding-left:0.3rem;
+    }
+
+
+.randevuTalepBilgi {
+    text-align:left;
+    font-size:1rem;
+}
+    .randevuTalepBilgi ol {
+        list-style-type: decimal;
+        list-style-position: inside;
+    }
+        .randevuTalepBilgi ol li {
+            padding-left: 10px;
+            font-size: 0.9rem;
+            margin-bottom:5px;
+        }

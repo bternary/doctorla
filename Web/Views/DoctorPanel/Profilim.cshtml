@@ -1,0 +1,1114 @@
+﻿@model Data.Domain.User
+@{
+    Layout = "~/Views/DoctorPanel/Shared/_DoctorLayout.cshtml";
+    ViewData["Title"] = "Profilim";
+    List<Data.Domain.Country> countrys = TempData["Countrys"] as List<Data.Domain.Country>;
+    List<Data.Domain.RelUserDepartment> userdepartmans = ViewBag.Departments as List<Data.Domain.RelUserDepartment>;
+    ViewBag.Profilim = "active";
+}
+@section css{
+    @*<link href="~/css/dashboard.css" rel="stylesheet" type="text/css"> DEĞİŞTİR *@
+    <link href="~/css/dashboard.min.css" rel="stylesheet">
+    <link href="~/css/dropzone.min.css" rel="stylesheet"/>
+    <style>
+        
+        input:invalid{
+            border:1px solid red;
+        }
+        .my-profile textarea {
+            height: auto;
+        }
+
+        .label {
+            margin: 0px
+        }
+
+        .sidebar-content ul li a, .sidebar-box form, .recent-item {
+            background: #1db9a0;
+        }
+
+        .change-photo-btn {
+            bottom: 0px;
+            top: 30px;
+            left: -16px;
+            height: 74px;
+            width: 226px;
+        }
+
+        input[type=text], input[type=email], input[type=number], input[type=search], input[type=password], input[type=tel], input[type=date], textarea, select {
+            font-size: 14px;
+            font-weight: 300;
+            background-color: rgb(255,255, 255);
+            border: 1px solid rgb(241, 241, 241);
+            border-radius: 0;
+            padding: 10px 15px;
+            width: 100%;
+            color: rgb(68,68,68);
+            margin-bottom: 15px;
+            font-family: 'Poppins',sans-serif;
+            height: 42px;
+            box-shadow: none;
+            margin-bottom: 0;
+        }
+    </style>
+}
+
+<div class="dashboard-form">
+    <div class="row">
+        @using (Html.BeginForm("Profilim", "DoctorPanel", FormMethod.Post, new { @id = "profileform", enctype = "multipart/form-data" }))
+        {
+            <!-- Profile -->
+            <div class="col-lg-6 col-md-6 col-xs-12 validationCheck profil">
+                <div class="dashboard-list-box">
+                    <h4 class="gray">
+
+                        <span class="yardim" onclick="randevuvideo()">Doktor Profil Detayları <i class="fa fa-question-circle"></i></span>
+                    </h4>
+
+                    <div class="dashboard-list-box-static">
+                        <div class="row">
+
+                            <div class="col-xs-12">
+                                <div class="edit-profile-photo">
+                                    <img id="profilephoto" src="@Model.PhotoUrl" alt="Profil Fotoğrafı" />
+
+                                </div>
+                            </div>
+                            @*<div class="col-lg-6 col-md-6 col-xs-12">
+                                    <div class="col-lg-12 col-md-12 col-xs-12">
+                                        <div id="dZUpload" class="dropzone" style="background-repeat: round;">
+                                            <div class="dz-default dz-message">Resim Yükle</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-12 col-md-12 col-xs-12" id="filescontainer">
+
+                                    </div>
+                                </div>*@
+
+                            <!-- Avatar -->
+                        </div>
+                        <!-- Details -->
+                        <div class="my-profile">
+                            <div class="row"><h2>Kişisel Bilgiler</h2></div>
+                            <div class="row">
+                                <div class="form-group col-sm-12 col-md-6">
+                                    <label>Adınız*</label>
+                                    @Html.TextBoxFor(x => x.Name, new { @type = "text", @placeholder = "Adınızı Giriniz", @class = "form-control" })
+
+                                    <i class="fas fa-exclamation-circle"></i>
+
+                                </div>
+                                <div class="form-group col-sm-12 col-md-6">
+                                    <label>Soyadınız*</label>
+                                    @Html.TextBoxFor(x => x.SurName, new { @type = "text", @placeholder = "Soyadınızı Giriniz", @class = "form-control" })
+
+                                    <i class="fas fa-exclamation-circle"></i>
+
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="form-group col-sm-12 col-md-6">
+                                    <label>T.C Kimlik Numaranız*</label>
+                                    @Html.TextBoxFor(x => x.TC, new { @type = "text", @placeholder = "T.C Kimlik Numaranızı Giriniz", @class = "form-control", @maxlength = "11" })
+
+                                    <i class="fas fa-exclamation-circle"></i>
+
+                                </div>
+                                <div class="form-group col-sm-12 col-md-6">
+                                    <label>Cinsiyet *</label>
+                                    @Html.DropDownListFor(x => x.Gender, new List<SelectListItem> { new SelectListItem { Text = "Kadın", Value = "F" }, new SelectListItem { Text = "Erkek", Value = "M" } }, "Cinsiyetiniz")
+
+                                    <i class="fas fa-exclamation-circle"></i>
+
+                                </div>
+                            </div>
+
+                            <div class="row">
+
+                                <div class="form-group col-sm-12 col-md-6">
+                                    <label>Doğum Tarihi*</label>
+                                    @Html.TextBoxFor(x => x.Birthdate, "{0:yyyy-MM-dd}", new { @type = "date", @class = "form-control" })
+
+                                    <i class="fas fa-exclamation-circle"></i>
+
+                                </div>
+                                <div class="form-group col-sm-12 col-md-6">
+                                    <label>Ünvanınız*</label>
+                                    @*@Html.TextBoxFor(x => x.DoctorDetail.Title, new { @placeholder = "Ünvanınızı Giriniz" })*@
+                                    <select id="DoctorDetail_Title" name="DoctorDetail_Title" class="form-control">
+                                        <option value="-1">Ünvan Seçiniz</option>
+                                        <option value="0">Ünvan Yok</option>
+                                    </select>
+                                    <i class="fas fa-exclamation-circle"></i>
+
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-group col-sm-12 col-md-6">
+                                    <label>Çalıştığınız Hastane*</label>
+                                    @Html.TextBoxFor(x => x.DoctorDetail.HospitalName, new { @placeholder = "Hastane Adı Giriniz" })
+
+
+                                    <i class="fas fa-exclamation-circle"></i>
+
+                                </div>
+
+                            </div>
+                            <div class="row"><h2>İletişim Bilgileri</h2></div>
+
+                            <div class="row">
+
+
+                                <div class="form-group col-sm-12 col-md-6">
+                                    <label>Telefon Numaranız*</label>
+                                    @Html.TextBoxFor(x => x.Phone, new { @type = "text", @placeholder = "Telefon Numaranızı Giriniz", @class = "form-control" })
+
+                                    <i class="fas fa-exclamation-circle"></i>
+
+                                </div>
+                                <div class="form-group col-sm-12 col-md-6">
+                                    <label>E-posta Adresiniz*</label>
+                                    @Html.TextBoxFor(x => x.Email, new { @type = "email", @placeholder = "E-posta Adresinizi Giriniz", @class = "form-control" })
+
+                                    <i class="fas fa-exclamation-circle"></i>
+
+                                </div>
+
+                            </div>
+
+                            <div class="row"><h2>Adres Bilgileri</h2></div>
+
+                            <div class="row">
+                                <div class="form-group col-sm-6 col-md-4">
+                                    <label>Ülkeniz*</label>
+                                    <select onchange="GetCitys()" id="Country" name="Country" class="form-control">
+                                        <option value="-1">Ülke Seçiniz</option>
+                                        @foreach (var item in countrys)
+                                        {
+                                            if (Model.Address.FirstOrDefault().CountryId == item.Id)
+                                            {
+                                                <option value="@item.Id" selected>@item.Name</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@item.Id">@item.Name</option>
+                                            }
+                                        }
+                                    </select>
+
+                                    <i class="fas fa-exclamation-circle"></i>
+
+                                </div>
+                                <div class="form-group  col-sm-6 col-md-4">
+                                    <label>İl*</label>
+                                    <select onchange="GetCounty()" id="City" name="City" class="form-control">
+                                        <option value="-1" selected>Önce Ülke Seçiniz</option>
+                                    </select>
+
+                                    <i class="fas fa-exclamation-circle"></i>
+
+                                </div>
+                                <div class="form-group  col-sm-6 col-md-4">
+                                    <label>İlçe*</label>
+                                    <select id="County" name="County" class="form-control">
+                                        <option value="-1" selected>Önce Şehir Seçiniz</option>
+                                    </select>
+
+                                    <i class="fas fa-exclamation-circle"></i>
+
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-group  col-sm-6 col-md-12">
+                                    <label>Mahalle*</label>
+                                    @Html.TextBoxFor(x => x.Address.FirstOrDefault().AddressDetail, new { @placeholder = "Mahallenizi Giriniz" })
+
+
+                                    <i class="fas fa-exclamation-circle"></i>
+
+                                </div>
+                            </div>
+
+
+                            @*<div class="row"><h2>Randevu Bilgileri</h2></div>
+
+                                <div class="row">
+
+
+                                    <div class="form-group col-md-6 col-xs-6">
+                                        <label>Branş Giriniz *</label>
+                                        <select id="userdepartments" name="departmentid" class="form-control" onchange="changeDepartment()" onclick="document.getElementById('departmentwarning').style.display = 'unset';">
+                                            <option value="-1">Branş Seçiniz</option>
+                                            @if (userdepartmans.Count == 0)
+                                            {
+                                                <option value="-1">Lütfen Branş Ataması İçin İletişime Geçin</option>
+                                            }
+                                            else
+                                            {
+                                                foreach (var item in userdepartmans)
+                                                {
+                                                    <option data-sessiontime="@item.SessionTime" data-price="@item.Price" value="@item.DepartmentId">@item.Department.Name</option>
+                                                }
+                                            }
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-md-3 col-xs-6">
+                                        <label>Süresi (Dk)</label>
+                                        <input type="number" id="sessiontime" onblur="kontrol(this.id)" name="sessiontime" placeholder="Randevu Süresi" disabled />
+
+                                        <i class="fas fa-exclamation-circle"></i>
+
+                                    </div>
+                                    <div class="form-group col-md-3 col-xs-6">
+                                        <label>Ücret (₺)</label>
+                                        <input type="number" id="sessionprice" onblur="kontrol(this.id)" name="sessionprice" placeholder="Randevu Ücreti" disabled />
+
+                                        <i class="fas fa-exclamation-circle"></i>
+
+                                    </div>
+                                    <div id="departmentwarning" style="display:none">
+                                        <div class="form-group col-xs-12">
+                                            <p style="color:red;font-size: 12px;">* Branş Seçiminden Sonra Yeni Süre Ve Fiyat Girebilirsiniz. Kaydete Basarak Bu Değişikliği Kaydedin.</p>
+                                        </div>
+                                        <div class="form-group col-xs-12">
+                                            <p style="color:red;font-size: 12px;">* Yeni Branş Ekletmek İsteyen Doktorlarımız Lütfen Bizimle İletişime Geçsin</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+
+                                <div class="row"><h2>Hesap Bilgileri</h2></div>
+
+                                <div class="row">
+                                    <div class="form-group col-xs-6">
+                                        <label>Eski Şifreniz</label>
+                                        <input type="text" name="oldpass" id="oldpass" placeholder="Eski Şifrenizi Girin" />
+
+                                        <i class="fas fa-exclamation-circle"></i>
+
+                                    </div>
+                                    <div class="form-group col-xs-6">
+                                        <label>Yeni Şifreniz </label>
+                                        <input type="text" name="newpass" id="newpass" placeholder="Yeni Şifrenizi Girin" />
+
+                                        <i class="fas fa-exclamation-circle"></i>
+
+                                    </div>
+                                    <div class="form-group col-xs-6">
+                                        <label>Şifrenizi Onaylayın </label>
+                                        <input type="text" name="newpass2" id="newpass2" placeholder="Yeni Şifrenizi Girin" />
+
+                                        <i class="fas fa-exclamation-circle"></i>
+                                    </div>
+                                    <div class="form-group col-xs-6">
+                                        <button type="button" id="sifreDegistir" onclick="changePassword()">Şifremi Güncelle</button>
+                                    </div>
+                                </div>*@
+
+
+
+
+                            <div class="row profilBtn">
+                                <button type="button" id="kaydetbtn" class="btn form-control"><span class="fa fa-pencil-square-o"></span> Kaydet</button>
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 col-md-6 col-xs-12 validationCheck profil">
+                <div class="dashboard-list-box">
+                    <h4 class="gray">
+                        <span class="yardim">Doktor Hesap Detayları</span>
+                    </h4>
+                    <div class="dashboard-list-box-static">
+
+
+
+                        <!-- Details -->
+                        <div class="my-profile">
+                            <div class="row"><h2>Randevu Bilgileri</h2></div>
+
+                            <div class="row">
+
+
+                                <div class="form-group col-xs-12">
+                                    <label>Branş Giriniz *</label>
+                                    <select id="userdepartments" name="departmentid" class="form-control" onchange="changeDepartment()" onclick="document.getElementById('departmentwarning').style.display = 'unset';">
+                                        <option value="-1">Branş Seçiniz</option>
+                                        @if (userdepartmans.Count == 0)
+                                        {
+                                            <option value="-1">Lütfen Branş Ataması İçin İletişime Geçin</option>
+                                        }
+                                        else
+                                        {
+                                            foreach (var item in userdepartmans)
+                                            {
+                                                <option data-sessiontime="@item.SessionTime" data-price="@item.Price" value="@item.DepartmentId">@item.Department.Name</option>
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                                <div class="form-group  col-xs-12 col-md-6">
+                                    <label>Süresi (Dk)</label>
+                                    <input type="number" id="sessiontime" onblur="kontrol(this.id)" name="sessiontime" placeholder="Randevu Süresi" disabled />
+
+                                    <i class="fas fa-exclamation-circle"></i>
+
+                                </div>
+                                <div class="form-group col-xs-12 col-md-6">
+                                    <label>Ücret (₺)</label>
+                                    <input type="number" id="sessionprice" onblur="kontrol(this.id)" name="sessionprice" placeholder="Randevu Ücreti" disabled />
+
+                                    <i class="fas fa-exclamation-circle"></i>
+
+                                </div>
+                                <div id="departmentwarning" style="display:none">
+                                    <div class="form-group col-xs-12">
+                                        <p style="color:red;font-size: 12px;">* Her branş için süre ve fiyat belirleyebilirsiniz. Branşı seçtikten sonra "Bilgileri Güncelle" butonuna basarak bilgileri kaydedebilirsiniz.</p>
+                                    </div>
+                                    <div class="form-group col-xs-12">
+                                        <p style="color:red;font-size: 12px;">* Yeni bir branş eklemek için lütfen bizimle iletişime geçin.</p>
+                                    </div>
+                                </div>
+                                <div class="form-group col-xs-12 profilBtn">
+                                    <button type="button" id="bransUcret" class="btn form-control" onclick="profileUpdatePrice()" disabled>Bilgileri Güncelle</button>
+                                </div>
+                            </div>
+
+
+
+                            <div class="row"><h2>Hesap Bilgileri</h2></div>
+                            <div class="row">
+                                <div class="form-group col-xs-12 col-md-6">
+                                    <label>Eski Şifreniz</label>
+                                    <input type="password" name="oldpass" id="oldpass" placeholder="Eski Şifrenizi Girin" minlength="8" />
+
+                                    <i class="fas fa-exclamation-circle"></i>
+
+                                </div>
+                                <div class="form-group col-xs-12 col-md-6">
+                                    <label>Yeni Şifreniz </label>
+                                    <input type="password" name="newpass" id="newpass" placeholder="Yeni Şifrenizi Girin" minlength="8"  />
+
+                                    <i class="fas fa-exclamation-circle"></i>
+
+                                </div>
+                                <div class="form-group col-xs-12 col-md-6">
+                                    <label>Şifrenizi Onaylayın </label>
+                                    <input type="password" name="newpass2" id="newpass2" placeholder="Yeni Şifrenizi Girin" minlength="8"  />
+
+                                    <i class="fas fa-exclamation-circle"></i>
+                                </div>
+                                <div class="form-group col-xs-12 profilBtn">
+                                    <button type="button" id="sifreDegistir" class="btn form-control" onclick="changePassword()">Şifremi Güncelle</button>
+                                </div>
+                            </div>
+
+
+
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+            <input type="submit" style="display:none" id="hiddensubmit" />
+        }
+    </div>
+</div>
+
+
+<div id="video" class="modal" tabindex="-1" role="dialog">
+    @* Randevu Oluştur Video *@
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <video class="randevuvideo" id="videoplayer" controls><source src="~/images/profil.mp4" type="video/mp4">Tarayıcınız Bu Dosya Türünü Desteklemiyor</video>
+        </div>
+    </div>
+</div>
+
+<script src="https://unpkg.com/imask"></script>
+
+<script src="~/js/dashboard-custom.js"></script>
+<script src="~/js/dropzone.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        console.log("ready!");
+        telNo();
+        var doctorTitle="@Model.DoctorDetail.Title";
+
+        fillDoctorTitles(doctorTitle);
+    });
+
+
+    document.getElementById("TC").addEventListener("keypress", event => {
+        console.log(document.getElementById("TC").value.length);
+
+            var theEvent = event || window.event;
+
+            if (theEvent.type === 'paste') {
+                key = event.clipboardData.getData('text/plain');
+            } else {
+                var key = theEvent.keyCode || theEvent.which;
+                key = String.fromCharCode(key);
+            }
+            var regex = /[0-9]|\./;
+            if (!regex.test(key)) {
+                theEvent.returnValue = false;
+                if (theEvent.preventDefault) theEvent.preventDefault();
+            }
+
+
+    });
+
+    var checkprice = true;
+
+
+
+    function profileUpdatePrice() {
+        checkprice = true;
+        const DoctorDetail_Title = document.getElementById('DoctorDetail_Title');
+        const userdepartments = document.getElementById('userdepartments');
+        const sessiontime = document.getElementById('sessiontime');
+        const sessionprice = document.getElementById('sessionprice');
+        if (document.getElementById("userdepartments").value != -1) {
+            if (sessiontime.value === '') {
+                setErrorFor(sessiontime, 'Bu Alan Boş Bırakılamaz!');
+            } else if (sessiontime.value < 0) {
+                setErrorFor(sessiontime, 'Negatif Değer Girilemez!');
+            } else {
+                setSuccessFor(sessiontime);
+            }
+            if (sessionprice.value === '') {
+                setErrorFor(sessionprice, 'Bu Alan Boş Bırakılamaz!');
+            } else if (sessionprice.value < 0) {
+                setErrorFor(sessionprice, 'Negatif Değer Girilemez!');
+            } else {
+                setSuccessFor(sessionprice);
+            }
+        }
+
+        if (checkprice == true) {
+
+            $.ajax({
+                url: '/DoctorPanel/profileUpdatePrice',
+                data: { sessiontime: sessiontime.value, sessionprice: sessionprice.value, departmentid: userdepartments.value, DoctorDetail_Title: DoctorDetail_Title.value },
+                type: 'post',
+                dataType: 'json',
+                success: function (data) {
+                    if (data.status == -1) {
+                        window.location.href = "/Doctorla/Giris";
+
+                    } else {
+                        toastr.success('Bilgileriniz Başarıyla Güncellendi!', 'Başarılı!');
+                        setTimeout(function () { window.location.reload(); }, 1000);
+                    }
+                },
+                error: function (data) {
+                    $.ajax({
+                        url: '/DoctorPanel/ErrorLogs',
+                        data: { page: "DoctorPanel  - Profilim - profileUpdatePrice" },
+                        type: 'post',
+                        dataType: 'json',
+                        success: function (data) {
+
+                        },
+                        error: function (data) {
+
+                        }
+                    });
+                }
+            });
+        } else {
+            const smalls = document.querySelectorAll("small");
+            console.log(smalls);
+            const firstsmall = smalls[0];
+            console.log(firstsmall);
+            const firstplus = firstsmall.parentElement;
+            firstplus.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }
+
+    var checkpassword = true;
+
+
+
+    function changePassword() {
+
+        const oldpass = document.getElementById('oldpass');
+        const newpass = document.getElementById('newpass');
+        const newpass2 = document.getElementById('newpass2');
+        checkpassword = true;
+
+
+        if (oldpass.value === '') {
+                setErrorFor(oldpass, 'Bu Alan Boş Bırakılamaz!');
+            } else {
+                setSuccessFor(oldpass);
+        }
+
+            if (newpass.value === '') {
+                setErrorFor(newpass, 'Bu Alan Boş Bırakılamaz!');
+            }else if (newpass.value.length<8) {
+                setErrorFor(newpass, 'Şifreniz en az 8 karakter olmalıdır!');
+            }else {
+                setSuccessFor(newpass);
+        }
+
+            if (newpass2.value === '') {
+                setErrorFor(newpass2, 'Bu Alan Boş Bırakılamaz!');
+            } else if (newpass2.value != newpass.value) {
+                setErrorFor(newpass2, 'Şifreler Uyuşmuyor!');
+            }
+            else if (newpass2.value.length < 8)
+                {
+                    setErrorFor(newpass2, 'Şifreniz en az 8 karakter olmalıdır!');
+                }
+            else {
+                setSuccessFor(newpass2);
+            }
+
+
+
+        //if (newpass.value.length > 0) {
+        //    if (oldpass.value === '') {
+        //        setErrorFor(oldpass, 'Bu Alan Boş Bırakılamaz!');
+        //    } else {
+        //        setSuccessFor(oldpass);
+        //    }
+        //    if (newpass2.value === '') {
+        //        setErrorFor(newpass2, 'Bu Alan Boş Bırakılamaz!');
+        //    } else if (newpass2.value != newpass.value) {
+        //        setErrorFor(newpass2, 'Şifreler Uyuşmuyor!');
+        //    } else {
+        //        setSuccessFor(newpass2);
+        //    }
+        //}
+        //if (newpass2.value.length > 0) {
+        //    if (oldpass.value === '') {
+        //        setErrorFor(oldpass, 'Bu Alan Boş Bırakılamaz!');
+        //    } else {
+        //        setSuccessFor(oldpass);
+        //    }
+        //    if (newpass.value === '') {
+        //        setErrorFor(newpass, 'Bu Alan Boş Bırakılamaz!');
+        //    } if (newpass.value.length < 8) {
+        //        setErrorFor(newpass, 'Şifreniz en az 8 karakter olmalıdır!');
+        //    } else if (newpass2.value != newpass.value) {
+        //        setErrorFor(newpass2, 'Şifreler Uyuşmuyor!');
+        //    } else {
+        //        setSuccessFor(newpass);
+        //    }
+        //}
+
+
+        if (checkpassword == true) {
+            console.log("degiisss");
+
+            $.ajax({
+                url: '/DoctorPanel/ChangePassword',
+                data: { Oldpass: oldpass.value, Newpass: newpass.value },
+                type: 'post',
+                dataType: 'json',
+                success: function (data) {
+                    if (data.status == 2) {
+                        window.location.href = "/Doctorla/Giris";
+                    }else if (data.status == -1) {
+                        setErrorFor(oldpass, data.message);
+                    } else if (data.status == 3) {
+                        setErrorFor(newpass, data.message);
+
+                    }
+                    else {
+                        toastr.success('Şifreniz Başarıyla Güncellendi!', 'Başarılı!');
+                        setTimeout(function () { window.location.href = "/Doctorla/Giris"},800)
+                    }
+                },
+                error: function (data) {
+                    $.ajax({
+                        url: '/DoctorPanel/ErrorLogs',
+                        data: { page: "DoctorPanel  - Profilim - ChangePassword" },
+                        type: 'post',
+                        dataType: 'json',
+                        success: function (data) {
+
+                        },
+                        error: function (data) {
+
+                        }
+                    });
+                }
+            });
+        } else {
+            const smalls = document.querySelectorAll("small");
+            console.log(smalls);
+            const firstsmall = smalls[0];
+            console.log(firstsmall);
+            const firstplus = firstsmall.parentElement;
+            firstplus.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }
+
+    var checkprofil = true;
+    function checkInputs() {
+
+        checkprofil = true;
+        const profilAd = document.getElementById('Name');
+        const profilSoyad = document.getElementById('SurName');
+        const profilTC = document.getElementById('TC');
+        const profilTelefon = document.getElementById('Phone');
+        const profilEposta = document.getElementById('Email');
+        const profilDogumTarihi = document.getElementById('Birthdate');
+        const Gender = document.getElementById('Gender');
+        const DoctorDetail_Title = document.getElementById('DoctorDetail_Title');
+        const DoctorDetail_HospitalName = document.getElementById('DoctorDetail_HospitalName');
+
+        const Country = document.getElementById('Country');
+        const City = document.getElementById('City');
+        const County = document.getElementById('County');
+        const AddressDetail = document.getElementById('AddressDetail');
+
+        if (profilAd.value === '') {
+            setErrorFor(profilAd, 'Bu Alan Boş Bırakılamaz!');
+        } else {
+            setSuccessFor(profilAd);
+        }
+
+        if (profilSoyad.value === '') {
+            setErrorFor(profilSoyad, 'Bu Alan Boş Bırakılamaz!');
+        } else {
+            setSuccessFor(profilSoyad);
+        }
+        if (profilTC.value === '') {
+            setErrorFor(profilTC, 'Bu Alan Boş Bırakılamaz!');
+        } else if (!TCNOKontrol(profilTC.value)) {
+            console.log("123");
+            setErrorFor(profilTC, 'Lütfen Geçerli Bir Kimlik Numarası Giriniz!');
+        } else {
+            setSuccessFor(profilTC);
+        }
+        if (profilTelefon.value.indexOf("_")>-1) {
+            setErrorFor(profilTelefon, 'Bu Alan Boş Bırakılamaz!');
+        } else {
+            setSuccessFor(profilTelefon);
+        }
+
+        if (profilEposta.value === '') {
+            setErrorFor(profilEposta, 'Bu Alan Boş Bırakılamaz');
+        } else if (!isEmail(profilEposta.value)) {
+            setErrorFor(profilEposta, 'Lütfen Geçerli Bir E-posta Adresi Girin');
+        } else {
+            setSuccessFor(profilEposta);
+        }
+
+
+        var selectedDate = new Date(profilDogumTarihi.value);
+        var now = new Date();
+
+
+        if (profilDogumTarihi.value === '') {
+            setErrorFor(profilDogumTarihi, 'Bu Alan Alanı Boş Bırakılamaz');
+        } else if (selectedDate > now) {
+            setErrorFor(profilDogumTarihi, 'Lütfen Geçerli Bir Tarih Girin');
+
+        } else {
+            setSuccessFor(profilDogumTarihi);
+        }
+
+        if (Gender.value === "" || Gender.value === null) {
+            setErrorFor(Gender, 'Bu Alan Boş Bırakılamaz!');
+        } else {
+            setSuccessFor(Gender);
+        }
+
+        if (DoctorDetail_Title.value === '-1') {
+            setErrorFor(DoctorDetail_Title, 'Bu Alan Boş Bırakılamaz!');
+        } else {
+            setSuccessFor(DoctorDetail_Title);
+        }
+        if (DoctorDetail_HospitalName.value === '') {
+            setErrorFor(DoctorDetail_HospitalName, 'Bu Alan Boş Bırakılamaz!');
+        } else {
+            setSuccessFor(DoctorDetail_HospitalName);
+        }
+
+        if (Country.value === '-1') {
+            setErrorFor(Country, 'Bu Alan Boş Bırakılamaz!');
+        } else {
+            setSuccessFor(Country);
+        }
+        if (City.value === '-1') {
+            setErrorFor(City, 'Bu Alan Boş Bırakılamaz!');
+        } else {
+            setSuccessFor(City);
+        }
+        if (County.value === '-1') {
+            setErrorFor(County, 'Bu Alan Boş Bırakılamaz!');
+        } else {
+            setSuccessFor(County);
+        }
+        if (document.getElementById("AddressDetail").disabled==false) {
+
+            if (AddressDetail.value === '') {
+                setErrorFor(AddressDetail, 'Bu Alan Boş Bırakılamaz!');
+            } else {
+                setSuccessFor(AddressDetail);
+            }
+        }
+        //if (document.getElementById("userdepartments").value!=-1) {
+        //    if (sessiontime.value === '') {
+        //        setErrorFor(sessiontime, 'Bu Alan Boş Bırakılamaz!');
+        //    } else if (sessiontime.value < 0) {
+        //        setErrorFor(sessiontime, 'Negatif Değer Girilemez!');
+        //    } else {
+        //        setSuccessFor(sessiontime);
+        //    }
+        //    if (sessionprice.value === '') {
+        //        setErrorFor(sessionprice, 'Bu Alan Boş Bırakılamaz!');
+        //    } else if (sessionprice.value < 0) {
+        //        setErrorFor(sessionprice, 'Negatif Değer Girilemez!');
+        //    } else {
+        //        setSuccessFor(sessionprice);
+        //    }
+        //}
+
+
+
+
+        if (checkprofil == true) {
+            console.log("sdv");
+            $('#hiddensubmit').trigger('click'); //Gizli Submit Button
+        } else {
+            const smalls = document.querySelectorAll("small");
+            console.log(smalls);
+            const firstsmall = smalls[0];
+            console.log(firstsmall);
+            const firstplus = firstsmall.parentElement;
+            firstplus.scrollIntoView({ behavior: 'smooth', block: 'center'});
+            //var headerOffset = 200;
+            //var elementPosition = firstsmall.getBoundingClientRect().top;
+            //var offsetPosition = elementPosition - headerOffset;
+
+            //window.scrollTo({
+            //    top: offsetPosition,
+            //    behavior: "smooth"
+            //});
+        }
+
+
+    }
+    function kontrol(id) {
+        var deger = document.getElementById(id).value;
+        if (deger == "" || deger == null || deger < 0) {
+            document.getElementById(id).value = "0";
+        }
+    }
+
+    function TCNOKontrol(TCNO) {
+        var tek = 0,
+            cift = 0,
+            sonuc = 0,
+            TCToplam = 0,
+            i = 0,
+            hatali = [11111111110, 22222222220, 33333333330, 44444444440, 55555555550, 66666666660, 7777777770, 88888888880, 99999999990];;
+
+        if (TCNO.length != 11) return false;
+        if (isNaN(TCNO)) return false;
+        if (TCNO[0] == 0) return false;
+
+        tek = parseInt(TCNO[0]) + parseInt(TCNO[2]) + parseInt(TCNO[4]) + parseInt(TCNO[6]) + parseInt(TCNO[8]);
+        cift = parseInt(TCNO[1]) + parseInt(TCNO[3]) + parseInt(TCNO[5]) + parseInt(TCNO[7]);
+
+        tek = tek * 7;
+        sonuc = Math.abs(tek - cift);
+        if (sonuc % 10 != TCNO[9]) return false;
+
+        for (var i = 0; i < 10; i++) {
+            TCToplam += parseInt(TCNO[i]);
+        }
+
+        if (TCToplam % 10 != TCNO[10]) return false;
+
+        if (hatali.toString().indexOf(TCNO) != -1) return false;
+
+        return true;
+    }
+
+    function telNo() {
+
+        var phoneMask = IMask(
+            document.getElementById('Phone'), {
+            mask: '+9\\0 (000) 000-00-00',
+            lazy: false,
+            placeholderChar: '_'
+        });
+
+
+    }
+
+    function setErrorFor(input, message) {
+        const formControl = input.parentElement;
+        if (formControl.lastElementChild.id=="small") {
+            formControl.removeChild(formControl.lastElementChild);
+
+        }
+        const small = document.createElement("small");
+        formControl.appendChild(small);
+        formControl.classList.add("error");
+        small.setAttribute("id", "small");
+        small.innerText = message;
+        checkprofil = false;
+        checkpassword = false;
+        checkprice = true;
+    }
+
+    function setSuccessFor(input) {
+        const formControl = input.parentElement;
+        formControl.classList.remove("error");
+        if (formControl.lastElementChild.id == "small") {
+            formControl.removeChild(formControl.lastElementChild);
+        }
+    }
+
+    function isEmail(email) {
+        return /^(([^<>()\[\]\\.,;:\s@@"]+(\.[^<>()\[\]\\.,;:\s@@"]+)*)|(".+"))@@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(email);
+    }
+
+
+
+
+      function changeDepartment() {
+        document.getElementById("sessionprice").value = $('#userdepartments').find(':selected').data('price');
+          document.getElementById("sessiontime").value = $('#userdepartments').find(':selected').data('sessiontime');
+          var brans = document.getElementById("userdepartments").value;
+          if (brans != -1) {
+
+              document.getElementById("sessiontime").disabled = false;
+              document.getElementById("sessionprice").disabled = false;
+              document.getElementById("bransUcret").disabled = false;
+
+          } else {
+
+              document.getElementById("sessiontime").disabled = true;
+              document.getElementById("sessionprice").disabled = true;
+              document.getElementById("bransUcret").disabled = true;
+          }
+    }
+
+
+        function randevuvideo() {
+        $('#video').modal('show')
+          }
+
+      $('#video').on('hidden.bs.modal', function (e) {
+            document.getElementById("videoplayer").pause(1);
+        })
+
+
+        Dropzone.autoDiscover = false;
+
+        function deletefile(index) {
+            document.querySelectorAll("#filescontainer p")[index].innerHTML=""
+            files.pop(index); counter--;
+            document.getElementById("dZUpload").style.backgroundImage = '';
+            document.getElementById("dZUpload").style.color = 'black';
+        }
+        var counter = 0;
+        var files = new Array();
+        $(function () {
+            //-----------------  UPLOAD FILES
+
+
+
+
+            var base64 = '';
+            var filelimit = 1;
+            //var acceptedtype = "image/*,application/pdf,.doc,.docx";
+            var acceptedtype = "image/png,image/jpg,image/jpeg,"; //İzin Verilen Dosya Türleri
+            Dropzone.autoDiscover = false;
+            $("#kaydetbtn").click(function (e) { //Görünüz Buton
+                e.preventDefault();
+                console.log("1");
+                files.forEach(function (file) {
+                    $("#profileform").append("<input type='text' name='photofile' value='"+file+"'/>");//Container
+                });
+                console.log("2");
+                checkInputs();
+                console.log("3");
+
+            });
+             $("#dZUpload").dropzone({
+                 maxFiles: filelimit,
+                 maxFilesize: 10024,
+                 acceptedFiles: acceptedtype,
+                 uploadMultiple: true,
+                 parallelUploads: true,
+                 paramName: "Userphoto", //Önemsiz
+                 autoProcessQueue: false,
+                 url: '/', //Önemsiz
+                 addedfile: function (file) {
+                     console.log(file);
+                        var reader = new FileReader();
+                     reader.onload = function (event) {
+                         if (counter < filelimit) {
+                             base64 = event.target.result;
+                             files.push(base64);
+                             $("#filescontainer").append("<p class='label label-primary '><span class='fa fa-times' style='cursor:pointer' onclick='deletefile(" + counter + ")'></span> " + file.name + "</p> ");
+                             counter++;
+                             document.getElementById("dZUpload").style.backgroundImage ='url('+base64+')';
+                             document.getElementById("dZUpload").style.color ='white';
+                         } else {
+                               Swal.fire({
+                                    title: 'Dosya Ekleme Hatası',
+                                    text:'Daha Fazla Dosya Ekleyemezsiniz',
+                                    icon: 'error',
+                                    showConfirmButton: false,
+                               })
+                         }
+
+                    };
+                     reader.readAsDataURL(file);
+                 }
+             });
+
+
+            //-----------------  UPLOAD FILES
+
+
+
+            GetCitys();
+        });
+        var cityid=@Model.Address.FirstOrDefault().CityId;
+        var countyid=@Model.Address.FirstOrDefault().CountyId;
+        var lasttabid = 1;
+        function tab(tabid) {
+            document.getElementById("tabid" + lasttabid).style.display = "none";
+            document.getElementById("tabli" + lasttabid).classList.remove("active");
+            document.getElementById("tabid" + tabid).style.display = "";
+            document.getElementById("tabli" + tabid).classList.add("active");
+            lasttabid = tabid;
+        }
+
+    function fillDoctorTitles(title) {
+        $.getJSON('../js/JsModels/DoctorTitles.json', function (data) {
+            $.each(data, function (i, f) {
+
+                if (f == title) {
+                    $("#DoctorDetail_Title").append("<option value='" + i + "' selected>" + f + "</option>")
+
+                } else {
+                    $("#DoctorDetail_Title").append("<option value='" + i + "'>" + f + "</option>")
+
+                }
+            });
+        });
+    }
+
+
+        function GetCitys() {
+            var countryid = $("#Country").val();
+            if (countryid!=-1) {
+                $.ajax({
+                    url: "/Doctorla/GetCity",
+                type: "get",
+                dataType: "json",
+                data: { CountryId: countryid },
+                success: function (data) {
+                    $("#City").html('');
+                    data.forEach(function (item) {
+
+                        if(item.id==cityid)
+                            $("#City").append('<option value="' + item.id + '" selected>' + item.name + '</option>');
+                        else
+                            $("#City").append('<option value="' + item.id + '" >' + item.name + '</option>');
+
+
+                    });
+                         GetCounty();
+                },
+                error: function (data) {
+                    $.ajax({
+                        url: '/DoctorPanel/ErrorLogs',
+                        data: { page: "DoctorPanel  - Profilim - GetCitys" },
+                        type: 'post',
+                        dataType: 'json',
+                        success: function (data) {
+
+                        },
+                        error: function (data) {
+
+                        }
+                    });
+                }
+            });
+            } else if (countryid == "-1")
+            {
+                console.log(countryid);
+                console.log("sdv");
+                document.getElementById("City").innerHTML = '<option value=" -1" selected>Önce Ülke Seçiniz</option>';
+                document.getElementById("County").innerHTML = '<option value=" -1" selected>Önce Şehir Seçiniz</option>';
+                document.getElementById("AddressDetail").disabled = true;
+                document.getElementById("AddressDetail").value = "";
+
+            }
+
+        }
+        function GetCounty() {
+            var cityid = $("#City").val();
+            if (cityid) {
+                $.ajax({
+                    url: "/Doctorla/GetCounty",
+                type: "get",
+                dataType: "json",
+                data: { CityId: cityid },
+                success: function (data) {
+                    $("#County").html('');
+                    data.forEach(function (item) {
+                        if (item.id == countyid)
+                            $("#County").append('<option value="' + item.id + '" selected>' + item.name + '</option>');
+                        else
+                            $("#County").append('<option value="' + item.id + '">' + item.name + '</option>');
+
+                    });
+                    document.getElementById("AddressDetail").disabled = false;
+
+                    },
+                    error: function (data) {
+                        $.ajax({
+                            url: '/DoctorPanel/ErrorLogs',
+                            data: { page: "DoctorPanel  - Profilim - GetCounty" },
+                            type: 'post',
+                            dataType: 'json',
+                            success: function (data) {
+
+                            },
+                            error: function (data) {
+
+                            }
+                        });
+                    }
+            });
+            }
+
+        }
+    $('.dashboard-responsive-nav-trigger').on('click', function (e) {
+        e.preventDefault();
+        $(this).toggleClass('active');
+
+        var dashboardNavContainer = $('body').find(".dashboard-nav");
+
+        if ($(this).hasClass('active')) {
+            $(dashboardNavContainer).addClass('active');
+        } else {
+            $(dashboardNavContainer).removeClass('active');
+        }
+
+    });
+
+</script>
+
+

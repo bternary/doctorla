@@ -1,0 +1,160 @@
+﻿@using Data.Domain
+@model List<Data.Domain.DailyCheck>
+@{
+    DateTime selectedDate = DateTime.Parse(ViewBag.selecteddate.ToString());
+    DateTime start = DateTime.Parse(ViewBag.startdate.ToString());
+    DateTime end = DateTime.Parse(ViewBag.enddate.ToString());
+    DateTime today = DateTime.Now;
+    int counter=0;
+    List<DailyCheck> dailyChecks = Model;
+}
+
+
+<section class="timetable" style="padding-bottom:2rem;">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="section-title text-center">
+                    <h2>Hatırlatma <span>Çizelgesi  </span></h2>
+                    <p>Sarı Renkli Randevular, Dolu Randevuları Gösterir</p>
+                </div>
+            </div>
+        </div>
+        <div class="timetable-content">
+            <div class="row">
+                <div class="col-xs-12 tarih-buton">
+                    <div class="row">
+                        <div class="col-sm-12 col-md-7 takvim-bir">
+                            
+                        </div>
+                        <div class="col-sm-12 col-md-5 takvim-iki">
+                                    <button type="button" onclick="refreshAppointments('@today.ToShortDateString()')" class="btn btn-outline-secondary">Bugün</button>
+                                    <button type="button" onclick="refreshAppointments('@selectedDate.AddDays(-7).ToShortDateString()')" class="btn btn-default">
+                                        <i class="fa fa-chevron-left"></i>
+                                    </button>
+                                    <span style="display:none" id="selecteddate">@selectedDate.ToShortDateString()</span>
+                                    <span>
+                                        @start.ToShortDateString() - @end.ToShortDateString()
+                                    </span>
+                                    <button type="button" onclick="refreshAppointments('@selectedDate.AddDays(7).ToShortDateString()')" class="btn btn-default">
+                                        <i class="fa fa-chevron-right"></i>
+                                    </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-12 table-responsive">
+                    <table class="table tt-table table-bordered " id="takvim-tablo">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th class="@((int)today.Date.DayOfWeek==1?"randevutoday":"")">Pazartesi</th>
+                                <th class="@((int)today.Date.DayOfWeek==2?"randevutoday":"")" style="width:200px;">Salı</th>
+                                <th class="@((int)today.Date.DayOfWeek==3?"randevutoday":"")">Çarşamba</th>
+                                <th class="@((int)today.Date.DayOfWeek==4?"randevutoday":"")">Perşembe</th>
+                                <th class="@((int)today.Date.DayOfWeek==5?"randevutoday":"")">Cuma</th>
+                                <th class="@((int)today.Date.DayOfWeek==6?"randevutoday":"")">Cumartesi</th>
+                                <th class="@((int)today.Date.DayOfWeek==7?"randevutoday":"")">Pazar</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            @for (int i = 0; i < 24; i++)
+                            {
+                                <tr>
+                                    <td>@i: 00 - @(i + 1): 00</td>
+                                    @for (int j = 1; j < 8; j++)
+                                    {
+
+                                        
+                                        if (j == 8)
+                                            j = 0;
+                                        bool checkdata = true;
+
+                                        <td>
+                                            <table class="tablo-saatler">
+                                                @foreach (var item in dailyChecks.Where(x =>  x.NurseAlertDays.Split(',').Contains(j.ToString()) && x.NurseAlertDaysHours.Split(',').Contains(i.ToString()+":00")).ToList())
+                                                {
+                                                    checkdata = false;
+                                                    string appointmentstatus = "";
+                                                <tr>
+                                                    <td><a  href="javascript:;;" class="@appointmentstatus" id="@item.Id" data-toggle="popover" data-trigger="focus" data-container="body" data-placement="top" type="button" data-html="true">Ad: @item.User.Name @item.User.SurName <br />Paket: @item.PackageName  <br />  @(item.Start<=start.AddDays(j-1)?"Paketin "+((start.AddDays(j-1)-item.Start).Days+1)+".Günü":"")  </a></td>
+                                                </tr>
+                                                    <div id="popover-content-@item.Id" class="hide ">
+                                                        <div class="container-fluid acilir-pencere" style="width:100%;">
+                                                            <div class="row">
+                                                                <div class="col-xs-12 ">
+                                                                    <a id="popupDetailbtn" onclick="getDailyCheckToModal(@item.Id)" data-toggle="modal" data-target="#olcumModal" href="#" class="btn ">Detayları Görüntüle</a>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                }@if (j == 0) { j = 8; }
+                                            </table>
+                                        </td>
+                                       
+                                    }
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+</section>
+@section script {}
+
+<script type="text/javascript">
+
+    
+    function randevuvideo() {
+        $('#video').modal('show')
+    }
+    
+      function refreshAppointments(date) {
+        document.querySelectorAll(".popover ").forEach(function (item) { item.remove() });
+        $.ajax({
+            url: '/DoctorPanel/Anasayfa',
+            data: { weekdate: date },
+            type: 'GET',
+            dataType: 'html',
+            success: function (data) {
+                $("#randevutakvim").html(data);
+            },
+            error: function (data) {
+                $.ajax({
+                    url: '/NursePanel/ErrorLogs',
+                    data: { page: "NursePanel  - _takvim - refreshAppointments" },
+                    type: 'post',
+                    dataType: 'json',
+                    success: function (data) {
+
+                    },
+                    error: function (data) {
+
+                    }
+                });
+            }
+        });
+    }
+
+
+       $( document ).ready(function() {
+       
+
+                $("[data-toggle=popover]").each(function(i, obj) {
+
+                $(this).popover({
+                  html: true,
+                  content: function() {
+                    var id = $(this).attr('id')
+                    return $('#popover-content-' + id).html();
+                  }
+                });
+
+                });
+
+
+        });
+
+
+</script>

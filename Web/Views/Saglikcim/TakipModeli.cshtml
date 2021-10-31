@@ -1,0 +1,346 @@
+﻿@model List<Data.Domain.Package>
+@{
+    ViewData["Title"] = "Takip Modeli";
+}
+@*<link href="~/css/child.css" rel="stylesheet" /> DEĞİŞTİR *@
+<link href="~/css/child.min.css" rel="stylesheet" />
+@*<link href="~/css/dental.css" rel="stylesheet" /> DEĞİŞTİR *@
+<link href="~/css/dental.min.css" rel="stylesheet" />
+<link href="~/css/style.min.css" rel="stylesheet" />
+
+<style>
+ 
+    section.call-to-action {
+        background: url(../images/takipmodelarkaplan.jpg) no-repeat;
+        background-size: 80%;
+        background-position: left;
+        background-attachment: fixed;
+        position: relative;
+    }
+
+        section.call-to-action::before {
+            content: '';
+            background: rgb(255, 255, 255);
+            position: absolute;
+            width: 45%;
+            height: 100%;
+            right: -120px;
+            z-index: 1;
+            top: 0;
+            transform: skew(-20deg);
+            left: unset !important;
+        }
+
+    .color-overlay {
+        -webkit-tap-highlight-color: rgba(0,0,0,0);
+        line-height: 1.42857143;
+        color: #333;
+        font-family: 'Poppins', sans-serif;
+        border: 0;
+        outline: 0;
+        font-size: 100%;
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        transition: all ease-in-out 0.5s;
+        background: #13232f;
+        opacity: 0.8;
+    }
+
+    .video-content {
+        border: none;
+    }
+
+        .video-content video {
+            border-radius: 0 30px;
+        }
+
+    .about-us-image img {
+        width: 100%;
+        height: 100%;
+        border: 5px solid rgb(255, 255, 255);
+        border-radius: 0 30px;
+        box-shadow: none;
+    }
+
+    .about-us h3, .about-us h2, .about-us p {
+        color: #fff;
+    }
+
+
+    .about-icon {
+        width:100px;
+        height:100px;
+        line-height:100px;
+    }
+    .about-icon i:before {
+        font-size:70px !important;
+    }
+  
+   
+</style>
+
+<div id="takip-modeli">
+
+
+    <a name="takipModekiTanimi"></a>
+    <section class="call-to-action">
+        <div class="container">
+            <div class="col-md-6">
+                <div class="action-content">
+                    <h2>Doctorla ile <br><span>Takip Modeli</span></h2>
+                    <p>Doctorla olarak sağlık danışanlarımıza verilen hizmeti en iyi şekilde yerine getirmek için tasarladığımız pek çok takip modeli ile her daim güvende hissetmenizi sağlamaya çalışmaktayız. Sürekli olarak geliştirmekte olduğumuz modellerimizde oluşturulan kişisel özellikler ile tam bir güven hissettirmeyi amaçlamaktayız. </p>
+                    <p>Kişiye Özel İlaç Hatırlatma ile, özel olarak hazırlanan ilaç hatırlatıcınız ile günün dilediğiniz zamanına bildirim ve sms uyarıcıları ekleyebilirsiniz.</p>
+                    <p>Detaylı Sağlık Takibi ile, Tansiyon, diyabet, ilaç, egzersiz, aşı gibi pek çok kategoride özel olarak takip edilebilir bir sistem içinde size özel hazırlanan grafikler ile sağlığınızı kontrol altına almayı hedeflemektedir. </p>
+                    <p>Profesyonel Destek ile, sizin belirlediğiniz gün ve saatlerde haftanın iki günü, toplamda ‘ayda 8 kere’ sağlık danışanlarımız ile seans gerçekleştirerek sağlığınızın devamını sağlayabilirsiniz.</p>
+                    <p>Çoklu Kontrol Özelliği ile, belirlediğiniz yakınınız ile tüm sağlık eylemlerinizi ve hatırlatmalarınızı ortak olarak takip edebilirsiniz. </p>
+                    <p>Sağlık Belgeleri Paylaşımı, sağlık dökümanlarınızı size özel atanan danışmanlarınız ile paylaşın. </p>
+                    <p>Ayrıntılı Sağlık Karnesi ile, ‘Bir ay boyunca her gün’ yapılmış olan kontrollerin sonucunda, her yerde kulllanabileceğiniz, sizin için hazırlanan özel grafikler, tablolar ve özel notlardan oluşan belgeye sahip olun. </p>
+                    <p>Modellerimizi yandaki oluşturduğumuz tanıtım filminde daha ayrıntılı olarak inceleyebilirsiniz.</p>
+                </div>
+            </div>
+            <div class="col-md-6 align-self-center">
+                <div class="video-outer">
+                    <div class="video-content" onclick="butonkaybet();">
+                        <video controls id="korona-korunma-video" poster="../images/takipmodelleriposterpng.png?v=2">
+                            <source src="~/images/takipmodelleri.mp4" type="video/mp4">
+                            Tarayıcınız Bu Video Tarafından Desteklenmiyor
+                        </video>
+                        <button type="button" class="play-btn" id="ply-btn" onclick="videobaslat('korona-korunma-video');"><i class="fa fa-play"></i></button>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="color-overlay"></div>
+    </section>
+
+
+
+
+    <a name="takipPaketleri"></a>
+    @Html.Partial("~/Views/Saglikcim/Partials/_TakipPaketleri.cshtml", Model)
+
+
+
+    <section class="pediatrician ">
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="section-title text-center">
+                        <h2>Takip Modeli<span> Nasıl Çalışır?</span></h2>
+                    </div>
+                </div>
+            </div>
+            <div class="ped-outer mar-top-30">
+                <div class="row">
+                    <div class="col-md-3 col-sm-6 col-xs-12">
+                        <div class="ped-item">
+                                <div class="ped-icon">
+                                    <i class="flaticon-medical-insurance"></i>
+                                </div>
+                                <div class="ped-content">
+                                    <h3>Ücretsiz </h3>
+                                    <p>Takip Modelini 10 gün boyunca hiçbir ücret ödemeden kullanmak için tek yapman gereken kayıt olmak.</p>
+                                </div>
+                                
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6 col-xs-12">
+                        <div class="ped-item mar-n-30">
+                            <div class="ped-icon">
+                                <i class="flaticon-analytics"></i>
+                            </div>
+                            <div class="ped-content">
+                                <h3>Medikal Ölçümler ve Özel Takip Grafikleri</h3>
+                                <p>Takip edilmesini istediğiniz tüm medikal ölçümlerini girin. Her ölçümünüze özel olarak hazırlanmış grafiklerden sağlığınızı 7/24 kontrol altına alın.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6 col-xs-12">
+                        <div class="ped-item">
+                            <div class="ped-icon">
+                                <i class="flaticon-reminder" style="margin-left:10px"></i>
+                            </div>
+                            <div class="ped-content">
+                                <h3>Hatırlatıcınızı Oluşturun </h3>
+                                <p>Düzenli kullanmanız gereken ilaçları doğru zamanda almanız için oluşturduğunuz hatırlatıcılar ile sizi gün içerisinde uyarıyoruz. Çoklu kullanım modelimiz; siz ilacınızı almayı unutsanız bile seçtiğiniz yakınınız size hatırlatması için uyarı yapmaktayız.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6 col-xs-12">
+                        <div class="ped-item">
+                            <div class="ped-icon">
+                                <i class="flaticon-nurse"></i>
+                            </div>
+                            <div class="ped-content">
+                                <h3>Profesyonel Destek</h3>
+                                <p>Sizin belirlediğiniz günlerde özel olarak aktarılmış sağlık danışmanlarımızla beraber sesli bir seans gerçekleştiriyorsunuz. Sağlığınızla alakalı tüm bilgileri ve notlarını özel panelinizden kontrol ederek yaşam kalitenizi doruklara çıkartın.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <section class="teeth-protection">
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="section-title text-center title-white">
+                        <h2>Takip Modelinin Özellikleri</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="row ortala">
+                <div class="col-md-4">
+                    <div class="tp-item mar-rt-60">
+                        <div class="tp-icon">
+                            <i class="flaticon-reminder" style="margin-left:6px;"></i>
+                        </div>
+                        <div class="tp-content">
+                            <h3>Kişiye Özel İlaç Hatırlatma</h3>
+                            <p>Kendinize özel ilaç hatırlatıcılarınızı oluşturun, gün içerisinde gelen uyarılarımız ile doğru zamanda ilacınızı kullanın ve sağlığınızı koruyun.</p>
+                        </div>
+                    </div>
+                    <div class="tp-item">
+                        <div class="tp-icon">
+                            <i class="flaticon-analytics"></i>
+                        </div>
+                        <div class="tp-content">
+                            <h3>Detaylı Sağlık Takibi</h3>
+                            <p>Birçok Kategoride oluşturduğunuz ölçümleri otomatik olarak hazırlanan grafiklerden sağlığınızı kontrol altına alın.</p>
+                        </div>
+                    </div>
+                    <div class="tp-item mar-rt-60">
+                        <div class="tp-icon">
+                            <i class="flaticon-nurse"></i>
+                        </div>
+                        <div class="tp-content">
+                            <h3>Profesyonel Destek</h3>
+                            <p>Size özel belirlediğiniz gün ve saatlerde özel sağlık danışmanınızla seans gerçekleştirerek mutlak başarıya ve sağlığa ulaşın.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 ortala-gorsel">
+                    <div class="tp-shape">
+                        <img src="~/images/takipmodelinasilcalisir.png"  alt="Takip Modeli Nasıl Çalışır?">
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="tp-item tp-right mar-lt-60">
+                        <div class="tp-icon">
+                            <i class="flaticon-parental-control"></i>
+                        </div>
+                        <div class="tp-content">
+                            <h3>Çoklu Kontrol</h3>
+                            <p>Belirlediğiniz yakınınız ile sağlınızı ortak takip edebilir, ilacını almayı unutursanız yakınınıza bildirilir böyle aileniz ve siz tüm sağlık aktivitelerinizi takip edebilirsiniz.</p>
+                        </div>
+                    </div>
+                    <div class="tp-item tp-right">
+                        <div class="tp-icon">
+                            <i class="flaticon-insurance" style="margin-left:10px;"></i>
+                        </div>
+                        <div class="tp-content">
+                            <h3>Raporlarınızı Paylaşın</h3>
+                            <p>Sağlık dokümanlarınızı veya sağlık raporlarınızı size özel atanan sağlık danışmanlarınız ile kolayca paylaşın.</p>
+                        </div>
+                    </div>
+                    <div class="tp-item tp-right mar-lt-60">
+                        <div class="tp-icon">
+                            <i class="flaticon-medical-report-1"></i>
+                        </div>
+                        <div class="tp-content">
+                            <h3>Ayrıntılı Sağlık Karnesi</h3>
+                            <p>
+                                30 gün boyunca yapılmış olan kontrollerin sonucunda her yerde kullanabileceğiniz,
+                                Size için hazırlanan grafikler tablolar ve özel notlarla desteklenen belgenize kavuşun
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="about-us  call-to-action">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-8 col-sm-12">
+                    <div class="section-title">
+                        <h2><span>Neden Takip Modelini </span>Kullanmalıyım ?</h2>
+                    </div>
+                </div>
+                <div class="col-md-7 col-sm-12">
+                    <div class="about-content">
+                        <div class="content-box">
+                            <div class="about-item">
+                                <div class="about-icon">
+                                    <i class="flaticon-body"></i>
+                                </div>
+                                <div class="about-desc">
+                                    <h3>Sağlığınızı Tahmin Değil Takip Edin</h3>
+                                    <p>Doctorla olarak hazırladığımız takip modelinde kendiniz için bir interaktif sağlık günlüğü oluşturun ve ileride yaşayacağınız tüm sağlık sorunları ortadan kaldırın.</p>
+                                </div>
+                            </div>
+                            <div class="about-item">
+                                <div class="about-icon child-2">
+                                    <i class="flaticon-energy"></i>
+                                </div>
+                                <div class="about-desc">
+                                    <h3>Yaşam Kalitenizi Arttırın</h3>
+                                    <p>Muhteşem bir sağlığa kavuşmak için artık önünüzde hiçbir engel yok. Siz geleceğiniz için harika planlar kurarken, biz sağlınızı kontrol altına alarak profesyonel bir destek sunarak planlarınızı ertelemenize gerek kalmıyor.</p>
+                                </div>
+                            </div>
+                            <div class="about-item">
+                                <div class="about-icon child-3">
+                                    <i class="flaticon-medicine"></i>
+                                </div>
+                                <div class="about-desc">
+                                    <h3>Mutlak Başarı</h3>
+                                    <p>Doğru zamanda doğru hamleler yaparak sağlınızın gün geçtikçe koruma altına almak amacıyla hazırlanmış modellerimiz ,konfor alanınızdan çıkmadan nerede olursanız olun sonuç odaklı sistemlerimiz daima yanınızda.</p>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-5 col-sm-12">
+                    <div class="about-us-image">
+                        <img src="~/images/takipmodeligorsel2.jpg" alt="Neden Takip Modelini Kullanmalıyım?" >
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="color-overlay"></div>
+
+    </section>
+
+
+
+
+</div>
+
+<script>
+    function videobaslat(videoid) {
+        var vid = document.getElementById("korona-korunma-video");
+
+        vid.play();
+        document.getElementById("ply-btn").style.display = "none";
+
+    }
+    function butonkaybet() {
+
+
+        document.getElementById("ply-btn").style.display = "none";
+
+    }
+</script>
+

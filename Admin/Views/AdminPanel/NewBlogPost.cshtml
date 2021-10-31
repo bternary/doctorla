@@ -1,0 +1,651 @@
+﻿@using Data.Domain
+@model Blog
+@{
+    ViewData["Title"] = "Yeni Yazı Ekle";
+    ViewBag.Blog = "active";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    HashSet<string> tags = new HashSet<string>();
+    HashSet<string> categorys = new HashSet<string>();
+    HashSet<string> postTags = new HashSet<string>();
+    HashSet<string> postCategorys = new HashSet<string>();
+
+    foreach (var item in ViewBag.tags)
+    {
+        if (item != null)
+        {
+
+            var tag = item.Split(",");
+            foreach (var item2 in tag)
+            {
+                tags.Add(item2);
+            }
+        }
+    }
+    foreach (var item in ViewBag.categorys)
+    {
+        if (item != null)
+        {
+
+            var category = item.Split(",");
+            foreach (var item2 in category)
+            {
+                categorys.Add(item2);
+            }
+        }
+
+    }
+    if (ViewBag.type != "new")
+    {
+        var postcategorys = Model.Category.Split(",");
+        foreach (var item2 in postcategorys)
+        {
+            postCategorys.Add(item2);
+        }
+        var posttags = Model.Tags.Split(",");
+        foreach (var item2 in posttags)
+        {
+            postTags.Add(item2);
+        }
+    }
+}
+<link href="~/css/dropzone.min.css" rel="stylesheet" />
+<link href="~/css/select2.min.css" rel="stylesheet" />
+@section css{ 
+<style>
+    .addNewTag {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        position: relative;
+    }
+    .addNew .addNewTag {
+        display: none;
+    }
+    .addNewTag .addNewTag-input{
+        flex: 1;
+        padding-right: 1rem;
+    }
+    .addNew.active .addNewTag {
+        display: flex;
+    }
+    .addNew.active a {
+        display: none;
+    }
+</style>
+}
+<div class="row validationCheck" id="newBlogPost">
+    <div class="col-xs-12 col-md-8 ">
+        <textarea id="description" name="description">
+                @(ViewBag.type== "new" ? "Bir Şeyler Yaz...":Model.Description)
+    </textarea>
+    </div>
+    <div class="col-xs-12 col-md-4">
+        <div class="form-group col-xs-12">
+            <h2>Yazı Bilgileri</h2>
+        </div>
+        <div class="form-group col-xs-12">
+            <label>Yazının Başlığı</label>
+            <input type="text" name="title" id="title" value="@(ViewBag.type=="new"?"":Model.Title)" placeholder="Yazının Başlığını Giriniz" class="form-control" />
+
+            <i class="fas fa-exclamation-circle"></i>
+        </div>
+        <div class="form-group col-xs-12">
+            <label>Yazının SeoUrli</label>
+            <input type="text" name="seoUrl" id="seoUrl" value="@(ViewBag.type=="new"?"":Model.SeoUrl)" placeholder="Yazının SeoUrlini Giriniz" class="form-control" />
+
+            <i class="fas fa-exclamation-circle"></i>
+        </div>
+        <div class="form-group col-xs-12">
+            <label>Yazının Kısa Açıklaması</label>
+            <textarea name="shortDescription" id="shortDescription" placeholder="Yazının Kısa Açıklaması Giriniz" class="form-control" maxlength="500">@(ViewBag.type=="new"?"":Model.ShortDescription)</textarea>
+            <i class="fas fa-exclamation-circle"></i>
+        </div>
+        <div class="form-group col-xs-12">
+            <label>Kategori</label>
+            <div class="adminCheckboxes">
+                @foreach (var item in categorys)
+                {
+                    <div class="custom-control custom-checkbox">
+                        <input type="checkbox" value="@item" class="custom-control-input" @(ViewBag.type == "new" ? "" : (postCategorys.Contains(@item) ? "checked" : "")) name="categoryChecks" id="categoryCheck-@item">
+                        <label class="custom-control-label" for="categoryCheck-@item">@item</label>
+                    </div>
+
+                }
+
+            </div>
+
+            <div class="addNew">
+                <div class="addNewCategory">
+                    <div class="addNewCategory-input">
+                        <input type="text" name="categoryName" id="categoryName" placeholder="Yeni Kategoriyi Giriniz" class="form-control" />
+                        <i class="fas fa-exclamation-circle"></i>
+                    </div>
+                    <div class="islem-Button">
+                        <button type="button" id="addCategoryBtn" class="blue">Ekle</button>
+                    </div>
+                </div>
+                <a href="#" id="addCategoryLink">Yeni Kategori Ekle</a>
+            </div>
+        </div>
+        <div class="form-group col-xs-12">
+            <label>Etiketler</label>
+            <select id="tags" multiple="multiple">
+                @foreach (var item in tags)
+                {
+                    <!option value="@item" @(ViewBag.type == "new" ? "" : (postTags.Contains(@item) ? "selected" : ""))> @item</!option>
+
+                }
+            </select>
+            <div class="addNew">
+                <div class="addNewTag">
+                    <div class="addNewTag-input">
+                        <input type="text" name="tagName" id="tagName" placeholder="Yeni Etiket Giriniz" class="form-control" />
+                        <i class="fas fa-exclamation-circle"></i>
+                    </div>
+                    <div class="islem-Button">
+                        <button type="button" id="addTagBtn" class="blue">Ekle</button>
+                    </div>
+                </div>
+                <a href="#" id="addTagLink">Yeni Etiket Ekle</a>
+            </div>
+        </div>
+        <div class="form-group col-xs-12">
+            <label>Yazar</label>
+            <select id="postAuthor">
+                @foreach (UserListItemModel item in ViewBag.authors)
+                {
+                    <!option value="@item.Id" @(ViewBag.type == "new" ? "" : (Model.IUser == item.Id ? "selected" : ""))>@item.UserName</!option>
+                }
+
+            </select>
+            <i class="fas fa-exclamation-circle"></i>
+        </div>
+        <div class="form-group col-xs-12">
+            <label>İç Sayfa Kapak Fotoğrafı</label>
+            <div id="dZUpload" class="dropzone" style="background-repeat: round;">
+                <div class="dz-default dz-message">@(ViewBag.type== "new" ? "Fotoğraf Yükle" : "Başka Fotoğraf Yükle")</div>
+            </div>
+            <div class="col-xs-12" id="filescontainer">
+                @if (ViewBag.type != "new")
+                {
+
+                    <img src="@(Model.ThumbnailPhoto)" id="thumbnail" alt="@(Model.ThumbnailPhoto)" /> <p class='label label-primary '><span class='fa fa-times' style='cursor:pointer' onclick='deletefile(0)'></span>@(Model.ThumbnailPhoto)</p>
+                }
+            </div>
+        </div>
+        <div class="form-group col-xs-12">
+            <label>Kapak Fotoğrafı Mobil</label>
+            <div id="dZUpload1" class="dropzone" style="background-repeat: round;">
+                <div class="dz-default dz-message">@(ViewBag.type== "new" ? "Fotoğraf Yükle" : "Başka Fotoğraf Yükle")</div>
+            </div>
+            <div class="col-xs-12" id="filescontainer1">
+                @if (ViewBag.type != "new")
+                {
+
+                    <img src="@(Model.CoverPhotoMobile)" id="coverPhotoMobile" alt="@(Model.CoverPhotoMobile)" /> <p class='label label-primary '><span class='fa fa-times' style='cursor:pointer' onclick='deletefile1(0)'></span>@(Model.CoverPhotoMobile)</p>
+                }
+            </div>
+        </div>
+        <div class="form-group col-xs-12">
+            <label>Kapak Fotoğrafı</label>
+            <div id="dZUpload2" class="dropzone" style="background-repeat: round;">
+                <div class="dz-default dz-message">@(ViewBag.type== "new" ? "Fotoğraf Yükle" : "Başka Fotoğraf Yükle")</div>
+            </div>
+            <div class="col-xs-12" id="filescontainer2">
+                @if (ViewBag.type != "new")
+                {
+                    <img src="@(Model.CoverPhoto)" id="coverPhoto" alt="@(Model.CoverPhoto)" /> <p class='label label-primary '><span class='fa fa-times' style='cursor:pointer' onclick='deletefile2(0)'></span>@(Model.CoverPhoto)</p>
+                }
+            </div>
+        </div>
+        <div class="form-group col-xs-12 islem-Button newPostButtons">
+            @*<button class="green" id="previewPost" onclick="preview();">Önizle</button>*@
+
+            <button class="blue" id="publishPost">@(ViewBag.type== "new" ? "Kaydet":"Güncelle")</button>
+
+        </div>
+    </div>
+</div>
+
+
+
+
+<div class="modal fade fullModal" id="previewModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Post Önizleme</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body previewPost">
+
+            </div>
+            <div class="modal-footer  islem-Button">
+                <button type="button" class="blue" data-dismiss="modal">Kapat</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/js/tinymce.min.js"></script>
+
+<script src="~/js/select2.full.min.js"></script>
+<script src="~/js/dropzone.js"></script>
+
+<script>
+    // BLOG POST
+    tinymce.init({
+        selector: '#description',
+        language: 'tr_TR',
+
+        plugins: 'print preview paste importcss searchreplace autolink autosave save directionality code visualblocks visualchars fullscreen image link media template codesample table charmap hr pagebreak nonbreaking anchor toc insertdatetime advlist lists wordcount imagetools textpattern noneditable help charmap quickbars emoticons',
+        imagetools_cors_hosts: ['picsum.photos'],
+        menubar: 'file edit view insert format tools table help',
+        toolbar: 'undo redo | bold italic underline strikethrough | fontselect fontsizeselect formatselect | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist | forecolor backcolor removeformat | pagebreak | charmap emoticons | fullscreen  preview save print | insertfile image media template link anchor codesample | ltr rtl',
+        toolbar_sticky: true,
+        autosave_ask_before_unload: false,
+        autosave_interval: '10s',
+        autosave_prefix: '{path}{query}-{id}-',
+        autosave_restore_when_empty: false,
+        autosave_retention: '2m',
+        image_advtab: true,
+        paste_data_images: true,
+        image_class_list: [
+            { title: 'None', value: '' },
+            { title: 'Some class', value: 'class-name' }
+        ],
+        images_upload_base_path: '.../wwwroot/postImages/',
+        importcss_append: true,
+        file_picker_callback: function (callback, value, meta) {
+            /* Provide file and text for the link dialog */
+            if (meta.filetype === 'file') {
+                callback('https://www.google.com/logos/google.jpg', { text: 'My text' });
+            }
+
+            /* Provide image and alt text for the image dialog */
+            if (meta.filetype === 'image') {
+                callback('https://www.google.com/logos/google.jpg', { alt: 'My alt text' });
+            }
+
+            /* Provide alternative source and posted for the media dialog */
+            if (meta.filetype === 'media') {
+                callback('movie.mp4', { source2: 'alt.ogg', poster: 'https://www.google.com/logos/google.jpg' });
+            }
+        },
+        templates: [
+            { title: 'New Table', description: 'creates a new table', content: '<div class="mceTmpl"><table width="98%%"  border="0" cellspacing="0" cellpadding="0"><tr><th scope="col"> </th><th scope="col"> </th></tr><tr><td> </td><td> </td></tr></table></div>' },
+            { title: 'Starting my story', description: 'A cure for writers block', content: 'Once upon a time...' },
+            { title: 'New list with dates', description: 'New List with dates', content: '<div class="mceTmpl"><span class="cdate">cdate</span><br /><span class="mdate">mdate</span><h2>My List</h2><ul><li></li><li></li></ul></div>' }
+        ],
+
+        template_cdate_format: '[Date Created (CDATE): %m/%d/%Y : %H:%M:%S]',
+        template_mdate_format: '[Date Modified (MDATE): %m/%d/%Y : %H:%M:%S]',
+        height: 600,
+        min_height: 300,
+        branding: false,
+
+        image_caption: true,
+        quickbars_selection_toolbar: 'bold italic | quicklink h2 h3 blockquote quickimage quicktable',
+        noneditable_noneditable_class: 'mceNonEditable',
+        toolbar_mode: 'wrap',
+        contextmenu: 'link image imagetools table',
+        content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
+    });
+    // POST TAGS
+    $('#postTags').select2({
+        tags: true,
+        tokenSeparators: [','],
+        placeholder: "Lütfen Etiketleri Belirtin"
+    });
+    // POST IMAGE
+    function deletefile(index) {
+        document.getElementById("filescontainer").innerHTML = "";
+        document.getElementById("dZUpload").innerText = "Fotoğraf Yükle";
+        files.pop(index);
+        counter--;
+        isFile = false;
+    }
+    function deletefile1(index) {
+        document.getElementById("filescontainer1").innerHTML = "";
+        document.getElementById("dZUpload1").innerText = "Fotoğraf Yükle";
+        files1.pop(index);
+        counter1--;
+        isFile = false;
+    }
+    function deletefile2(index) {
+        document.getElementById("filescontainer2").innerHTML = "";
+        document.getElementById("dZUpload2").innerText = "Fotoğraf Yükle";
+        files2.pop(index);
+        counter2--;
+        isFile = false;
+    }
+    Dropzone.autoDiscover = false;
+    var counter = 0;
+    var counter1 = 0;
+    var counter2 = 0;
+    var files = new Array();
+    var files1 = new Array();
+    var files2 = new Array();
+    $(function () {
+        //-----------------  UPLOAD FILES
+        var base64 = '';
+        var base641 = '';
+        var base642 = '';
+        var filelimit = 1;
+        //var acceptedtype = "image/*,application/pdf,.doc,.docx";
+        var acceptedtype = "image/png,image/jpg,image/jpeg,"; //İzin Verilen Dosya Türleri
+        Dropzone.autoDiscover = false;
+        $("#kaydetbtn").click(function (e) { //Görünüz Buton
+            e.preventDefault();
+            files.forEach(function (file) {
+                $("#profileform").append("<input type='hidden' name='thumbnailPhoto' value='" + file + "'/>");//Container
+            });
+            files2.forEach(function (file) {
+                $("#profileform").append("<input type='hidden' name='coverPhoto' value='" + file + "'/>");//Container
+            });
+            files1.forEach(function (file) {
+                $("#profileform").append("<input type='hidden' name='coverPhotoMobile' value='" + file + "'/>");//Container
+            });
+            $('#hiddensubmit').trigger('click'); //Gizli Submit Button
+        });
+        $("#dZUpload").dropzone({
+            maxFiles: filelimit,
+            maxFilesize: 10024,
+            acceptedFiles: acceptedtype,
+            uploadMultiple: true,
+            parallelUploads: true,
+            paramName: "Userphoto", //Önemsiz
+            autoProcessQueue: false,
+            url: '/', //Önemsiz
+            addedfile: function (file) {
+                var reader = new FileReader();
+                console.log(file.name);
+                reader.onload = function (event) {
+
+                    base64 = event.target.result;
+                    files.push(base64);
+                    document.getElementById("filescontainer").innerHTML = "<img src='" + base64 + "' alt='" + file.name + "' id='thumbnail'/> <p class='label label-primary '><span class='fa fa-times' style='cursor:pointer' onclick='deletefile(" + 0 + ")'></span> " + file.name + "</p> ";
+                    counter++;
+                    document.getElementById("dZUpload").innerText = "Başka Fotoğraf Yükle";
+                    isFile = true;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+        $("#dZUpload1").dropzone({
+            maxFiles: filelimit,
+            maxFilesize: 10024,
+            acceptedFiles: acceptedtype,
+            uploadMultiple: true,
+            parallelUploads: true,
+            paramName: "Userphoto", //Önemsiz
+            autoProcessQueue: false,
+            url: '/', //Önemsiz
+            addedfile: function (file) {
+                var reader = new FileReader();
+                console.log(file.name);
+                reader.onload = function (event) {
+
+                    base641 = event.target.result;
+                    files1.push(base641);
+                    document.getElementById("filescontainer1").innerHTML = "<img src='" + base641 + "' alt='" + file.name + "' id='thumbnail'/> <p class='label label-primary '><span class='fa fa-times' style='cursor:pointer' onclick='deletefile(" + 0 + ")'></span> " + file.name + "</p> ";
+                    counter1++;
+                    document.getElementById("dZUpload1").innerText = "Başka Fotoğraf Yükle";
+                    isFile = true;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+        $("#dZUpload2").dropzone({
+            maxFiles: filelimit,
+            maxFilesize: 10024,
+            acceptedFiles: acceptedtype,
+            uploadMultiple: true,
+            parallelUploads: true,
+            paramName: "Userphoto", //Önemsiz
+            autoProcessQueue: false,
+            url: '/', //Önemsiz
+            addedfile: function (file) {
+                var reader = new FileReader();
+                console.log(file.name);
+                reader.onload = function (event) {
+
+                    base642= event.target.result;
+                    files2.push(base642);
+                    document.getElementById("filescontainer2").innerHTML = "<img src='" + base642 + "' alt='" + file.name + "' id='thumbnail'/> <p class='label label-primary '><span class='fa fa-times' style='cursor:pointer' onclick='deletefile(" + 0 + ")'></span> " + file.name + "</p> ";
+                    counter2++;
+                    document.getElementById("dZUpload2").innerText = "Başka Fotoğraf Yükle";
+                    isFile = true;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+        //-----------------  UPLOAD FILES
+    });
+    var checkpost = true;
+    document.getElementById("publishPost").addEventListener("click", () => {
+
+        var postContentVal = tinymce.get("description").getContent();
+        var postTitleVal = document.getElementById("title").value;
+        var postCategoryEl = document.querySelectorAll('input[name="categoryChecks"]:checked');
+        var postAuthorVal = document.querySelectorAll('#postAuthor > option:checked')[0].value;
+        var postCategorysVals = "";
+        for (var i of postCategoryEl) {
+            postCategorysVals += i.value + ",";
+        }
+        postCategorysVals = postCategorysVals.slice(0, -1);
+        var postTagsEl = $('#tags').find(':selected');
+        var postTagsVals = "";
+        for (var i of postTagsEl) {
+            postTagsVals += i.value + ",";
+        }
+        postTagsVals = postTagsVals.slice(0, -1);
+        var shortDescriptionValue = document.getElementById("shortDescription").value;
+        var seoUrlValue = document.getElementById("seoUrl").value;
+
+        checkpost = true;
+
+        const content = document.querySelector(".tox-editor-container");
+        const image1 = document.querySelector("#filescontainer1 img");
+        const image2 = document.querySelector("#filescontainer2 img");
+        const title = document.getElementById("title");
+        const author = document.getElementById("postAuthor");
+
+        if (postContentVal === '') {
+            setErrorFor(content, 'Bu Alan Boş Bırakılamaz!');
+        } else {
+            setSuccessFor(content);
+        }
+        if (seoUrlValue === '') {
+            setErrorFor(document.getElementById("seoUrl"), 'Bu Alan Boş Bırakılamaz!');
+        } else {
+            setSuccessFor(document.getElementById("seoUrl"));
+        }
+        if (shortDescriptionValue === '') {
+            setErrorFor(document.getElementById("shortDescription"), 'Bu Alan Boş Bırakılamaz!');
+        } else {
+            setSuccessFor(document.getElementById("shortDescription"));
+        }
+        if (title.value === '') {
+            setErrorFor(title, 'Bu Alan Boş Bırakılamaz!');
+        } else {
+            setSuccessFor(title);
+        }
+        if (postCategorysVals === '') {
+            setErrorFor(document.querySelector(".adminCheckboxes"), 'Bu Alan Boş Bırakılamaz!');
+        } else {
+            setSuccessFor(document.querySelector(".adminCheckboxes"));
+        }
+        if (postTagsVals === '') {
+            setErrorFor(document.getElementById("tags"), 'Bu Alan Boş Bırakılamaz!');
+        } else {
+            setSuccessFor(document.getElementById("tags"));
+        }
+        if (image1 == null) {
+            setErrorFor(document.getElementById("dZUpload1"), 'Bu Alan Boş Bırakılamaz!');
+        } else {
+            setSuccessFor(document.getElementById("dZUpload1"));
+        }
+        if (image2 == null) {
+            setErrorFor(document.getElementById("dZUpload2"), 'Bu Alan Boş Bırakılamaz!');
+        } else {
+            setSuccessFor(document.getElementById("dZUpload2"));
+        }
+
+        if (checkpost == true) {
+                $.ajax({
+            url: '/AdminPanel/AddPost',
+            data: { SeoUrl: seoUrlValue, Description: postContentVal, ShortDescription: shortDescriptionValue, Title: postTitleVal, Categorys: postCategorysVals, Tags: postTagsVals, UserId: postAuthorVal, ThumbnailPhoto: files, CoverPhoto: files1, CoverPhotoMobile: files2, Type: '@(ViewBag.type== "new" ? "new":"update")', Id:@(ViewBag.type== "new" ? 0:Model.Id)},
+            type: 'post',
+            datatype: 'json',
+            success: function (data) {
+                swal.fire({
+                    icon: 'success',
+                    title: data.message,
+                    showConfirmButton: false,
+                    timer: 2500
+                }).then((result) => {
+                    location ="/AdminPanel/Blogs";
+                });
+            },
+            error: function (data) {
+                toastr.error('bir hata ile karşılaştık', 'hata!');
+            }
+        });
+        } else {
+
+            const smalls = document.querySelectorAll("small");
+            console.log(smalls);
+            const firstsmall = smalls[0];
+            console.log(firstsmall);
+            const firstplus = firstsmall.parentElement;
+            firstplus.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    });
+     function setErrorFor(input, message) {
+        checkpost = false;
+
+        const formControl = input.parentNode;
+        if (formControl.lastElementChild.id == "small") {
+            formControl.removeChild(formControl.lastElementChild);
+
+        }
+        const small = document.createElement("small");
+        if (input.classList.contains('tox-editor-container')) {
+            formControl.parentNode.appendChild(small);
+
+        } else {
+            formControl.appendChild(small);
+        }
+        formControl.classList.add("error");
+        small.setAttribute("id", "small");
+        small.innerText = message;
+    }
+     function setSuccessFor(input) {
+
+        const formControl = input.parentNode;
+        formControl.classList.remove("error");
+        if (input.classList.contains('tox-editor-container')) {
+            if (formControl.parentNode.lastElementChild.id == "small") {
+                formControl.parentNode.removeChild(formControl.lastElementChild);
+            }
+        } else {
+            if (formControl.lastElementChild.id == "small") {
+                formControl.removeChild(formControl.lastElementChild);
+            }
+        }
+
+    }
+    const addCategoryLink=document.getElementById("addCategoryLink");
+    addCategoryLink.addEventListener("click", () => {
+        var parent = addCategoryLink.parentNode;
+        parent.classList.toggle("active");
+
+    });
+    const addTagLink = document.getElementById("addTagLink");
+    addTagLink.addEventListener("click", () => {
+        var parent = addTagLink.parentNode;
+        parent.classList.toggle("active");
+    });
+
+    const addTagBtn = document.getElementById("addTagBtn");
+    const tagName = document.getElementById("tagName");
+    var tagVals = new Array();
+    var tagsNL = document.getElementById("tags");
+    for (var i = 0; i < tagsNL.length; i++) {
+        tagVals.push(tagsNL.options[i].text.toUpperCase());
+    }
+    addTagBtn.addEventListener("click", () => {
+        var value = tagName.value.replace(/\w\S*/g, (w) => (w.replace(/^\w/, (c) => c.toUpperCase())));
+        if (value !== '')
+            if (tagVals.indexOf(value.toUpperCase()) < 0)
+            {
+                var option = document.createElement("option");
+                option.text = value;
+                tagsNL.add(option);
+                tagName.value = "";
+                tagVals.push(value.toUpperCase());
+            }
+        });
+    const addCategoryBtn = document.getElementById("addCategoryBtn");
+    const categoryName = document.getElementById("categoryName");
+    var categorysNL = document.querySelectorAll('input[name="categoryChecks"] ');
+    var categoryVals = new Array();
+    for (var i of categorysNL) {
+        categoryVals.push(i.value.toUpperCase());
+    }
+    addCategoryBtn.addEventListener("click", () => {
+
+        var value = categoryName.value.replace(/\w\S*/g, (w) => (w.replace(/^\w/, (c) => c.toUpperCase())));
+
+        if (value === '') {
+            setErrorFor(document.querySelector(".adminCheckboxes"), 'Bu Alan Boş Bırakılamaz!');
+        } else {
+
+            console.log(categoryVals);
+            console.log(value.toUpperCase());
+            if (categoryVals.indexOf(value.toUpperCase()) > -1) {
+
+                setErrorFor(document.querySelector(".adminCheckboxes"), 'Bu Kategori Mevcut!');
+            } else {
+
+                document.querySelector(".adminCheckboxes").innerHTML += '<div class="custom-control custom-checkbox"><input type="checkbox" value="' + value + '" class="custom-control-input"  name="categoryChecks" id="categoryCheck-' + value + '"><label class="custom-control-label" for="categoryCheck-' + value + '">' + value + '</label></div>';
+                categoryName.value = "";
+                categoryVals.push(value.toUpperCase());
+
+                setSuccessFor(document.querySelector(".adminCheckboxes"));
+            }
+        }
+    });
+
+    function preview() {
+        var postContentVal = tinymce.get("postContent").getContent();
+        var postTitleVal = document.getElementById("postTitle").value;
+        var postImage = $('#thumbnail').attr('src')
+        var modalPost = document.querySelector(".previewPost");
+        console.log(postImage);
+        modalPost.innerHTML = "";
+        if (postTitleVal) {
+            modalPost.innerHTML += "<h1>" + postTitleVal + "</h1>";
+
+
+        }
+        if (postImage) {
+            modalPost.innerHTML += '<img src="' + postImage + '" style="width:100%; object-fit: cover; " alt="' + postTitleVal + '" />';
+
+        }
+        if (postContentVal) {
+            modalPost.innerHTML += postContentVal;
+
+        }
+        $('#previewModal').modal('show');
+    }
+
+
+
+
+
+
+</script>

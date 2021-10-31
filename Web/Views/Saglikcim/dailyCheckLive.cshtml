@@ -1,0 +1,177 @@
+﻿
+@{
+    Layout = null;
+    ViewData["Title"] = "Canlı Görüşme";
+}
+<head>
+    <script src="~/js/jquery-3.3.1.min.js"></script>
+    <script src="https://meet.jit.si/libs/lib-jitsi-meet.min.js"></script>
+    <script src="https://meet.jit.si/external_api.js"></script>
+    <script src="~/lib/jquery/dist/jquery.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+    <link href="~/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/css/style.css" rel="stylesheet" />
+
+</head>
+<div id="canli-gorusme">
+    <div id="meet"></div>
+</div>
+
+<div id="yardim-ekrani" style="display:none;">
+    <div class="mikrofon-kamera-masaustu " id="yardim-ekrani-masaustu">
+        <div class="mikrofon-kamera-masaustu-icerik">
+            <h1>Tarayıcı İzinleri</h1>
+            <p>Canlı görüşmenin en sağlıklı şekilde gerçekleşebilmesi için tarayıcınızın mikrofon ve kamera erişim izinlerini vermeniz gerekmektedir. Eğer bu izinlerin nasıl verileceğini bilmiyorsanız aşağıdaki adımları takip edin.</p>
+            <h4 class="izinler-liste-baslik">
+                Chrome Tarayıcısı İçin:
+            </h4>
+            <ol>
+                <li>Tarayıcının sol üstünde bulunan kilit simgesine tıklayın.</li>
+                <li>Açılan ekranda <strong>'Kamera'</strong> ve <strong>'Mikrofon'</strong> seçeneklerini <strong>'İzin Ver'</strong> olarak değiştirin.</li>
+                <li><strong>Son olarak bu sayfayı yenileyin.</strong></li>
+            </ol>
+        </div>
+        <img src="~/images/masaustu-chrome.png" alt="Chrome Tarayıcılarda Canlı Görüşme" />
+    </div>
+    <div class="mikrofon-kamera" id="yardim-ekrani-mobil" style="display:none;">
+        <div class="mikrofon-kamera-masaustu-icerik">
+            <h1>Tarayıcı İzinleri</h1>
+            <p>Canlı görüşmenin en sağlıklı şekilde gerçekleşebilmesi için tarayıcınızın mikrofon ve kamera erişim izinlerini vermeniz gerekmektedir. Eğer bu izinlerin nasıl verileceğini bilmiyorsanız aşağıdaki adımları takip edin.</p>
+            <h4 class="izinler-liste-baslik">
+                Chrome Tarayıcısı İçin:
+            </h4>
+            <ol>
+                <li>Tarayıcının sol üstünde bulunan kilit simgesine tıklayın.</li>
+                <li>Açılan ekranda sağ alttaki <strong>'Site Ayarları'</strong> butonuna tıklayın.</li>
+                <li>Açılan ekranda <strong>'Kameranıza Erişim'</strong> ve <strong>'Mikrofonunuza Erişim'</strong> seçeneklerini <strong>'İzin Ver'</strong> olarak değiştirin.</li>
+                <li><strong>Son olarak bu sayfayı yenileyin.</strong></li>
+            </ol>
+        </div>
+        <img src="~/images/android-chrome.png" alt="Chrome Tarayıcılarda Canlı Görüşme" />
+    </div>
+</div>
+
+<script type="text/javascript">
+        var isPermission = 0;
+        $(document).ready(function () {
+
+            navigator.permissions.query({ name: 'microphone' })
+                .then((permissionObj) => {
+                    if (permissionObj.state == "denied") {
+                        document.getElementById("canli-gorusme").style.display = "none";
+                        document.getElementById("yardim-ekrani").style.display = "block";
+
+                    } else {
+                        isPermission = 1;
+                    }
+                })
+                .catch((error) => {
+                    alert('Got error :', error);
+                });
+
+            navigator.permissions.query({ name: 'camera' })
+                .then((permissionObj) => {
+                    if (permissionObj.state == "denied") {
+
+                        document.getElementById("canli-gorusme").style.display = "none";
+                        document.getElementById("yardim-ekrani").style.display = "block";
+                    } else {
+                        isPermission = 1;
+                    }
+                })
+                .catch((error) => {
+                    alert('Got error :', error);
+                });
+
+        const domain = 'meet.jit.si';
+        const options = {
+            roomName: '@ViewBag.chatid',
+            width: '100%',
+            height: '100%',
+            //jwt: '@ViewBag.chatid',
+            devices: {
+                audioInput: '<deviceLabel>',
+                audioOutput: '<deviceLabel>',
+                videoInput: '<deviceLabel>'
+            },
+            userInfo: {
+                email: 'info@doctorla.co',
+                displayName: '@ViewBag.Name'
+            }, configOverwrite: {
+                disableDeepLinking: true,
+            },
+            parentNode: document.querySelector('#meet')
+        };
+        const api = new JitsiMeetExternalAPI(domain, options);
+    });
+
+       var minutes = document.getElementById("minutes");
+        var seconds = document.getElementById("second");
+    var colorsettings = true;
+        var timer = setInterval(function () {
+            if (minute == 0 && second <= 1) {
+                clearInterval(timer);
+                seconds.innerText = "00";
+                $("#sendanswers").trigger("click");
+            }
+            else {
+                second--;
+                    if (second == 0) {
+                        second = 59;
+                        minute--;
+                        if (minute<10)
+                            minutes.innerText ="0"+ minute;
+
+                        else
+                            minutes.innerText = minute;
+                }
+                if (second<10)
+                    seconds.innerText = "0" + second;
+                else
+                    seconds.innerText = second;
+                if (minute == 0 && colorsettings) {
+                    seconds.style.color = "red"; colorsettings = false;minutes.style.color = "red";
+                }
+                if (minute == 0 && second < 2) {
+                          Swal.fire({
+                            title:'Randevunuz Başarıyla Tamamlandı',
+                              text:'Randevu Süreniz Tamamlanmıştır. Randevuyu Oylamak İçin Profilinize Yönlendiriliyorsunuz. Randevunuzun Yanındaki Yıldızdan Aldığınız Hizmet Kalitesini Oylayabilirsiniz. Doctorla Ekibi',
+                            icon: 'success',
+                            timer: 10000,
+                            showConfirmButton: false,
+                          })
+                    setTimeout(function () { window.location.href = "/Doctorla/Profilim" }, 10000);
+                }
+
+            }
+        }, 1000)
+        $(function () {
+            var isMobile = {
+                Android: function () {
+                    return navigator.userAgent.match(/Android/i);
+                },
+                BlackBerry: function () {
+                    return navigator.userAgent.match(/BlackBerry/i);
+                },
+                iOS: function () {
+                    return navigator.userAgent.match(/iPhone|iPad|iPod/i);
+                },
+                Opera: function () {
+                    return navigator.userAgent.match(/Opera Mini/i);
+                },
+                Windows: function () {
+                    return navigator.userAgent.match(/IEMobile/i) || navigator.userAgent.match(/WPDesktop/i);
+                },
+                any: function () {
+                    return (isMobile.Android() || isMobile.BlackBerry() || isMobile.iOS() || isMobile.Opera() || isMobile.Windows());
+                }
+            };
+            if (isMobile.any()) {
+                if (isPermission==0) {
+                    document.getElementById("yardim-ekrani-mobil").style.display = "block";
+                    document.getElementById("yardim-ekrani-masaustu").style.display = "none";
+                }
+            }
+        });
+</script>
+
